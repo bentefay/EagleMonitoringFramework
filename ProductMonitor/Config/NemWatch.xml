@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Tab>
+  <Checks>
+    <Check>
+      <Name>Gen Fuel Type (5min)</Name>
+      <Online>true</Online>
+      <Frequency>
+        <Type>Regular</Type>
+        <Input>
+          <Frequency>5</Frequency>
+        </Input>
+      </Frequency>
+      <Query>
+        <Type>TimeSinceGenerationByFuelTypeNemWatchWebApiUpdated</Type>
+        <Input>
+          <Location>https://nemwatch.datastripe2.com/web/api/NemWatch/GenerationByFuelTypeData</Location>
+          <CheckApviSolarData>False</CheckApviSolarData>
+          <UseOldestSolar>False</UseOldestSolar>
+          <CheckAemoData>True</CheckAemoData>
+          <Resolution>5</Resolution>
+        </Input>
+      </Query>
+      <Triggers>
+        <Trigger>
+          <Type>OlderThan</Type>
+          <Input>
+            <Minutes>10</Minutes>
+          </Input>
+          <Actions>
+            <Type>WAV</Type>
+            <Input>
+              <File>C:\alarm.wav</File>
+            </Input>
+          </Actions>
+        </Trigger>
+        <Trigger>
+          <Type>OlderThan</Type>
+          <Input>
+            <Minutes>15</Minutes>
+          </Input>
+          <Actions>
+            <Action>
+              <Type>WAV</Type>
+              <Input>
+                <File>C:\alarm.wav</File>
+              </Input>
+            </Action>
+          </Actions>
+        </Trigger>
+      </Triggers>
+    </Check>
+  </Checks>
+</Tab>

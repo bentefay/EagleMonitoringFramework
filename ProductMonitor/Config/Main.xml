@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ProductMonitor>
+  <ProgramAlarms>
+    <WAV>C:\\alarm.wav</WAV>
+    <Email1>data@global-roam.com</Email1>
+    <Email2></Email2>
+    <SMS></SMS>
+    <Heartbeat></Heartbeat>
+  </ProgramAlarms>
+  <Tabs>
+    <Tab>
+      <name>Nem Watch</name>
+      <online>true</online>
+      <config>NemWatch.xml</config>
+    </Tab>
+  </Tabs>
+</ProductMonitor>
