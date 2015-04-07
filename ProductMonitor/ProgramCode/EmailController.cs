@@ -11,32 +11,33 @@ namespace ProductMonitor.ProgramCode
 {
     class EmailController
     {
-        
-        ArrayList messages;
-        ArrayList tabs;
-        Timer timer;
-        static EmailController instance;
+        private readonly ArrayList _messages;
+        private readonly ArrayList _tabs;
+        private readonly Timer _timer;
+        private static EmailController instance;
 
-        private EmailController() {
+        private EmailController() 
+        {
            
             System.IO.Directory.CreateDirectory(Program.TempPath + "\\Screenshots");
-            messages = new ArrayList();
-            tabs = new ArrayList();
+            _messages = new ArrayList();
+            _tabs = new ArrayList();
             
-            timer = new Timer(10 * 60 * 1000); //10 minutes ---------------------
-            timer.Elapsed += new ElapsedEventHandler(timer_Elapsed);
-            timer.Start();
+            _timer = new Timer(10 * 60 * 1000); //10 minutes ---------------------
+            _timer.Elapsed += Timer_Elapsed;
+            _timer.Start();
         }
-        void timer_Elapsed(object sender, ElapsedEventArgs exception)
+
+        private void Timer_Elapsed(object sender, ElapsedEventArgs exception)
         {
             try
             {
 
-                Log.Information("Checking list of emails to send (email count: {0}).", messages.Count);
+                Log.Information("Checking list of emails to send (email count: {0}).", _messages.Count);
 
                 //get a list of problem tabs
                 string subject = "Error: ";
-                foreach (string s in tabs)
+                foreach (string s in _tabs)
                 {
                     subject += s + " & ";
                 }
@@ -49,11 +50,10 @@ namespace ProductMonitor.ProgramCode
                 }
 
                 //take screenshots;
-                ArrayList screenshots = new ArrayList();
-                foreach (string s in tabs)
+                var screenshots = new ArrayList();
+                foreach (string s in _tabs)
                 {
-                    String saveLocation = Program.TempPath + "\\Screenshots\\" + s.Replace(' ', '_')
-                                          + "_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".png";
+                    var saveLocation = Program.TempPath + "\\Screenshots\\" + s.Replace(' ', '_') + "_" + DateTime.Now.ToString("yyyyMMddHHmm") + ".png";
                     ;
                     GuiController.TakeScreenshot(s, saveLocation);
                     if (System.IO.File.Exists(saveLocation))
@@ -64,8 +64,8 @@ namespace ProductMonitor.ProgramCode
 
 
                 //get a list of addresses
-                ArrayList targets = new ArrayList();
-                foreach (Message m in messages)
+                var targets = new ArrayList();
+                foreach (Message m in _messages)
                 {
                     if (!targets.Contains(m.target))
                     {
@@ -76,8 +76,8 @@ namespace ProductMonitor.ProgramCode
                 //send a combined email to each address
                 foreach (String s in targets)
                 {
-                    ArrayList bigMessage = new ArrayList();
-                    foreach (Message m in messages)
+                    var bigMessage = new ArrayList();
+                    foreach (Message m in _messages)
                     {
                         if (m.target == s)
                         {
@@ -95,9 +95,11 @@ namespace ProductMonitor.ProgramCode
                     message += "\n";
 
                     //send the email
-                    MailMessage email = new MailMessage("productMonitor@global-roam.com", s);
-                    email.Subject = subject;
-                    email.Body = message;
+                    var email = new MailMessage("productMonitor@global-roam.com", s)
+                    {
+                        Subject = subject, 
+                        Body = message
+                    };
 
                     foreach (string f in screenshots)
                     {
@@ -106,7 +108,7 @@ namespace ProductMonitor.ProgramCode
                     }
 
                     //add any file attachments
-                    foreach (Message mes in messages)
+                    foreach (Message mes in _messages)
                     {
                         //HACK: uses internal knowledge of the check's dictionaries to work
                         if (mes.message.Contains("Download Location"))
@@ -132,7 +134,7 @@ namespace ProductMonitor.ProgramCode
 
                     email.Priority = MailPriority.High;
 
-                    SmtpClient emailClient = new SmtpClient();
+                    var emailClient = new SmtpClient();
                     emailClient.Host = this.host;
                     emailClient.Port = this.port;
                     emailClient.Credentials =
@@ -200,8 +202,8 @@ namespace ProductMonitor.ProgramCode
                         }
                     }
                 }
-                messages.Clear();
-                tabs.Clear();
+                _messages.Clear();
+                _tabs.Clear();
 
             }
             catch (Exception e1)
@@ -228,10 +230,10 @@ namespace ProductMonitor.ProgramCode
         {
             Log.Information("Adding email to queue. {{ Target: {0}, Message: {1}, Tab: {2} }}", target, message, tab);
 
-            messages.Add(new Message(target, message));
-            if (!tabs.Contains(tab))
+            _messages.Add(new Message(target, message));
+            if (!_tabs.Contains(tab))
             {
-                tabs.Add(tab);
+                _tabs.Add(tab);
             }
 
             //force all checks on that tab to check their data
@@ -259,7 +261,7 @@ namespace ProductMonitor.ProgramCode
 
         public void SetTimer(int minutes)
         {
-            this.timer.Interval = 1000 * 60 * minutes;
+            this._timer.Interval = 1000 * 60 * minutes;
         }
 
         #region Settings

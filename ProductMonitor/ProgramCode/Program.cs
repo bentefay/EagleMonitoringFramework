@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using ProductMonitor.Display_Code;
-using ProductMonitor.Generic;
 using ProductMonitor.ProgramCode.Actions;
 using ProductMonitor.ProgramCode.Frequencies;
 using ProductMonitor.ProgramCode.Queries;
@@ -58,7 +58,7 @@ namespace ProductMonitor.ProgramCode
                 PreStartUp();
                 var configFilePath = Path.Combine(_configFilePathRoot, @"main.xml");
 
-                Program.Load(new Uri(configFilePath));
+                Load(new Uri(configFilePath));
 
                 PostStartUp();
 
@@ -88,16 +88,16 @@ namespace ProductMonitor.ProgramCode
 
             //open the document
 
-            XmlDocument mainDoc = new XmlDocument();
+            var mainDoc = new XmlDocument();
             try
             {
-                XmlTextReader myReader = new XmlTextReader(filePath.AbsoluteUri);
+                var myReader = new XmlTextReader(filePath.AbsoluteUri);
                 mainDoc.Load(myReader);
                 myReader.Close();
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Unable to load main xml file");
+                System.Windows.Forms.MessageBox.Show(@"Unable to load main xml file");
                 Log.Error(e, "Unable to load main xml file");
             }
 
@@ -110,11 +110,11 @@ namespace ProductMonitor.ProgramCode
                     {
                         if (monitorNode.Name.ToUpper() == "PROGRAMALARMS")
                         {
-                            setupAlarms(monitorNode);
+                            SetupAlarms(monitorNode);
                         }
                         else if (monitorNode.Name.ToUpper() == "TABS")
                         {
-                            loadTabs(monitorNode);
+                            LoadTabs(monitorNode);
                         }
                     }
                 }
@@ -123,7 +123,7 @@ namespace ProductMonitor.ProgramCode
             Log.Information("Configuration Loaded");
         }
 
-        private static void setupAlarms(XmlNode alarmsNode)
+        private static void SetupAlarms(XmlNode alarmsNode)
         {
             foreach (XmlNode child in alarmsNode)
             {
@@ -156,19 +156,19 @@ namespace ProductMonitor.ProgramCode
             //TODO: Set up the global alarms
         }
 
-        private static void loadTabs(XmlNode tabsNode)
+        private static void LoadTabs(XmlNode tabsNode)
         {
             foreach (XmlNode tab in tabsNode.ChildNodes)
             {
                 if (tab.Name.ToUpper() == "TAB")
                 {
-                    loadTab(tab);
+                    LoadTab(tab);
                 }
             }
         }
 
         //loads a tab file
-        private static void loadTab(XmlNode tab)
+        private static void LoadTab(XmlNode tab)
         {
             string name = "";
             string tabLocation = "";
@@ -199,8 +199,8 @@ namespace ProductMonitor.ProgramCode
 
 
             var configFilePath = Path.Combine(_configFilePathRoot, tabLocation);
-            XmlTextReader myReader = new XmlTextReader(configFilePath);
-            XmlDocument tabDocument = new XmlDocument();
+            var myReader = new XmlTextReader(configFilePath);
+            var tabDocument = new XmlDocument();
             try
             {
                 tabDocument.Load(myReader);
@@ -208,23 +208,23 @@ namespace ProductMonitor.ProgramCode
             }
             catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Unable to connect to " + tabLocation);
+                System.Windows.Forms.MessageBox.Show(@"Unable to connect to " + tabLocation);
                 Log.Error(e, "Unable to connect to " + tabLocation);
             }
 
 
             //get the checks
-            XmlNode Checks = tabDocument.LastChild.LastChild;
-            foreach (XmlNode check in Checks.ChildNodes)
+            var checks = tabDocument.LastChild.LastChild;
+            foreach (XmlNode check in checks.ChildNodes)
             {
                 if (check.Name.ToUpper() == "CHECK")
                 {
-                    loadCheck(name, online, check);
+                    LoadCheck(name, online, check);
                 }
             }
         }
 
-        private static void loadCheck(string tabName, bool tabOnline, XmlNode checkNode)
+        private static void LoadCheck(string tabName, bool tabOnline, XmlNode checkNode)
         {
 
             string name = "";
@@ -240,7 +240,7 @@ namespace ProductMonitor.ProgramCode
             }
 
             //create the check
-            Check checkBeingLoaded = new Check(name, _arrayBuilder.Count);
+            var checkBeingLoaded = new Check(name, _arrayBuilder.Count);
             _arrayBuilder.Add(checkBeingLoaded);
             checkBeingLoaded.SetTab(tabName);
 
@@ -253,7 +253,7 @@ namespace ProductMonitor.ProgramCode
                 {
                     if (childNode.FirstChild.Value.ToUpper() == "TRUE")
                     {
-                        if (tabOnline == true)
+                        if (tabOnline)
                         {
                             checkOnline = true;
                         }
@@ -267,7 +267,7 @@ namespace ProductMonitor.ProgramCode
                 {
                     try
                     {
-                        loadFrequency(checkBeingLoaded, childNode);
+                        LoadFrequency(checkBeingLoaded, childNode);
                         nodesLoaded++;
                     }
                     catch (Exception e)
@@ -279,7 +279,7 @@ namespace ProductMonitor.ProgramCode
                 {
                     try
                     {
-                        loadQuery(checkBeingLoaded, childNode);
+                        LoadQuery(checkBeingLoaded, childNode);
                         nodesLoaded++;
                     }
                     catch (Exception e)
@@ -297,7 +297,7 @@ namespace ProductMonitor.ProgramCode
                         {
                             try
                             {
-                                loadTrigger(checkBeingLoaded, triggerNode);
+                                LoadTrigger(checkBeingLoaded, triggerNode);
                             }
                             catch (Exception e)
                             {
@@ -314,7 +314,7 @@ namespace ProductMonitor.ProgramCode
 
             if (nodesLoaded != 3)
             {
-                System.Windows.Forms.MessageBox.Show("Error in loadCheck");
+                System.Windows.Forms.MessageBox.Show(@"Error in loadCheck");
                 Log.Error("Error in loadCheck");
             }
             try
@@ -329,13 +329,13 @@ namespace ProductMonitor.ProgramCode
             }
         }
 
-        private static void loadFrequency(Check checkBeingLoaded, XmlNode FrequencyNode)
+        private static void LoadFrequency(Check checkBeingLoaded, XmlNode frequencyNode)
         {
             string type = "";
             XmlNode input = null;
 
             //get XML properties
-            foreach (XmlNode childNode in FrequencyNode.ChildNodes)
+            foreach (XmlNode childNode in frequencyNode.ChildNodes)
             {
                 if (childNode.Name.ToUpper() == "TYPE")
                 {
@@ -365,13 +365,13 @@ namespace ProductMonitor.ProgramCode
             checkBeingLoaded.SetFrequency(myFrequency);
         }
 
-        private static void loadQuery(Check checkBeingLoaded, XmlNode QueryNode)
+        private static void LoadQuery(Check checkBeingLoaded, XmlNode queryNode)
         {
             string type = "";
             XmlNode input = null;
 
             //load the xml data for the query
-            foreach (XmlNode childNode in QueryNode.ChildNodes)
+            foreach (XmlNode childNode in queryNode.ChildNodes)
             {
                 if (childNode.Name.ToUpper() == "TYPE")
                 {
@@ -389,7 +389,7 @@ namespace ProductMonitor.ProgramCode
             
         }
 
-        private static void loadTrigger(Check checkBeingLoaded, XmlNode triggerNode)
+        private static void LoadTrigger(Check checkBeingLoaded, XmlNode triggerNode)
         {
             string type = "";
             XmlNode input = null;
@@ -444,17 +444,17 @@ namespace ProductMonitor.ProgramCode
             //---add new trigger types here---
 
             //load the actions for the trigger
+            Debug.Assert(actionsNode != null, "actionsNode != null");
             foreach (XmlNode action in actionsNode.ChildNodes)
             {
                 if (action.Name.ToUpper() == "ACTION")
                 {
-                    loadAction(myTrigger, action);
+                    LoadAction(myTrigger, action);
                 }
             }
         }
 
-        private static void loadAction(Trigger triggerBeingLoaded,
-            XmlNode actionNode)
+        private static void LoadAction(Trigger triggerBeingLoaded, XmlNode actionNode)
         {
             string type = "";
             XmlNode input = null;
@@ -475,36 +475,27 @@ namespace ProductMonitor.ProgramCode
             //create the action of the correct type and add it to the trigger
             if (type.ToUpper() == "WAV")
             {
-                PlayWavFile myAction =
-                    new PlayWavFile(input);
-
+                var myAction = new PlayWavFile(input);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpper() == "WAVRepeating".ToUpper())
             {
-                RepeatWavFile myAction =
-                    new RepeatWavFile(input);
-
+                var myAction = new RepeatWavFile(input);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpper() == "SENDEMAIL")
             {
-                SendEmail myAction =
-                    new SendEmail(input);
-
+                var myAction = new SendEmail(input);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpper() == "SENDSMS")
             {
-                SendSms myAction =
-                    new SendSms(input);
-
+                var myAction = new SendSms(input);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpperInvariant() == typeof(ExecuteFile).Name.ToUpperInvariant())
             {
                 var myAction = new ExecuteFile(input);
-
                 triggerBeingLoaded.AddAction(myAction);
             }
         }
@@ -534,7 +525,7 @@ namespace ProductMonitor.ProgramCode
             //clean up (will not get everything)
             try
             {
-                System.IO.Directory.Delete(TempPath, true);
+                Directory.Delete(TempPath, true);
             }
             catch (Exception e)
             {

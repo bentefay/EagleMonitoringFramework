@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ProductMonitor.Display_Code;
-using ProductMonitor.Generic;
 using ProductMonitor.ProgramCode.Triggers;
 using Serilog;
 
@@ -13,12 +12,11 @@ namespace ProductMonitor.ProgramCode
         private Frequencies.Frequency frequency;
         private Queries.Query query;
         private LinkedList<Triggers.Trigger> triggers = new LinkedList<Trigger>();
-        private int index;
-        private string type;
-        private string tabName;
-        private string name;
-        private bool hasError;
-        private string errorMessage;
+        private readonly int _index;
+        private string _type;
+        private string _tabName;
+        private bool _hasError;
+        private string _errorMessage;
 
         public const string TimeAtQueryExecution = "Time at Query Execution";
 
@@ -28,20 +26,19 @@ namespace ProductMonitor.ProgramCode
 
         public Check(string name, int index)
         {
-            this.name = name;
-            this.index = index;
+            _index = index;
         }
 
         public string DefaultOkStatusMessage { get; set; }
 
         public void SetTab(string name)
         {
-            tabName = name;
+            _tabName = name;
         }
 
         public int getIndex()
         {
-            return index;
+            return _index;
         }
 
         public void SetFrequency(Frequencies.Frequency frequency)
@@ -56,15 +53,13 @@ namespace ProductMonitor.ProgramCode
 
         public void SetType(string type)
         {
-            this.type = type;
+            _type = type;
         }
 
-        public void AddTrigger(Triggers.Trigger trigger)
+        public void AddTrigger(Trigger trigger)
         {
-            LinkedListNode<Triggers.Trigger> myNode =
-                new LinkedListNode<Trigger>(trigger);
+            var myNode = new LinkedListNode<Trigger>(trigger);
             triggers.AddLast(myNode);
-
             trigger.setCheck(this);
         }
 
@@ -75,9 +70,9 @@ namespace ProductMonitor.ProgramCode
 
         public void Activate()
         {
-            errorMessage = null;
+            _errorMessage = null;
             actionActivated = false;
-            hasError = false;
+            _hasError = false;
 
 
             if (!IsPaused())
@@ -92,17 +87,17 @@ namespace ProductMonitor.ProgramCode
                 {
                     Log.Warning(e, "The error handler has failed");
                     //tell the error handler that it failed
-                    hasError = true;
-                    errorMessage = e.ToString();
+                    _hasError = true;
+                    _errorMessage = e.ToString();
                     result = e.Message;
-                    GlobalAlarm.ReportError(index);
+                    GlobalAlarm.ReportError(_index);
                 }
                 // System.Windows.Forms.MessageBox.Show(query.GetDescription());
 
-                if (!hasError)
+                if (!_hasError)
                 {
 
-                    foreach (Triggers.Trigger t in triggers)
+                    foreach (var t in triggers)
                     {
                         try
                         {
@@ -119,7 +114,7 @@ namespace ProductMonitor.ProgramCode
                     }
 
                     //tell the error handler that it is working
-                    GlobalAlarm.ReportSuccess(index);
+                    GlobalAlarm.ReportSuccess(_index);
                 }
             }
             else
@@ -135,14 +130,14 @@ namespace ProductMonitor.ProgramCode
         {
             if (frequency != null)
             {
-                if (paused == true)
+                if (paused)
                 {
-                    GlobalAlarm.MarkPaused(index);
+                    GlobalAlarm.MarkPaused(_index);
                     frequency.Pause(true);
                 }
                 else
                 {
-                    GlobalAlarm.MarkUnPaused(index);
+                    GlobalAlarm.MarkUnPaused(_index);
                     frequency.Pause(false);
                 }
             }
@@ -162,7 +157,7 @@ namespace ProductMonitor.ProgramCode
 
         public string GetTab()
         {
-            return tabName;
+            return _tabName;
         }
 
         public string GetLocation()
@@ -177,7 +172,7 @@ namespace ProductMonitor.ProgramCode
 
         public bool HasError()
         {
-            return hasError;
+            return _hasError;
         }
 
         public bool IsTriggered()
@@ -187,7 +182,7 @@ namespace ProductMonitor.ProgramCode
         }
         public string GetError()
         {
-            return errorMessage;
+            return _errorMessage;
         }
         public string GetResult()
         {
@@ -198,14 +193,13 @@ namespace ProductMonitor.ProgramCode
                     string formattedResult;
                     if (((TimeSpan)result).Days > 0)
                     {
-                        formattedResult =
-                            ((TimeSpan)result).Days.ToString() + " Day";
+                        formattedResult = ((TimeSpan)result).Days + " Day";
 
                         if (((TimeSpan)result).Days != 1)
                         {
                             formattedResult += "s";
                         }
-                        formattedResult += " " + ((TimeSpan)result).Hours.ToString() + " Hour";
+                        formattedResult += " " + ((TimeSpan)result).Hours + " Hour";
 
                         if (((TimeSpan)result).Hours != 1)
                         {
@@ -263,7 +257,7 @@ namespace ProductMonitor.ProgramCode
                 {
                     return DefaultOkStatusMessage;
                 }
-                return type;
+                return _type;
             }
         }
 
@@ -290,7 +284,7 @@ namespace ProductMonitor.ProgramCode
 
         public string GetCheckType()
         {
-            return type;
+            return _type;
         }
 
         #endregion

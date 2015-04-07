@@ -1,4 +1,3 @@
-using System;
 using System.Media;
 using System.Threading;
 
@@ -6,57 +5,60 @@ namespace ProductMonitor.ProgramCode
 {
     static class SoundController
     {
-        static SoundPlayer alarmSound = new SoundPlayer();
-        static bool playingOnce = false;
+        static SoundPlayer _alarmSound = new SoundPlayer();
+        static bool _playingOnce;
 
         public static void PlayOnce(string file)
         {
-            if (alarmSound == null)
+            if (_alarmSound == null)
             {
-                playingOnce = true;
-                alarmSound = new SoundPlayer(file);
-                alarmSound.PlaySync();
-                alarmSound = null;
+                _playingOnce = true;
+                _alarmSound = new SoundPlayer(file);
+                _alarmSound.PlaySync();
+                _alarmSound = null;
                 
             }
         }
 
         public static void PlayRepeating(string file, string message)
         {
-            lock (alarmSound)
+            lock (_alarmSound)
             {
-                if (alarmSound.SoundLocation == "" || playingOnce == true)
+                if (_alarmSound.SoundLocation == "" || _playingOnce)
                 {
-                    playingOnce = false;
-                    alarmSound = new SoundPlayer(file);
+                    _playingOnce = false;
+                    _alarmSound = new SoundPlayer(file);
 
-                    boxMessage = message;
+                    _boxMessage = message;
 
                     try
                     {
-                        alarmSound.PlayLooping();
+                        _alarmSound.PlayLooping();
                     }
-                    catch (Exception)
+                    catch
                     {
                         //Do some really hard number crunching here
                     }
                     finally
                     {
-                        ThreadStart stopSoundFunction = new ThreadStart(stopSound);
-                        Thread soundStoppingThread = new Thread(stopSoundFunction);
-                        soundStoppingThread.IsBackground = true;
+                        var stopSoundFunction = new ThreadStart(StopSound);
+                        var soundStoppingThread = new Thread(stopSoundFunction)
+                        {
+                            IsBackground = true
+                        };
                         soundStoppingThread.Start();
                     }
                 }
             }
         }
 
-        static string boxMessage;
+        static string _boxMessage;
 
-        private static void stopSound() {
-            System.Windows.Forms.MessageBox.Show(boxMessage);
-            alarmSound.Stop();
-            alarmSound = new SoundPlayer();
+        private static void StopSound() 
+        {
+            System.Windows.Forms.MessageBox.Show(_boxMessage);
+            _alarmSound.Stop();
+            _alarmSound = new SoundPlayer();
         }
     }
 }

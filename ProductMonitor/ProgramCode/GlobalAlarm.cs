@@ -4,9 +4,8 @@ namespace ProductMonitor.ProgramCode
 {
     static class GlobalAlarm
     {
-        private static int[] checksInError;
-
-        private static string target;
+        private static int[] _checksInError;
+        private static string _target;
 
         public static void ReportError(int check)
         {
@@ -18,17 +17,17 @@ namespace ProductMonitor.ProgramCode
             bool allInError = true;
 
 
-            lock (checksInError)
+            lock (_checksInError)
             {
-                checksInError[check] += 1;                
+                _checksInError[check] += 1;                
             }
 
-            for (int i = 0; i < checksInError.Length; i++)
+            for (int i = 0; i < _checksInError.Length; i++)
             {
                 if (Program.ListOfChecks[i].GetTab() == tab
                     && Program.ListOfChecks[i].GetLocation() == location)
                 {
-                    if (checksInError[i] == 0)
+                    if (_checksInError[i] == 0)
                     {
                         allInError = false;
                         break;
@@ -42,14 +41,14 @@ namespace ProductMonitor.ProgramCode
                     + "(DANGER WILL ROBINSON)";
 
                 EmailController.getInstance().sendEmailAlert(
-                    target, message, tab);
+                    _target, message, tab);
 
-                for (int i = 0; i < checksInError.Length; i++)
+                for (int i = 0; i < _checksInError.Length; i++)
                 {
                     if (Program.ListOfChecks[i].GetTab() == tab
                        && Program.ListOfChecks[i].GetLocation() == location)
                     {
-                        checksInError[i] = 0;
+                        _checksInError[i] = 0;
                     }
                 }
             }
@@ -59,30 +58,30 @@ namespace ProductMonitor.ProgramCode
 
         public static void ReportSuccess(int check)
         {
-            lock (checksInError)
+            lock (_checksInError)
             {
-                checksInError[check] = 0;
+                _checksInError[check] = 0;
             }
         }
 
         public static void PrepareList(int length)
         {
-            checksInError = new int[length];
+            _checksInError = new int[length];
         }
 
         public static void SetTarget(string emailaddress)
         {
-            target = emailaddress;
+            _target = emailaddress;
         }
 
         public static void MarkPaused(int check)
         {
-            checksInError[check] = -1;
+            _checksInError[check] = -1;
         }
 
         public static void MarkUnPaused(int check)
         {
-            checksInError[check] = 0;
+            _checksInError[check] = 0;
         }
     }
 }
