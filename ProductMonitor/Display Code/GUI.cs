@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using ProductMonitor.Generic;
 using ProductMonitor.ProgramCode;
+using Serilog;
 using SourceGrid;
 using SourceGrid.Cells;
 
@@ -25,13 +29,13 @@ namespace ProductMonitor.Display_Code
         public GUI()
         {
             InitializeComponent();
-            this.FormClosed += new FormClosedEventHandler(GUI_FormClosed);
-            this.FormClosing += GUI_FormClosing;
+            FormClosed += GUI_FormClosed;
+            FormClosing += GUI_FormClosing;
             toolTipController.ToolTipTitle = "This cell has something to do with...";
             toolTipController.ToolTipIcon = ToolTipIcon.Info;
             toolTipController.IsBalloon = true;
 
-            this.Text = string.Format("Product Monitor v{0}", Application.ProductVersion);
+            Text = string.Format("Product Monitor v{0}", Application.ProductVersion);
 
             try
             {
@@ -39,7 +43,7 @@ namespace ProductMonitor.Display_Code
             }
             catch (Exception e)
             {
-                Product_Monitor.Generic.Logger.getInstance().Log("Failed to load window position with error: " + e.Message);
+                Log.Information("Failed to load window position with error: " + e.Message);
             }
         }
 
@@ -51,7 +55,7 @@ namespace ProductMonitor.Display_Code
             }
             catch (Exception ex)
             {
-                Product_Monitor.Generic.Logger.getInstance().Log("Failed to save window position with error: " + ex.Message);
+                Log.Information("Failed to save window position with error: " + ex.Message);
             }
         }
 
@@ -69,7 +73,7 @@ namespace ProductMonitor.Display_Code
             MakeNewTable(name);
         }
 
-        public void DrawTable(string tab, string[] locations, string[] types)
+        public void DrawTable(string tab, IReadOnlyList<string> locations, IReadOnlyList<string> types)
         {
             Grid tabGrid = null;
             foreach (Grid g in grids)
@@ -82,7 +86,7 @@ namespace ProductMonitor.Display_Code
 
             if (tabGrid != null)
             {
-                SetColumnsAndRows(locations, types, tabGrid);
+                SetColumnsAndRows(locations.ToArray(), types.ToArray(), tabGrid);
             }
         }
 
@@ -123,9 +127,9 @@ namespace ProductMonitor.Display_Code
                     formatProvider = (Grid)grids[0];
                 }
 
-                TabPage newPage = new TabPage(name);
+                var newPage = new TabPage(name);
                 newPage.Name = name;
-                Grid newGrid = new Grid();
+                var newGrid = new Grid();
                 newGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 
                 newGrid.Parent = newPage;
@@ -144,14 +148,13 @@ namespace ProductMonitor.Display_Code
             }
         }
 
-        private void SetColumnsAndRows(string[] Columns, string[] Rows, Grid grid)
+        private void SetColumnsAndRows(string[] columns, string[] rows, Grid grid)
         {
 
             if (grid.InvokeRequired)
             {
-                SetNumberOfColumnsAndRows d =
-                    new SetNumberOfColumnsAndRows(SetColumnsAndRows);
-                this.Invoke(d, new object[] { Columns, Rows, grid });
+                SetNumberOfColumnsAndRows d = SetColumnsAndRows;
+                Invoke(d, columns, rows, grid);
             }
             else
             {
@@ -164,21 +167,21 @@ namespace ProductMonitor.Display_Code
                 grid.Columns.Insert(0);
 
 
-                for (int row = 1; row <= Rows.Length; row++)
+                for (int row = 1; row <= rows.Length; row++)
                 {
                     grid.Rows.Insert(row);
-                    grid[row, 0] = new SourceGrid.Cells.RowHeader(Rows[row - 1]);
+                    grid[row, 0] = new RowHeader(rows[row - 1]);
 
-                    for (int column = 1; column <= Columns.Length; column++)
+                    for (int column = 1; column <= columns.Length; column++)
                     {
                         if (row == 1)
                         {
                             grid.Columns.Insert(column);
                             grid[0, column] =
-                                new SourceGrid.Cells.ColumnHeader(Columns[column - 1]);
+                                new SourceGrid.Cells.ColumnHeader(columns[column - 1]);
                         }
 
-                        grid[row, column] = new SourceGrid.Cells.Cell();
+                        grid[row, column] = new Cell();
                         grid[row, column].View = new SourceGrid.Cells.Views.Cell();
                     }
                 }
@@ -241,7 +244,7 @@ namespace ProductMonitor.Display_Code
 
         private void viewLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            new Log().ShowDialog();
+            new LogViewer().ShowDialog();
         }
 
         private void pauseChecksToolStripMenuItem_Click(object sender, EventArgs e)

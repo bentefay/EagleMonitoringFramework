@@ -1,20 +1,16 @@
-
-
-using System;
 using System.IO;
 using System.Net;
-using System.Web;
 using System.Text;
-using System.Collections;
+using System.Web;
 
-namespace Product_Monitor.Generic
+namespace ProductMonitor.Generic
 {
 	/// <summary>
 	/// The SendSMS class can be used to Send an SMS message to a collection of
 	/// phone numbers (supplied as an array list). Currently this class is
 	/// specialised to only work with the SMSBullet provider.
 	/// </summary>
-	public class SendSMS
+	public class SendSms
 	{
 		#region Constructors and Destructors
 
@@ -25,7 +21,7 @@ namespace Product_Monitor.Generic
 		/// <param name="password"></param>
 		/// <param name="message">The message to send, cannot be greater than 120 characters.</param>
 		/// <param name="numbers"></param>
-		public SendSMS(string username, string password, string message, string numbers)
+		public SendSms(string username, string password, string message, string numbers)
 		{
 			this.sUsername = username;
 			this.sPassword = password;

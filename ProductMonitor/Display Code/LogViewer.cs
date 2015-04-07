@@ -1,18 +1,19 @@
 using System;
 using System.Windows.Forms;
+using ProductMonitor.Generic;
 
 namespace ProductMonitor.Display_Code
 {
-    public partial class Log : Form
+    public partial class LogViewer : Form
     {
-        public Log()
+        public LogViewer()
         {
             InitializeComponent();
         }
 
         private void Log_Load(object sender, EventArgs e)
         {
-            logBox.Text = Product_Monitor.Generic.Logger.getInstance().GetLog();
+            logBox.Text = "";
         }
     }
 }

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using MoreLinq;
+using ProductMonitor.Generic;
+using Serilog;
 
 namespace ProductMonitor.Display_Code
 {
@@ -49,7 +52,7 @@ namespace ProductMonitor.Display_Code
                         {
                             myTab = new TabDisplay(check.GetTab());
                             _mainForm.AddTab(check.GetTab());
-                            _tabs = _tabs.Where(t => t != null).Prepend(myTab).ToArray();
+                            _tabs = _tabs.Where(t => t != null).Concat(myTab).ToArray();
                         }
 
                     }
@@ -61,9 +64,9 @@ namespace ProductMonitor.Display_Code
                             _mainForm.DrawTable(myTab.GetName(), myTab.GetLocations(), myTab.GetTypes());
                         }
 
-                        for (int i = 0; i < myTab.GetTypes().Length; i++)
+                        for (int i = 0; i < myTab.GetTypes().Count; i++)
                         {
-                            for (int j = 0; j < myTab.GetLocations().Length; j++)
+                            for (int j = 0; j < myTab.GetLocations().Count; j++)
                             {
                                 var cell = myTab.GetTable()[i, j];
                                 if (cell != null)
@@ -142,7 +145,7 @@ namespace ProductMonitor.Display_Code
             }
             catch (Exception e)
             {
-                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                Log.Error(e, "Update failed");
             }
         }
 
@@ -151,7 +154,7 @@ namespace ProductMonitor.Display_Code
             return _tabs.Where(t => t.GetName() == tab).Select(t => t.GetTable()).FirstOrDefault();
         }
 
-        static public String[] LocationsInTab(string tab)
+        static public IReadOnlyList<String> LocationsInTab(string tab)
         {
             return _tabs.Where(t => t.GetName() == tab).Select(t => t.GetLocations()).FirstOrDefault();
         }

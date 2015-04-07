@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
-using System.Timers;
 using System.IO;
+using System.Timers;
 using ProductMonitor.ProgramCode;
 
-namespace Product_Monitor.Generic
+namespace ProductMonitor.Generic
 {
     //cleans up the temp file
     class Cleanup

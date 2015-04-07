@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Product_Monitor.Generic
+namespace ProductMonitor.Generic
 {
     class TimeSpanFunctionality
     {

@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Xml;
 using ProductMonitor.Generic;
-using Product_Monitor.Generic;
+using Serilog;
 
 namespace ProductMonitor.ProgramCode.Queries
 {
@@ -98,7 +98,7 @@ namespace ProductMonitor.ProgramCode.Queries
             catch (Exception e)
             {
                 _lastException = e;
-                Logger.getInstance().Log(e);
+                Log.Error(e, "Failed to check Generation By Fuel Type Widget Web Api");
                 return TimeSpan.MaxValue;
             }
         }

@@ -66,6 +66,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Serilog">
+      <HintPath>..\packages\Serilog.1.4.204\lib\net45\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.FullNetFx">
+      <HintPath>..\packages\Serilog.1.4.204\lib\net45\Serilog.FullNetFx.dll</HintPath>
+    </Reference>
     <Reference Include="SourceGrid">
       <HintPath>..\packages\SourceGrid.4.4.0\lib\net35\SourceGrid.dll</HintPath>
     </Reference>
@@ -109,10 +115,9 @@
     <Compile Include="Display Code\WindowHelper.cs" />
     <Compile Include="Generic\Cleanup.cs" />
     <Compile Include="Generic\Extensions.cs" />
-    <Compile Include="Generic\Data Matrix.cs" />
+    <Compile Include="Generic\DataMatrix.cs" />
     <Compile Include="Generic\GetURLStream.cs" />
     <Compile Include="Generic\LinqExtensions.cs" />
-    <Compile Include="Generic\Logger.cs" />
     <Compile Include="Generic\Maybe.cs" />
     <Compile Include="Generic\SendSMS.cs" />
     <Compile Include="Generic\TimeSpanFunctionality.cs" />

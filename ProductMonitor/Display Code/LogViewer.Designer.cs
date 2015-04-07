@@ -1,6 +1,6 @@
 namespace ProductMonitor.Display_Code
 {
-    partial class Log
+    partial class LogViewer
     {
         /// <summary>
         /// Required designer variable.
@@ -46,7 +46,7 @@ namespace ProductMonitor.Display_Code
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(566, 410);
             this.Controls.Add(this.logBox);
-            this.Name = "Log";
+            this.Name = "LogViewer";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Log_Load);
             this.ResumeLayout(false);

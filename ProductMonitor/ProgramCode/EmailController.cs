@@ -4,7 +4,8 @@ using System.Linq;
 using System.Net.Mail;
 using System.Timers;
 using ProductMonitor.Display_Code;
-using Product_Monitor.Generic;
+using ProductMonitor.Generic;
+using Serilog;
 
 namespace ProductMonitor.ProgramCode
 {
@@ -31,7 +32,7 @@ namespace ProductMonitor.ProgramCode
             try
             {
 
-                Logger.getInstance().Log(String.Format("Checking list of emails to send (email count: {0}).", messages.Count));
+                Log.Information("Checking list of emails to send (email count: {0}).", messages.Count);
 
                 //get a list of problem tabs
                 string subject = "Error: ";
@@ -101,7 +102,7 @@ namespace ProductMonitor.ProgramCode
                     foreach (string f in screenshots)
                     {
                         email.Attachments.Add(new Attachment(f));
-                        Product_Monitor.Generic.Cleanup.GetInstance().AddCleanup(f);
+                        Cleanup.GetInstance().AddCleanup(f);
                     }
 
                     //add any file attachments
@@ -140,12 +141,12 @@ namespace ProductMonitor.ProgramCode
 
                     try
                     {
-                        Logger.getInstance().Log(String.Format("Sending email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body));
+                        Log.Information("Sending email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body);
                         emailClient.Send(email);
                     }
                     catch (Exception e2)
                     {
-                        Logger.getInstance().Log(e2);
+                        Log.Warning(e2, "Failed to send email. Stripping attachments.");
 
                         email.Attachments.Clear();
 
@@ -161,12 +162,12 @@ namespace ProductMonitor.ProgramCode
 
                         try
                         {
-                            Logger.getInstance().Log(String.Format("Sending stripped email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body));
+                            Log.Information("Sending stripped email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body);
                             emailClient.Send(email);
                         }
                         catch (Exception e3)
                         {
-                            Logger.getInstance().Log(e3);
+                            Log.Warning(e3, "Failed to send email again. Stripping all attachments.");
 
                             email.Attachments.Clear();
                             //add warning to message
@@ -175,19 +176,19 @@ namespace ProductMonitor.ProgramCode
 
                             try
                             {
-                                Logger.getInstance().Log(String.Format("Sending stripped email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body));
+                                Log.Information("Sending stripped email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body);
                                 emailClient.Send(email);
                             }
                             catch (Exception e4)
                             {
-                                Logger.getInstance().Log(e4);
+                                Log.Warning(e4, "Failed to send email again. Sending warning email.");
 
                                 MailMessage warningEmail = new MailMessage(s, "Error@global-roam.com");
                                 warningEmail.Body = "The Product Monitor failed to send an email to this address 3 times.";
 
                                 try
                                 {
-                                    Logger.getInstance().Log(String.Format("Sending warning email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body));
+                                    Log.Information("Sending warning email: {{ Addresses: [ {0} ], Body: {1} }}", String.Join(", ", email.To.Select(em => em.Address)), email.Body);
                                     emailClient.Send(warningEmail);
                                 }
                                 catch
@@ -205,8 +206,7 @@ namespace ProductMonitor.ProgramCode
             }
             catch (Exception e1)
             {
-                Logger.getInstance().Log("An exception has occurred.");
-                Logger.getInstance().Log(e1);
+                Log.Information(e1, "Failed to send email.");
             }
         }
 
@@ -226,7 +226,7 @@ namespace ProductMonitor.ProgramCode
 
         public void sendEmailAlert(String target, String message, String tab)
         {
-            Logger.getInstance().Log(String.Format("Adding email to queue. {{ Target: {0}, Message: {1}, Tab: {2} }}", target, message, tab));
+            Log.Information("Adding email to queue. {{ Target: {0}, Message: {1}, Tab: {2} }}", target, message, tab);
 
             messages.Add(new Message(target, message));
             if (!tabs.Contains(tab))

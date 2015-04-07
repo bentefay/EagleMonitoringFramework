@@ -5,31 +5,27 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Product_Monitor.Generic
+namespace ProductMonitor.Generic
 {
     /// <summary>
     /// Object matrix worker class similar to an array.
     /// </summary>
-    /// <typeparam name="type">The type of elements in the matrix</typeparam>
-    class Data_Matrix<type>
+    /// <typeparam name="TType">The type of elements in the matrix</typeparam>
+    class DataMatrix<TType>
     {
 
         // multi dimensional items array
-        private type[,] items;
-        private int numRows;
-        private int numColumns;
+        private TType[,] _items;
 
         /// <summary>
         /// Creates a new Data Matrix with no columns or rows
         /// </summary>
-        public Data_Matrix()
+        public DataMatrix()
         {
-            items = new type[0, 0];
-            numColumns = 0;
-            numRows = 0;
+            _items = new TType[0, 0];
+            NumColumns = 0;
+            NumRows = 0;
         }
 
         /// <summary>
@@ -37,26 +33,26 @@ namespace Product_Monitor.Generic
         /// </summary>
         /// <param name="rows">The number of Rows in the matrix</param>
         /// <param name="columns">The number of Columns in the matrix</param>
-        public Data_Matrix(int rows, int columns)
+        public DataMatrix(int rows, int columns)
         {
-            items = new type[rows, columns];
-            numColumns = columns;
-            numRows = rows;
+            _items = new TType[rows, columns];
+            NumColumns = columns;
+            NumRows = rows;
         }
 
         /// <summary>
         /// Creates a new Data Matrix from the elements of a Two-Dimensional array
         /// </summary>
         /// <param name="array">A Multi-Dimensional array of elements to fill the matrix with</param>
-        public Data_Matrix(type[,] array)
+        public DataMatrix(TType[,] array)
         {
             if (array.Rank != 2)
             {
                 throw new InvalidOperationException("Incorrect number of dimensions in array");
             }
-            numRows = array.GetLength(0);
-            numColumns = array.GetLength(1);
-            items = array;
+            NumRows = array.GetLength(0);
+            NumColumns = array.GetLength(1);
+            _items = array;
         }
 
         /// <summary>
@@ -65,20 +61,20 @@ namespace Product_Monitor.Generic
         public void AddRow()
         {
             //create the new items array
-            numRows++;
-            type[,] newItems = new type[numRows, numColumns];
+            NumRows++;
+            var newItems = new TType[NumRows, NumColumns];
 
             //add the current items to the array
-            for (int i = 0; i < numRows - 1; i++)
+            for (int i = 0; i < NumRows - 1; i++)
             {
-                for (int j = 0; j < numColumns; j++)
+                for (int j = 0; j < NumColumns; j++)
                 {
-                    newItems[i, j] = items[i, j];
+                    newItems[i, j] = _items[i, j];
                 }
             }
 
             //replace the array
-            items = newItems;
+            _items = newItems;
         }
 
         /// <summary>
@@ -87,20 +83,20 @@ namespace Product_Monitor.Generic
         public void AddColumn()
         {
             //create the new items array
-            numColumns++;
-            type[,] newItems = new type[numRows, numColumns];
+            NumColumns++;
+            var newItems = new TType[NumRows, NumColumns];
 
             //add the current items to the array
-            for (int i = 0; i < numRows; i++)
+            for (int i = 0; i < NumRows; i++)
             {
-                for (int j = 0; j < numColumns - 1; j++)
+                for (int j = 0; j < NumColumns - 1; j++)
                 {
-                    newItems[i, j] = items[i, j];
+                    newItems[i, j] = _items[i, j];
                 }
             }
 
             //replace the array
-            items = newItems;
+            _items = newItems;
         }
 
         /// <summary>
@@ -109,9 +105,9 @@ namespace Product_Monitor.Generic
         /// <param name="row">The row that contains the item</param>
         /// <param name="column">The column that contains the item</param>
         /// <returns>The item at the specified postion in the Matrix</returns>
-        public type GetItem(int row, int column)
+        public TType GetItem(int row, int column)
         {
-            return items[row, column];
+            return _items[row, column];
         }
 
         /// <summary>
@@ -120,40 +116,27 @@ namespace Product_Monitor.Generic
         /// <param name="item">The item to insert into the Matrix</param>
         /// <param name="row">The row where the item shall be inserted</param>
         /// <param name="column">The column where the item shall be inserted</param>
-        public void InsertItem(type item, int row, int column){
-            items[row, column] = item;
+        public void InsertItem(TType item, int row, int column){
+            _items[row, column] = item;
         }
 
         /// <summary>
         /// Gets a two-dimensional array of the Matrix' values
         /// </summary>
         /// <returns>A two-dimensional array of the Matrix' values</returns>
-        public type[,] GetValues()
+        public TType[,] GetValues()
         {
-            return items;
+            return _items;
         }
 
         /// <summary>
         /// The number of rows in the Matrix
         /// </summary>
-        public int NumRows
-        {
-            get
-            {
-                return numRows;
-            }
-        }
-        
+        public int NumRows { get; private set; }
+
         /// <summary>
         /// The number of Columns in the Matrix
         /// </summary>
-        public int NumColumns
-        {
-            get
-            {
-                return numColumns;
-            }
-        }
-
+        public int NumColumns { get; private set; }
     }
 }

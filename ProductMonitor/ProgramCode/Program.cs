@@ -4,10 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using ProductMonitor.Display_Code;
+using ProductMonitor.Generic;
 using ProductMonitor.ProgramCode.Actions;
 using ProductMonitor.ProgramCode.Frequencies;
 using ProductMonitor.ProgramCode.Queries;
 using ProductMonitor.ProgramCode.Triggers;
+using Serilog;
+using SendSms = ProductMonitor.ProgramCode.Actions.SendSms;
 
 namespace ProductMonitor.ProgramCode
 {
@@ -20,7 +23,6 @@ namespace ProductMonitor.ProgramCode
         //public for testing
         public static void PreStartUp()
         {
-            Product_Monitor.Generic.Logger.getInstance();
             _arrayBuilder = new ArrayList();
             GuiController.StartUp();
         }
@@ -44,7 +46,11 @@ namespace ProductMonitor.ProgramCode
 
         public static void Main()
         {
-            Product_Monitor.Generic.Logger.getInstance().Log("Application Start");
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.ColoredConsole()
+                .CreateLogger();
+
+            Log.Information("Application Start");
 
             try
             {
@@ -62,7 +68,7 @@ namespace ProductMonitor.ProgramCode
             }
             catch (Exception e)
             {
-                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                Log.Error(e, "Failed to start application");
             }
         }
 
@@ -92,7 +98,7 @@ namespace ProductMonitor.ProgramCode
             catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show("Unable to load main xml file");
-                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                Log.Error(e, "Unable to load main xml file");
             }
 
             //get the nodes
@@ -114,7 +120,7 @@ namespace ProductMonitor.ProgramCode
                 }
             }
 
-            Product_Monitor.Generic.Logger.getInstance().Log("Configuration Loaded");
+            Log.Information("Configuration Loaded");
         }
 
         private static void setupAlarms(XmlNode alarmsNode)
@@ -203,7 +209,7 @@ namespace ProductMonitor.ProgramCode
             catch (Exception e)
             {
                 System.Windows.Forms.MessageBox.Show("Unable to connect to " + tabLocation);
-                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                Log.Error(e, "Unable to connect to " + tabLocation);
             }
 
 
@@ -266,7 +272,7 @@ namespace ProductMonitor.ProgramCode
                     }
                     catch (Exception e)
                     {
-                        Product_Monitor.Generic.Logger.getInstance().Log(e);
+                        Log.Error(e, "Failed to load FREQUENCY");
                     }
                 }
                 else if (childNode.Name.ToUpper() == "QUERY")
@@ -278,7 +284,7 @@ namespace ProductMonitor.ProgramCode
                     }
                     catch (Exception e)
                     {
-                        Product_Monitor.Generic.Logger.getInstance().Log(e);
+                        Log.Error(e, "Failed to load QUERY");
                     }
                 }
                 else if (childNode.Name.ToUpper() == "TRIGGERS")
@@ -295,7 +301,7 @@ namespace ProductMonitor.ProgramCode
                             }
                             catch (Exception e)
                             {
-                                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                                Log.Error(e, "Failed to load TRIGGER");
                             }
                         }
                     }
@@ -309,8 +315,7 @@ namespace ProductMonitor.ProgramCode
             if (nodesLoaded != 3)
             {
                 System.Windows.Forms.MessageBox.Show("Error in loadCheck");
-                Product_Monitor.Generic.Logger
-                    .getInstance().Log(new Exception("Error in loadCheck"));
+                Log.Error("Error in loadCheck");
             }
             try
             {
@@ -320,7 +325,7 @@ namespace ProductMonitor.ProgramCode
             }
             catch (Exception e)
             {
-                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                Log.Error(e, "Failed");
             }
         }
 
@@ -533,10 +538,10 @@ namespace ProductMonitor.ProgramCode
             }
             catch (Exception e)
             {
-                Product_Monitor.Generic.Logger.getInstance().Log(e);
+                Log.Error(e, "Failed to delete directory on exit");
             }
 
-            Product_Monitor.Generic.Logger.getInstance().Log("Application Exit");
+            Log.Information("Application Exit");
 
             Environment.Exit(0);
         }

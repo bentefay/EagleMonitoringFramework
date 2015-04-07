@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ProductMonitor.Display_Code;
+using ProductMonitor.Generic;
 using ProductMonitor.ProgramCode.Triggers;
+using Serilog;
 
 namespace ProductMonitor.ProgramCode
 {
@@ -88,7 +90,7 @@ namespace ProductMonitor.ProgramCode
                 }
                 catch (Exception e)
                 {
-                    Product_Monitor.Generic.Logger.getInstance().Log(e);
+                    Log.Warning(e, "The error handler has failed");
                     //tell the error handler that it failed
                     hasError = true;
                     errorMessage = e.ToString();
@@ -112,7 +114,7 @@ namespace ProductMonitor.ProgramCode
                         }
                         catch (Exception e)
                         {
-                            Product_Monitor.Generic.Logger.getInstance().Log(e);
+                            Log.Warning(e, "Failed to test alarm");
                         }
                     }
 

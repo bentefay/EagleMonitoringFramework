@@ -1,4 +1,5 @@
 using System.Xml;
+using ProductMonitor.Generic;
 
 namespace ProductMonitor.ProgramCode.Actions
 {
@@ -26,7 +27,7 @@ namespace ProductMonitor.ProgramCode.Actions
 
         public override void Execute()
         {
-            Product_Monitor.Generic.SendSMS sms = new Product_Monitor.Generic.SendSMS("SMS00568", "ez2getSome6",
+            Generic.SendSms sms = new Generic.SendSms("SMS00568", "ez2getSome6",
                 "The product monitor warns that " + trigger.getCheck().GetStatus(), number);
             sms.Send();
         }
