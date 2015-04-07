@@ -59,18 +59,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevAge.Core, Version=4.6.2660.128, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\GlobalRoam.ProductMonitorDependencies.1.0.0.0\lib\net20\DevAge.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="DevAge.Windows.Forms, Version=4.6.2660.128, Culture=neutral, PublicKeyToken=faad465d84242dbf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\GlobalRoam.ProductMonitorDependencies.1.0.0.0\lib\net20\DevAge.Windows.Forms.dll</HintPath>
-    </Reference>
-    <Reference Include="Mail, Version=2.7.2718.34617, Culture=neutral, PublicKeyToken=6dc438ab78a525b3, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\GlobalRoam.ProductMonitorDependencies.1.0.0.0\lib\net20\Mail.dll</HintPath>
-    </Reference>
     <Reference Include="MoreLinq.Portable">
       <HintPath>..\packages\MoreLinq.Portable.1.1.0\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\MoreLinq.Portable.dll</HintPath>
     </Reference>
@@ -78,17 +66,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Product Monitor.XmlSerializers, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\GlobalRoam.ProductMonitorDependencies.1.0.0.0\lib\net20\Product Monitor.XmlSerializers.dll</HintPath>
-    </Reference>
-    <Reference Include="SourceGrid, Version=4.7.2662.1973, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\GlobalRoam.ProductMonitorDependencies.1.0.0.0\lib\net20\SourceGrid.dll</HintPath>
-    </Reference>
-    <Reference Include="SourceGrid.Extensions, Version=4.7.2662.1974, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\GlobalRoam.ProductMonitorDependencies.1.0.0.0\lib\net20\SourceGrid.Extensions.dll</HintPath>
+    <Reference Include="SourceGrid">
+      <HintPath>..\packages\SourceGrid.4.4.0\lib\net35\SourceGrid.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
