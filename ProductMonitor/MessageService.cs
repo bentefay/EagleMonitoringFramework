@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using ProductMonitor.Framework;
+using ProductMonitor.Framework.Services;
 
 namespace ProductMonitor
 {

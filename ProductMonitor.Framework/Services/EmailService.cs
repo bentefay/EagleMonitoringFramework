@@ -6,9 +6,9 @@ using System.Timers;
 using ProductMonitor.Framework.Generic;
 using Serilog;
 
-namespace ProductMonitor.Framework.ProgramCode
+namespace ProductMonitor.Framework.Services
 {
-    public class EmailController
+    public class EmailService
     {
         private readonly string _tempPath;
         private readonly IScreenshotService _screenshotService;
@@ -17,9 +17,9 @@ namespace ProductMonitor.Framework.ProgramCode
         private readonly ArrayList _messages;
         private readonly ArrayList _tabs;
         private readonly Timer _timer;
-        private static EmailController _instance;
+        private static EmailService _instance;
 
-        public EmailController(string tempPath, IScreenshotService screenshotService, IMessageService messageService, Cleanup cleanup) 
+        public EmailService(string tempPath, IScreenshotService screenshotService, IMessageService messageService, Cleanup cleanup) 
         {
             _tempPath = tempPath;
             _screenshotService = screenshotService;

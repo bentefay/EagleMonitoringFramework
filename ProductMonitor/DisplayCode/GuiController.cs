@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using MoreLinq;
 using ProductMonitor.Framework;
-using ProductMonitor.Framework.ProgramCode;
 using Serilog;
 
 namespace ProductMonitor.DisplayCode

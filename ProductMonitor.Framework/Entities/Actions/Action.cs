@@ -1,6 +1,6 @@
-using ProductMonitor.Framework.ProgramCode.Triggers;
+using ProductMonitor.Framework.Entities.Triggers;
 
-namespace ProductMonitor.Framework.ProgramCode.Actions
+namespace ProductMonitor.Framework.Entities.Actions
 {
     public abstract class Action
     {

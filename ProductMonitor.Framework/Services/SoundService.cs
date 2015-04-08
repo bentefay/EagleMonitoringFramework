@@ -1,15 +1,15 @@
 using System.Media;
 using System.Threading;
 
-namespace ProductMonitor.Framework.ProgramCode
+namespace ProductMonitor.Framework.Services
 {
-    public class SoundController
+    public class SoundService
     {
         private readonly IMessageService _messageService;
         private SoundPlayer _alarmSound = new SoundPlayer();
         private bool _playingOnce;
 
-        public SoundController(IMessageService messageService)
+        public SoundService(IMessageService messageService)
         {
             _messageService = messageService;
         }

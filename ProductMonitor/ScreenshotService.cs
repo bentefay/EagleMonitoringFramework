@@ -1,4 +1,5 @@
 using ProductMonitor.Framework;
+using ProductMonitor.Framework.Services;
 
 namespace ProductMonitor
 {

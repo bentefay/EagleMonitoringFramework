@@ -7,7 +7,7 @@ using System.Xml;
 using ProductMonitor.Framework.Generic;
 using Serilog;
 
-namespace ProductMonitor.Framework.ProgramCode.Queries
+namespace ProductMonitor.Framework.Entities.Queries
 {
     public class TimeSinceGenerationByFuelTypeNemWatchWebApiUpdated : Query
     {

@@ -1,18 +1,18 @@
 using System;
 using System.Linq;
 
-namespace ProductMonitor.Framework.ProgramCode
+namespace ProductMonitor.Framework.Services
 {
-    public class GlobalAlarm
+    public class GlobalAlarmService
     {
-        private readonly EmailController _emailController;
+        private readonly EmailService _emailService;
         private int[] _checksInError;
         private string _target;
         private Check[] _listOfChecks;
 
-        public GlobalAlarm(EmailController emailController)
+        public GlobalAlarmService(EmailService emailService)
         {
-            _emailController = emailController;
+            _emailService = emailService;
         }
 
         public void ReportError(int check)
@@ -33,7 +33,7 @@ namespace ProductMonitor.Framework.ProgramCode
 
             var message = "!! SERVER DOWN: " + tab + Environment.NewLine + "(DANGER WILL ROBINSON)";
 
-            _emailController.sendEmailAlert(_target, message, tab);
+            _emailService.sendEmailAlert(_target, message, tab);
 
             for (int i = 0; i < _checksInError.Length; i++)
             {

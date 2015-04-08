@@ -1,4 +1,4 @@
-namespace ProductMonitor.Framework.ProgramCode.Frequencies
+namespace ProductMonitor.Framework.Entities.Frequencies
 {
     public abstract class  Frequency
     {

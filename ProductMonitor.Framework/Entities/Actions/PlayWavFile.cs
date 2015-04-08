@@ -1,15 +1,16 @@
 using System.Xml;
+using ProductMonitor.Framework.Services;
 
-namespace ProductMonitor.Framework.ProgramCode.Actions
+namespace ProductMonitor.Framework.Entities.Actions
 {
     public class PlayWavFile : Action
     {
-        private readonly SoundController _soundController;
+        private readonly SoundService _soundService;
         private readonly string soundFile;
 
-        public PlayWavFile(XmlNode input, SoundController soundController)
+        public PlayWavFile(XmlNode input, SoundService soundService)
         {
-            _soundController = soundController;
+            _soundService = soundService;
             foreach (XmlNode childNode in input.ChildNodes)
             {
                 if (childNode.Name == "File")
@@ -21,7 +22,7 @@ namespace ProductMonitor.Framework.ProgramCode.Actions
 
         public override void Execute()
         {
-            _soundController.PlayOnce(soundFile);
+            _soundService.PlayOnce(soundFile);
         }
     }
 }

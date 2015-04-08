@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Xml;
 
-namespace ProductMonitor.Framework.ProgramCode.Actions
+namespace ProductMonitor.Framework.Entities.Actions
 {
     public class ExecuteFile : Action
     {

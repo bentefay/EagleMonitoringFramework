@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ProductMonitor.Framework.ProgramCode.Triggers;
+using ProductMonitor.Framework.Entities.Frequencies;
+using ProductMonitor.Framework.Entities.Queries;
+using ProductMonitor.Framework.Entities.Triggers;
+using ProductMonitor.Framework.Services;
 using Serilog;
 
-namespace ProductMonitor.Framework.ProgramCode
+namespace ProductMonitor.Framework
 {
     public class Check : ICheckDisplay
     {
-        private Frequencies.Frequency _frequency;
-        private Queries.Query _query;
+        private Frequency _frequency;
+        private Query _query;
         private readonly LinkedList<Trigger> triggers = new LinkedList<Trigger>();
         private readonly int _index;
         private readonly Action<Check> _update;
-        private readonly GlobalAlarm _globalAlarm;
+        private readonly GlobalAlarmService _globalAlarmService;
         private string _type;
         private string _tabName;
         private bool _hasError;
@@ -25,11 +28,11 @@ namespace ProductMonitor.Framework.ProgramCode
         private object result;
         bool actionActivated = false;
 
-        public Check(string name, int index, Action<Check> update, GlobalAlarm globalAlarm)
+        public Check(string name, int index, Action<Check> update, GlobalAlarmService globalAlarmService)
         {
             _index = index;
             _update = update;
-            _globalAlarm = globalAlarm;
+            _globalAlarmService = globalAlarmService;
         }
 
         public string DefaultOkStatusMessage { get; set; }
@@ -44,12 +47,12 @@ namespace ProductMonitor.Framework.ProgramCode
             return _index;
         }
 
-        public void SetFrequency(Frequencies.Frequency frequency)
+        public void SetFrequency(Frequency frequency)
         {
             this._frequency = frequency;
         }
 
-        public void SetQuery(Queries.Query query)
+        public void SetQuery(Query query)
         {
             this._query = query;
         }
@@ -93,7 +96,7 @@ namespace ProductMonitor.Framework.ProgramCode
                     _hasError = true;
                     _errorMessage = e.ToString();
                     result = e.Message;
-                    _globalAlarm.ReportError(_index);
+                    _globalAlarmService.ReportError(_index);
                 }
                 // System.Windows.Forms.MessageBox.Show(query.GetDescription());
 
@@ -117,7 +120,7 @@ namespace ProductMonitor.Framework.ProgramCode
                     }
 
                     //tell the error handler that it is working
-                    _globalAlarm.ReportSuccess(_index);
+                    _globalAlarmService.ReportSuccess(_index);
                 }
             }
             else
@@ -136,12 +139,12 @@ namespace ProductMonitor.Framework.ProgramCode
             {
                 if (paused)
                 {
-                    _globalAlarm.MarkPaused(_index);
+                    _globalAlarmService.MarkPaused(_index);
                     _frequency.Pause(true);
                 }
                 else
                 {
-                    _globalAlarm.MarkUnPaused(_index);
+                    _globalAlarmService.MarkUnPaused(_index);
                     _frequency.Pause(false);
                 }
             }

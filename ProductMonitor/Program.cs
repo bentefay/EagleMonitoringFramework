@@ -4,7 +4,7 @@ using System.Threading;
 using ProductMonitor.DisplayCode;
 using ProductMonitor.Framework;
 using ProductMonitor.Framework.Generic;
-using ProductMonitor.Framework.ProgramCode;
+using ProductMonitor.Framework.Services;
 using Serilog;
 
 namespace ProductMonitor
@@ -29,9 +29,9 @@ namespace ProductMonitor
                 var cleanup = new Cleanup(_tempPath);
                 var messageService = new MessageService();
                 var screenshotService = new ScreenshotService();
-                var emailController = new EmailController(_tempPath, screenshotService, messageService, cleanup);
-                var soundController = new SoundController(messageService);
-                var globalAlarm = new GlobalAlarm(emailController);
+                var emailController = new EmailService(_tempPath, screenshotService, messageService, cleanup);
+                var soundController = new SoundService(messageService);
+                var globalAlarm = new GlobalAlarmService(emailController);
 
                 var guiController = new GuiController();
 

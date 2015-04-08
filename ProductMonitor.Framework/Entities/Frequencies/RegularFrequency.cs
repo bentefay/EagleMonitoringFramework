@@ -2,7 +2,7 @@ using System.Threading;
 using System.Timers;
 using System.Xml;
 
-namespace ProductMonitor.Framework.ProgramCode.Frequencies
+namespace ProductMonitor.Framework.Entities.Frequencies
 {
     public class RegularFrequency : Frequency
     {

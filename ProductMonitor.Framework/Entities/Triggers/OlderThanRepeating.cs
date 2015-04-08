@@ -1,8 +1,8 @@
 using System;
 using System.Xml;
-using Action = ProductMonitor.Framework.ProgramCode.Actions.Action;
+using Action = ProductMonitor.Framework.Entities.Actions.Action;
 
-namespace ProductMonitor.Framework.ProgramCode.Triggers
+namespace ProductMonitor.Framework.Entities.Triggers
 {
     public class OlderThanRepeating : Trigger
     {

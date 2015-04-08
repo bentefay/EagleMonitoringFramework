@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ProductMonitor.Framework.ProgramCode.Queries
+namespace ProductMonitor.Framework.Entities.Queries
 {
     public abstract class Query
     {

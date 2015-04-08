@@ -1,7 +1,6 @@
 using System.Diagnostics;
-using Eagle.Server.Handlers;
 
-namespace Eagle.Server.Notifications
+namespace Eagle.Server.Handlers
 {
     public class ShellExecuteHandler : Handler
     {

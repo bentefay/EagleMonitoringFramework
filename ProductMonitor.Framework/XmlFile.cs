@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using ProductMonitor.Framework.ProgramCode;
-using ProductMonitor.Framework.ProgramCode.Actions;
-using ProductMonitor.Framework.ProgramCode.Frequencies;
-using ProductMonitor.Framework.ProgramCode.Queries;
-using ProductMonitor.Framework.ProgramCode.Triggers;
+using ProductMonitor.Framework.Entities.Actions;
+using ProductMonitor.Framework.Entities.Frequencies;
+using ProductMonitor.Framework.Entities.Queries;
+using ProductMonitor.Framework.Entities.Triggers;
+using ProductMonitor.Framework.Services;
 using Serilog;
 
 namespace ProductMonitor.Framework
@@ -17,18 +17,18 @@ namespace ProductMonitor.Framework
     {
         private readonly string _configFilePathRoot;
         private readonly IMessageService _messageService;
-        private readonly EmailController _emailController;
-        private readonly GlobalAlarm _globalAlarm;
-        private readonly SoundController _soundController;
+        private readonly EmailService _emailService;
+        private readonly GlobalAlarmService _globalAlarmService;
+        private readonly SoundService _soundService;
         private readonly Func<string, int, Check> _checkFactory;
 
-        public XmlFile(string configFilePathRoot, IMessageService messageService, EmailController emailController, GlobalAlarm globalAlarm, SoundController soundController, Func<string, int, Check> checkFactory)
+        public XmlFile(string configFilePathRoot, IMessageService messageService, EmailService emailService, GlobalAlarmService globalAlarmService, SoundService soundService, Func<string, int, Check> checkFactory)
         {
             _configFilePathRoot = configFilePathRoot;
             _messageService = messageService;
-            _emailController = emailController;
-            _globalAlarm = globalAlarm;
-            _soundController = soundController;
+            _emailService = emailService;
+            _globalAlarmService = globalAlarmService;
+            _soundService = soundService;
             _checkFactory = checkFactory;
         }
 
@@ -75,22 +75,22 @@ namespace ProductMonitor.Framework
                 switch (child.Name.ToUpper())
                 {
                     case "EMAILDELAY":
-                        _emailController.SetTimer(int.Parse(child.FirstChild.Value));
+                        _emailService.SetTimer(int.Parse(child.FirstChild.Value));
                         break;
                     case "SMTPHOST":
-                        _emailController.Host = child.FirstChild.Value;
+                        _emailService.Host = child.FirstChild.Value;
                         break;
                     case "SMTPUSER":
-                        _emailController.Username = child.FirstChild.Value;
+                        _emailService.Username = child.FirstChild.Value;
                         break;
                     case "SMTPPASSWORD":
-                        _emailController.Password = child.FirstChild.Value;
+                        _emailService.Password = child.FirstChild.Value;
                         break;
                     case "SMTPPORT":
-                        _emailController.Port = int.Parse(child.FirstChild.Value);
+                        _emailService.Port = int.Parse(child.FirstChild.Value);
                         break;
                     case "EMAIL1":
-                        _globalAlarm.SetTarget(child.FirstChild.Value);
+                        _globalAlarmService.SetTarget(child.FirstChild.Value);
                         break;
                 }
             }
@@ -396,17 +396,17 @@ namespace ProductMonitor.Framework
             //create the action of the correct type and add it to the trigger
             if (type.ToUpper() == "WAV")
             {
-                var myAction = new PlayWavFile(input, _soundController);
+                var myAction = new PlayWavFile(input, _soundService);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpper() == "WAVRepeating".ToUpper())
             {
-                var myAction = new RepeatWavFile(input, _soundController);
+                var myAction = new RepeatWavFile(input, _soundService);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpper() == "SENDEMAIL")
             {
-                var myAction = new SendEmail(input, _emailController);
+                var myAction = new SendEmail(input, _emailService);
                 triggerBeingLoaded.AddAction(myAction);
             }
             else if (type.ToUpper() == "SENDSMS")

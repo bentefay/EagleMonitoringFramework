@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace ProductMonitor.Framework.ProgramCode.Actions
+namespace ProductMonitor.Framework.Entities.Actions
 {
     public class SendSms : Action
     {

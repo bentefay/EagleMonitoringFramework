@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProductMonitor.Framework
+namespace ProductMonitor.Framework.Services
 {
     public interface IMessageService
     {

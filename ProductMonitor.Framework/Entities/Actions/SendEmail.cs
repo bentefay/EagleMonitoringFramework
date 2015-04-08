@@ -1,15 +1,16 @@
 using System.Xml;
+using ProductMonitor.Framework.Services;
 
-namespace ProductMonitor.Framework.ProgramCode.Actions
+namespace ProductMonitor.Framework.Entities.Actions
 {
     public class SendEmail : Action
     {
-        private readonly EmailController _emailController;
+        private readonly EmailService _emailService;
         private readonly string _address;
 
-        public SendEmail(XmlNode input, EmailController emailController)
+        public SendEmail(XmlNode input, EmailService emailService)
         {
-            _emailController = emailController;
+            _emailService = emailService;
             foreach (XmlNode childNode in input.ChildNodes)
             {
                 if (childNode.Name.ToUpper() == "Address".ToUpper())
@@ -32,7 +33,7 @@ namespace ProductMonitor.Framework.ProgramCode.Actions
                 message += enumerator.Current.Key + " = " + enumerator.Current.Value + "\n";
             }
 
-            _emailController.sendEmailAlert(_address, message, trigger.getCheck().GetTab());
+            _emailService.sendEmailAlert(_address, message, trigger.getCheck().GetTab());
         }
     }
 }
