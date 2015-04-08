@@ -91,69 +91,40 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Display Code\ICheckDisplay.cs" />
-    <Compile Include="Display Code\LogViewer.cs">
+    <Compile Include="DisplayCode\LogViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Display Code\LogViewer.Designer.cs">
+    <Compile Include="DisplayCode\LogViewer.Designer.cs">
       <DependentUpon>LogViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Display Code\GuiCheckList.cs">
+    <Compile Include="DisplayCode\GuiCheckList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Display Code\GuiCheckList.Designer.cs">
+    <Compile Include="DisplayCode\GuiCheckList.Designer.cs">
       <DependentUpon>GuiCheckList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Display Code\GuiController.cs" />
-    <Compile Include="Display Code\GUI.cs">
+    <Compile Include="DisplayCode\GuiController.cs" />
+    <Compile Include="DisplayCode\GUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Display Code\GUI.Designer.cs">
+    <Compile Include="DisplayCode\GUI.Designer.cs">
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="Display Code\TabDisplay.cs" />
-    <Compile Include="Display Code\WindowHelper.cs" />
-    <Compile Include="Generic\Cleanup.cs" />
-    <Compile Include="Generic\Extensions.cs" />
-    <Compile Include="Generic\DataMatrix.cs" />
-    <Compile Include="Generic\GetURLStream.cs" />
-    <Compile Include="Generic\LinqExtensions.cs" />
-    <Compile Include="Generic\Maybe.cs" />
-    <Compile Include="Generic\SendSMS.cs" />
-    <Compile Include="Generic\TimeSpanFunctionality.cs" />
-    <Compile Include="Generic\Utilities.cs" />
-    <Compile Include="ProgramCode\Actions\Action.cs" />
-    <Compile Include="ProgramCode\Actions\SendEmail.cs" />
-    <Compile Include="ProgramCode\Actions\ExecuteFile.cs" />
-    <Compile Include="ProgramCode\Actions\SendSms.cs" />
-    <Compile Include="ProgramCode\Actions\RepeatWavFile.cs" />
-    <Compile Include="ProgramCode\Actions\PlayWavFile.cs" />
-    <Compile Include="ProgramCode\Check.cs" />
-    <Compile Include="ProgramCode\EmailController.cs" />
-    <Compile Include="ProgramCode\Frequencies\Frequency.cs" />
-    <Compile Include="ProgramCode\Frequencies\RegularFrequency.cs" />
-    <Compile Include="ProgramCode\Frequencies\SemiRegularFrequency.cs" />
-    <Compile Include="ProgramCode\GlobalAlarm.cs" />
-    <Compile Include="ProgramCode\Program.cs" />
-    <Compile Include="ProgramCode\Queries\Query.cs" />
-    <Compile Include="ProgramCode\Queries\TimeSinceGenerationByFuelTypeNemWatchWebApiUpdated.cs" />
-    <Compile Include="ProgramCode\Queries\TimeSinceGenerationByFuelTypeWidgetWebApiUpdated.cs" />
-    <Compile Include="ProgramCode\SoundController.cs" />
-    <Compile Include="ProgramCode\Triggers\DataRowNotNull.cs" />
-    <Compile Include="ProgramCode\Triggers\GreaterThan.cs" />
-    <Compile Include="ProgramCode\Triggers\OlderThanRepeating.cs" />
-    <Compile Include="ProgramCode\Triggers\OlderThan.cs" />
-    <Compile Include="ProgramCode\Triggers\Trigger.cs" />
+    <Compile Include="DisplayCode\TabDisplay.cs" />
+    <Compile Include="DisplayCode\WindowHelper.cs" />
+    <Compile Include="MessageService.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Display Code\GuiCheckList.resx">
+    <Compile Include="ScreenshotService.cs" />
+    <EmbeddedResource Include="DisplayCode\GuiCheckList.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GuiCheckList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Display Code\LogViewer.resx">
+    <EmbeddedResource Include="DisplayCode\LogViewer.resx">
       <SubType>Designer</SubType>
       <DependentUpon>LogViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Display Code\GUI.resx">
+    <EmbeddedResource Include="DisplayCode\GUI.resx">
       <SubType>Designer</SubType>
       <DependentUpon>GUI.cs</DependentUpon>
     </EmbeddedResource>
@@ -210,12 +181,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Config\Main.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\NemWatch.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\ProductMonitor.Framework\ProductMonitor.Framework.csproj">
+      <Project>{7d67af1f-dd18-4027-8d27-b67f78a92766}</Project>
+      <Name>ProductMonitor.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
