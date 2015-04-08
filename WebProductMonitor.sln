@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebProductMonitor", "WebPro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductMonitor", "ProductMonitor\ProductMonitor.csproj", "{D22718ED-48BF-463C-B51A-5B1A1F153196}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eagle.Client", "Eagle.Client\Eagle.Client.csproj", "{17DEA9CB-A971-4F08-AF6B-C227D1FB5E9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eagle.Server", "Eagle.Server\Eagle.Server.csproj", "{2AA133A8-9DA4-482F-92A5-20EF7CE3AF08}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductMonitor.Framework", "ProductMonitor.Framework\ProductMonitor.Framework.csproj", "{7D67AF1F-DD18-4027-8D27-B67F78A92766}"
 EndProject
 Global
@@ -27,6 +31,14 @@ Global
 		{7D67AF1F-DD18-4027-8D27-B67F78A92766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D67AF1F-DD18-4027-8D27-B67F78A92766}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D67AF1F-DD18-4027-8D27-B67F78A92766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17DEA9CB-A971-4F08-AF6B-C227D1FB5E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17DEA9CB-A971-4F08-AF6B-C227D1FB5E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17DEA9CB-A971-4F08-AF6B-C227D1FB5E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17DEA9CB-A971-4F08-AF6B-C227D1FB5E9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA133A8-9DA4-482F-92A5-20EF7CE3AF08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AA133A8-9DA4-482F-92A5-20EF7CE3AF08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AA133A8-9DA4-482F-92A5-20EF7CE3AF08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AA133A8-9DA4-482F-92A5-20EF7CE3AF08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

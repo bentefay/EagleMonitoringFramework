@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 
@@ -8,7 +9,7 @@ namespace WebProductMonitor
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             const string url = "http://localhost:12345/";
 
@@ -20,10 +21,12 @@ namespace WebProductMonitor
 
             using (WebApp.Start<Startup>(url))
             {
-                using (new System.Threading.Timer(state =>
-                {
-                    GlobalHost.ConnectionManager.GetHubContext<ProductMonitorHub>().Clients.All.BroadcastMessage("Bob", "Message");
-                }, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5)))
+                using (new Timer(state => GlobalHost
+                    .ConnectionManager
+                    .GetHubContext<ProductMonitorHub>()
+                    .Clients
+                    .All
+                    .BroadcastMessage("Bob", "Message"), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5)))
                 {
                     ProcessUserInput(url);
                 }
