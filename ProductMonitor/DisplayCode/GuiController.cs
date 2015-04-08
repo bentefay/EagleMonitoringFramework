@@ -13,12 +13,6 @@ namespace ProductMonitor.DisplayCode
         private static TabDisplay[] _tabs;
         private static GUI _mainForm;
 
-        private void StartGui(Func<Check[]> getChecks)
-        {
-            _mainForm = new GUI(getChecks);
-            System.Windows.Forms.Application.Run(_mainForm);
-        }
-
         public void StartUp(Func<Check[]> getChecks)
         {
             _tabs = new TabDisplay[0];
@@ -30,6 +24,12 @@ namespace ProductMonitor.DisplayCode
             {
                 Thread.Sleep(1000);
             }
+        }
+
+        private void StartGui(Func<Check[]> getChecks)
+        {
+            _mainForm = new GUI(getChecks);
+            System.Windows.Forms.Application.Run(_mainForm);
         }
 
         public void Update(ICheckDisplay check)

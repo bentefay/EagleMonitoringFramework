@@ -1,74 +1,72 @@
 using System.Threading;
 using System.Timers;
 using System.Xml;
+using Timer = System.Timers.Timer;
 
 namespace ProductMonitor.Framework.Entities.Frequencies
 {
     public class RegularFrequency : Frequency
     {
-        private int minutes;
+        private readonly int _minutes;
 
         public RegularFrequency(Check check, object[] input)
         {
-            this.check = check;
-            this.input = input;
-            this.minutes = (int)input[0];
+            Check = check;
+            Input = input;
+            _minutes = (int)input[0];
 
-            setUpTimer(minutes);
+            SetUpTimer(_minutes);
 
         }
 
-        public RegularFrequency(Check check, XmlNode FrequencyNode)
+        public RegularFrequency(Check check, XmlNode frequencyNode)
         {
-            this.check = check;
+            Check = check;
 
-            foreach (XmlNode childNode in FrequencyNode.ChildNodes)
+            foreach (XmlNode childNode in frequencyNode.ChildNodes)
             {
                 if (childNode.Name.ToUpper() == "Frequency".ToUpper())
                 {
-                    this.minutes = int.Parse(childNode.FirstChild.Value);
+                    _minutes = int.Parse(childNode.FirstChild.Value);
                     break;
                 }
             }
 
-            setUpTimer(minutes);
+            SetUpTimer(_minutes);
         }
 
-        void tick(object sender, ElapsedEventArgs e)
+        private void Tick(object sender, ElapsedEventArgs e)
         {
-            //run the check in a new thread
-            ThreadStart ActivateStarter = new ThreadStart(activate);
-            Thread myActivatorThread = new Thread(ActivateStarter);
+            var myActivatorThread = new Thread(Activate);
             myActivatorThread.IsBackground = true;
             myActivatorThread.Start();
-
         }
 
-        private void setUpTimer(int minutes)
+        private void SetUpTimer(int minutes)
         {
-            this.timer = new System.Timers.Timer();
-            timer.Interval = minutes * 60 * 1000;
-            timer.Elapsed += new ElapsedEventHandler(tick);
-            timer.Start();
+            Timer = new Timer();
+            Timer.Interval = minutes * 60 * 1000;
+            Timer.Elapsed += Tick;
+            Timer.Start();
         }
 
         public override void Pause(bool paused)
         {
-            if (paused == true)
+            if (paused)
             {
-                timer.Stop();
-                this.paused = true;
+                Timer.Stop();
+                Paused = true;
             }
             else
             {
-                timer.Start();
-                this.paused = false;
+                Timer.Start();
+                Paused = false;
             }
         }
 
-        public override bool isPaused()
+        public override bool IsPaused()
         {
-            return paused;
+            return Paused;
         }
     }
 }

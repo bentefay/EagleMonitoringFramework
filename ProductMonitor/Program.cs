@@ -38,16 +38,13 @@ namespace ProductMonitor
                 guiController.StartUp(() => _listOfChecks ?? new Check[0]);
 
                 _listOfChecks = new XmlFile(_configFilePathRoot, messageService, emailController, globalAlarm, soundController, 
-                    (s, i) => new Check(s, i, c => guiController.Update(c), globalAlarm)).Load();
+                    (s, i) => new Check(i, c => guiController.Update(c), globalAlarm)).Load();
 
                 globalAlarm.PrepareList(_listOfChecks);
 
-                foreach (Check c in _listOfChecks)
-                {
+                foreach (var c in _listOfChecks)
                     c.Activate();
-                }
 
-                //pause the main thread. The application runs in many other threads.
                 Thread.Sleep(Timeout.Infinite);
 
             }
@@ -56,15 +53,6 @@ namespace ProductMonitor
                 Log.Error(e, "Failed to start application");
             }
         }
-
-        //-----------------------------------
-        // Loading from XML Code
-        //-----------------------------------
-
-        #region Loading
-
-        
-        #endregion
 
         public static void PauseCheck(int index)
         {

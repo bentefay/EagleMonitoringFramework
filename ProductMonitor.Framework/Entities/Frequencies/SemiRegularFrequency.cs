@@ -1,204 +1,127 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Timers;
 using System.Xml;
+using MoreLinq;
+using Timer = System.Timers.Timer;
 
 namespace ProductMonitor.Framework.Entities.Frequencies
 {
     public class SemiRegularFrequency : Frequency
     {
-        private DateTime[] activationTimes;
-
-        public SemiRegularFrequency(Check check, object[] input)
-        {
-            this.check = check;
-            activationTimes = new DateTime[input.Length];
-            for (int i = 0; i < activationTimes.Length; i++ )
-            {
-                activationTimes[i] = (DateTime)input[i];
-            }
-
-            TimeSpan leastTimeToGo = new TimeSpan(365, 23, 59, 59);
-            do
-            {
-                for (int i = 0; i < activationTimes.Length; i++){
-                
-                    if (DateTime.Now.CompareTo(activationTimes[i]) > 0)
-                    {
-                        activationTimes[i] = activationTimes[i].AddDays(7.0);
-                    }
-                    else if ((activationTimes[i] - DateTime.Now) < leastTimeToGo)
-                    {
-                        leastTimeToGo = activationTimes[i] - DateTime.Now;
-                    }
-                }
-            } while (leastTimeToGo.Equals(new TimeSpan(365, 23, 59, 59)));
-
-            setUpTimer(leastTimeToGo);
-        }
+        private readonly DateTime[] _activationTimes;
 
         public SemiRegularFrequency(Check check, XmlNode input)
         {
-            this.check = check;
-            System.Collections.ArrayList activationTimes = new System.Collections.ArrayList();
+            Check = check;
+            var activationTimes = new List<DateTime>();
 
-            //fill the activation times
-            foreach (XmlNode childNode in input.FirstChild.ChildNodes)
-            {   
-                if (childNode.Name.ToUpper() == "TIME")
-                {
-                    DateTime myTime = new DateTime();
+            foreach (var childNode in input.FirstChild.ChildNodes.OfType<XmlNode>().Where(childNode => childNode.Name.ToUpper() == "TIME"))
+            {
+                    var myTime = new DateTime();
                     foreach (XmlNode timeDetails in childNode.ChildNodes)
                     {
-                        if (timeDetails.Name.ToUpper() == "DAY")
+                        switch (timeDetails.Name.ToUpper())
                         {
-                            DayOfWeek myDay = DayOfWeek.Sunday;
-                            switch (timeDetails.FirstChild.Value.ToUpper())
-                            {
-                                case "SUNDAY":
-                                    myDay = DayOfWeek.Sunday;
-                                    break;
-                                case "MONDAY":
-                                    myDay = DayOfWeek.Monday;
-                                    break;
-                                case "TUESDAY":
-                                    myDay = DayOfWeek.Tuesday;
-                                    break;
-                                case "WEDNESDAY":
-                                    myDay = DayOfWeek.Wednesday;
-                                    break;
-                                case "THURSDAY":
-                                    myDay = DayOfWeek.Thursday;
-                                    break;
-                                case "FRIDAY":
-                                    myDay = DayOfWeek.Friday;
-                                    break;
-                                case "SATURDAY":
-                                    myDay = DayOfWeek.Saturday;
-                                    break;
-                            }
+                            case "DAY":
+                                var myDay = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), timeDetails.FirstChild.Value.ToUpper());
 
-                            while (myTime.DayOfWeek != myDay)
-                            {
-                                myTime = myTime.AddDays(1.0);
-                            }
-                        }
-                        else if (timeDetails.Name.ToUpper() == "HOUR")
-                        {
-                            myTime = myTime.AddHours(double.Parse(timeDetails.FirstChild.Value));
+                                while (myTime.DayOfWeek != myDay)
+                                {
+                                    myTime = myTime.AddDays(1.0);
+                                }
+                                break;
+                            case "HOUR":
+                                myTime = myTime.AddHours(double.Parse(timeDetails.FirstChild.Value));
+                                break;
                         }
                     }
+
                     myTime = myTime.AddYears(DateTime.Now.Year - 1);
-                        activationTimes.Add(myTime);
-                    }
+                    activationTimes.Add(myTime);
             }
-                    this.activationTimes = (DateTime[])activationTimes.ToArray(DateTime.Now.GetType());
 
-                    TimeSpan leastTimeToGo = new TimeSpan(365, 23, 59, 59);
-                    do
-                    {
-                        for (int i = 0; i < activationTimes.Count; i++)
-                        {
+            _activationTimes = activationTimes.ToArray();
 
-                            if (DateTime.Now.CompareTo(activationTimes[i]) > 0)
-                            {
-                                activationTimes[i] = ((DateTime)activationTimes[i]).AddDays(7.0);
-                            }
-                            else if ((((DateTime)activationTimes[i]) - DateTime.Now) < leastTimeToGo)
-                            {
-                                leastTimeToGo = ((DateTime)activationTimes[i]) - DateTime.Now;
-                            }
-                        }
-                    } while (leastTimeToGo.Equals(new TimeSpan(365, 23, 59, 59)));
+            var leastTimeToGo = GetLeastTimeToGo(_activationTimes);
 
-                    setUpTimer(leastTimeToGo);
-                }
-
-        
-
-        private void setUpTimer(TimeSpan timeTillActivation)
-        {
-            this.timer = new System.Timers.Timer();
-            timer.Interval = timeTillActivation.TotalMilliseconds;
-            timer.Elapsed += new ElapsedEventHandler(tick);
-            timer.Start();
+            SetUpTimer(leastTimeToGo);
         }
 
-        void tick(object sender, ElapsedEventArgs e)
+        private static TimeSpan GetLeastTimeToGo(DateTime[] activationTimes)
         {
+            var leastTimeToGo = TimeSpan.MaxValue;
+            do
+            {
+                for (int i = 0; i < activationTimes.Length; i++)
+                {
+                    if (DateTime.Now > activationTimes[i])
+                    {
+                        activationTimes[i] = activationTimes[i].AddDays(7.0);
+                    }
+                    else
+                    {
+                        leastTimeToGo = new[] { activationTimes[i] - DateTime.Now, leastTimeToGo }.Min();
+                    }
+                }
+            } while (leastTimeToGo.Equals(TimeSpan.MaxValue));
 
-            //run the check in a new thread
-            ThreadStart ActivateStarter = new ThreadStart(activate);
-            Thread myActivatorThread = new Thread(ActivateStarter);
+            return leastTimeToGo;
+        }
+
+
+        private void SetUpTimer(TimeSpan timeTillActivation)
+        {
+            Timer = new Timer();
+            Timer.Interval = timeTillActivation.TotalMilliseconds;
+            Timer.Elapsed += Tick;
+            Timer.Start();
+        }
+
+        private void Tick(object sender, ElapsedEventArgs e)
+        {
+            var myActivatorThread = new Thread(Activate);
             myActivatorThread.IsBackground = true;
-            //myActivatorThread.Start();
+            myActivatorThread.Start();
 
-            timer.Stop();
+            Timer.Stop();
 
-            TimeSpan leastTimeToGo = new TimeSpan(365, 23, 59, 59);
-            do
-            {
-                for (int i = 0; i < activationTimes.Length; i++)
-                {
+            var leastTimeToGo = GetLeastTimeToGo(_activationTimes);
 
-                    if (DateTime.Now.CompareTo(activationTimes[i]) > 0)
-                    {
-                        activationTimes[i] = activationTimes[i].AddDays(7.0);
-                    }
-                    else if ((activationTimes[i] - DateTime.Now) < leastTimeToGo)
-                    {
-                        leastTimeToGo = activationTimes[i] - DateTime.Now;
-                    }
-                }
-            } while (leastTimeToGo.Equals(new TimeSpan(365, 23, 59, 59)));
+            Timer.Interval = leastTimeToGo.TotalMilliseconds;
 
-            timer.Interval = leastTimeToGo.TotalMilliseconds;
-
-            timer.Start();
+            Timer.Start();
 
         }
 
-        private void setTimer()
+        private void SetTimer()
         {
-            TimeSpan leastTimeToGo = new TimeSpan(365, 23, 59, 59);
-            do
-            {
-                for (int i = 0; i < activationTimes.Length; i++)
-                {
+            var leastTimeToGo = GetLeastTimeToGo(_activationTimes);
 
-                    if (DateTime.Now.CompareTo(activationTimes[i]) > 0)
-                    {
-                        activationTimes[i] = activationTimes[i].AddDays(7.0);
-                    }
-                    else if ((activationTimes[i] - DateTime.Now) < leastTimeToGo)
-                    {
-                        leastTimeToGo = activationTimes[i] - DateTime.Now;
-                    }
-                }
-            } while (leastTimeToGo.Equals(new TimeSpan(365, 23, 59, 59)));
+            Timer.Interval = leastTimeToGo.TotalMilliseconds;
 
-            timer.Interval = leastTimeToGo.TotalMilliseconds;
-
-            timer.Start();
+            Timer.Start();
         }
 
         public override void Pause(bool paused)
         {
-            if (paused == true)
+            if (paused)
             {
-                this.paused = true;
-                timer.Stop();
+                Paused = true;
+                Timer.Stop();
             }
             else
             {
-                this.paused = false;
-                setTimer();
+                Paused = false;
+                SetTimer();
             }
         }
 
-        public override bool isPaused()
+        public override bool IsPaused()
         {
-            return paused;
+            return Paused;
         }
 
         public override bool ActivationForceable()

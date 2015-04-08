@@ -1,24 +1,24 @@
 namespace ProductMonitor.Framework.Entities.Frequencies
 {
-    public abstract class  Frequency
+    public abstract class Frequency
     {
-        protected Check check;
-        protected bool paused;
-        protected object[] input;
-        protected System.Timers.Timer timer;
+        protected Check Check;
+        protected bool Paused;
+        protected object[] Input;
+        protected System.Timers.Timer Timer;
 
         abstract public void Pause(bool paused);
-        abstract public bool isPaused();
+        abstract public bool IsPaused();
 
         virtual public bool ActivationForceable()
         {
             return true;
         }
 
-        virtual protected void activate()
+        virtual protected void Activate()
         {
             System.Threading.Thread.CurrentThread.IsBackground = true;
-            check.Activate();
+            Check.Activate();
             System.Threading.Thread.CurrentThread.Abort();
         }
 

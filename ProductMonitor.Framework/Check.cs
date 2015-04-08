@@ -13,7 +13,7 @@ namespace ProductMonitor.Framework
     {
         private Frequency _frequency;
         private Query _query;
-        private readonly LinkedList<Trigger> triggers = new LinkedList<Trigger>();
+        private readonly LinkedList<Trigger> _triggers = new LinkedList<Trigger>();
         private readonly int _index;
         private readonly Action<Check> _update;
         private readonly GlobalAlarmService _globalAlarmService;
@@ -24,11 +24,10 @@ namespace ProductMonitor.Framework
 
         public const string TimeAtQueryExecution = "Time at Query Execution";
 
-        //provide variables for display functionality
-        private object result;
-        bool actionActivated = false;
+        private object _result;
+        bool _actionActivated;
 
-        public Check(string name, int index, Action<Check> update, GlobalAlarmService globalAlarmService)
+        public Check(int index, Action<Check> update, GlobalAlarmService globalAlarmService)
         {
             _index = index;
             _update = update;
@@ -49,12 +48,12 @@ namespace ProductMonitor.Framework
 
         public void SetFrequency(Frequency frequency)
         {
-            this._frequency = frequency;
+            _frequency = frequency;
         }
 
         public void SetQuery(Query query)
         {
-            this._query = query;
+            _query = query;
         }
 
         public void SetType(string type)
@@ -65,7 +64,7 @@ namespace ProductMonitor.Framework
         public void AddTrigger(Trigger trigger)
         {
             var myNode = new LinkedListNode<Trigger>(trigger);
-            triggers.AddLast(myNode);
+            _triggers.AddLast(myNode);
             trigger.setCheck(this);
         }
 
@@ -77,9 +76,8 @@ namespace ProductMonitor.Framework
         public void Activate()
         {
             _errorMessage = null;
-            actionActivated = false;
+            _actionActivated = false;
             _hasError = false;
-
 
             if (!IsPaused())
             {
@@ -87,7 +85,7 @@ namespace ProductMonitor.Framework
                 //is testing if something has changed since the last test etc)
                 try
                 {
-                    result = _query.Test();
+                    _result = _query.Test();
                 }
                 catch (Exception e)
                 {
@@ -95,7 +93,7 @@ namespace ProductMonitor.Framework
                     //tell the error handler that it failed
                     _hasError = true;
                     _errorMessage = e.ToString();
-                    result = e.Message;
+                    _result = e.Message;
                     _globalAlarmService.ReportError(_index);
                 }
                 // System.Windows.Forms.MessageBox.Show(query.GetDescription());
@@ -103,14 +101,14 @@ namespace ProductMonitor.Framework
                 if (!_hasError)
                 {
 
-                    foreach (var t in triggers)
+                    foreach (var t in _triggers)
                     {
                         try
                         {
                             //if true alarm will go off (part of test method)
-                            if (t.Test(result))
+                            if (t.Test(_result))
                             {
-                                actionActivated = true;
+                                _actionActivated = true;
                             }
                         }
                         catch (Exception e)
@@ -125,7 +123,7 @@ namespace ProductMonitor.Framework
             }
             else
             {
-                result = "paused";
+                _result = "paused";
             }
 
             //update the GUI
@@ -160,8 +158,6 @@ namespace ProductMonitor.Framework
             return _frequency.ActivationForceable();
         }
 
-        #region Check Display Code
-
         public string GetTab()
         {
             return _tabName;
@@ -174,7 +170,7 @@ namespace ProductMonitor.Framework
 
         public bool IsPaused()
         {
-            return _frequency.isPaused();
+            return _frequency.IsPaused();
         }
 
         public bool HasError()
@@ -185,7 +181,7 @@ namespace ProductMonitor.Framework
         public bool IsTriggered()
         {
 
-            return actionActivated;
+            return _actionActivated;
         }
         public string GetError()
         {
@@ -193,59 +189,59 @@ namespace ProductMonitor.Framework
         }
         public string GetResult()
         {
-            if (result != null)
+            if (_result != null)
             {
-                if (result is TimeSpan)
+                if (_result is TimeSpan)
                 {
                     string formattedResult;
-                    if (((TimeSpan)result).Days > 0)
+                    if (((TimeSpan)_result).Days > 0)
                     {
-                        formattedResult = ((TimeSpan)result).Days + " Day";
+                        formattedResult = ((TimeSpan)_result).Days + " Day";
 
-                        if (((TimeSpan)result).Days != 1)
+                        if (((TimeSpan)_result).Days != 1)
                         {
                             formattedResult += "s";
                         }
-                        formattedResult += " " + ((TimeSpan)result).Hours + " Hour";
+                        formattedResult += " " + ((TimeSpan)_result).Hours + " Hour";
 
-                        if (((TimeSpan)result).Hours != 1)
+                        if (((TimeSpan)_result).Hours != 1)
                         {
                             formattedResult += "s";
                         }
 
                     }
-                    else if (((TimeSpan)result).Hours > 0)
+                    else if (((TimeSpan)_result).Hours > 0)
                     {
                         formattedResult =
-                            ((TimeSpan)result).Hours.ToString() + " Hour";
+                            ((TimeSpan)_result).Hours.ToString() + " Hour";
 
-                        if (((TimeSpan)result).Hours != 1)
+                        if (((TimeSpan)_result).Hours != 1)
                         {
                             formattedResult += "s";
                         }
-                        formattedResult += " " + ((TimeSpan)result).Minutes.ToString() + " Minute";
+                        formattedResult += " " + ((TimeSpan)_result).Minutes.ToString() + " Minute";
 
-                        if (((TimeSpan)result).Minutes != 1)
+                        if (((TimeSpan)_result).Minutes != 1)
                         {
                             formattedResult += "s";
                         }
 
                     }
-                    else if (((TimeSpan)result).Minutes > 0)
+                    else if (((TimeSpan)_result).Minutes > 0)
                     {
-                        formattedResult = ((TimeSpan)result).Minutes.ToString() + " Minute";
+                        formattedResult = ((TimeSpan)_result).Minutes.ToString() + " Minute";
 
-                        if (((TimeSpan)result).Minutes != 1)
+                        if (((TimeSpan)_result).Minutes != 1)
                         {
                             formattedResult += "s";
                         }
 
-                        formattedResult += " " + ((TimeSpan)result).Seconds.ToString() + " Seconds";
+                        formattedResult += " " + ((TimeSpan)_result).Seconds.ToString() + " Seconds";
 
                     }
-                    else if (((TimeSpan)result).Seconds > 0)
+                    else if (((TimeSpan)_result).Seconds > 0)
                     {
-                        formattedResult = ((TimeSpan)result).Seconds.ToString() + " Seconds";
+                        formattedResult = ((TimeSpan)_result).Seconds.ToString() + " Seconds";
                     }
                     else
                     {
@@ -255,7 +251,7 @@ namespace ProductMonitor.Framework
                 }
                 else
                 {
-                    return result.ToString();
+                    return _result.ToString();
                 }
             }
             else
@@ -272,7 +268,7 @@ namespace ProductMonitor.Framework
         {
             StringBuilder msg = new StringBuilder();
             var values = _query.GetAdditionalValues();
-            if (result != null && result is TimeSpan)
+            if (_result != null && _result is TimeSpan)
             {
                 msg.AppendLine("It has been " + GetResult() + " since the " + _query.GetDescription() + " has updated");
 
@@ -293,8 +289,6 @@ namespace ProductMonitor.Framework
         {
             return _type;
         }
-
-        #endregion
 
     }
 }
