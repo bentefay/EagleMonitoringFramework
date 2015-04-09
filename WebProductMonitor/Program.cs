@@ -19,6 +19,8 @@ namespace WebProductMonitor
             // username = run whoami at command prompt
             // GetPermission(url);
 
+            var random = new Random();
+
             using (WebApp.Start<Startup>(url))
             {
                 using (new Timer(state => GlobalHost
@@ -26,7 +28,10 @@ namespace WebProductMonitor
                     .GetHubContext<ProductMonitorHub>()
                     .Clients
                     .All
-                    .BroadcastMessage("Bob", "Message"), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5)))
+                    .BroadcastMessage(
+                        random.Next(2) == 0 ? "Ben" : "Dylan", 
+                        random.Next(2) == 0 ? "This is some kind of example message." : "This is a similar but different message."), 
+                        null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3)))
                 {
                     ProcessUserInput(url);
                 }

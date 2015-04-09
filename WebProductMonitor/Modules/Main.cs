@@ -6,7 +6,7 @@ namespace WebProductMonitor.Modules
 	{
 		public Main()
 		{
-			Get["/"] = _ => View["main.html"];
+			Get["/"] = _ => View["dashboard.html"];
 		}
 	}
 }
