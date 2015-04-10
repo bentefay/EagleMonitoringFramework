@@ -1,23 +1,58 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
+using ProductMonitor.Framework;
+using ProductMonitor.Framework.Generic;
+using ProductMonitor.Framework.Services;
+using Serilog;
+using WebProductMonitor.Hubs;
+using WebProductMonitor.Services;
 
 namespace WebProductMonitor
 {
     class Program
     {
+        private static readonly string _configFilePathRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Config");
+
+        // Must run as administrator, or run the following command:
+        // netsh http add urlacl url=http://+:8080/ user=DOMAIN\username
+        // DOMAIN = domain or computer name
+        // username = run whoami at command prompt
+        
+        // To undo command:
+        // netsh http delete urlacl url=http://+:8080/
+        
+        // Executing the command using code: GetPermission(url);
+
         static void Main()
         {
             const string url = "http://localhost:12345/";
 
-            // netsh http add urlacl url=http://+:8080/ user=DOMAIN\username
-            // netsh http delete urlacl url=http://+:8080/
-            // DOMAIN = domain or computer name
-            // username = run whoami at command prompt
-            // GetPermission(url);
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.ColoredConsole()
+                .CreateLogger();
+
+            Log.Information("Application Start");
+
+            var tempPath = AppDomain.CurrentDomain.BaseDirectory + "TEMP";
+            var cleanup = new Cleanup(tempPath);
+            var messageService = new MessageService();
+            var screenshotService = new ScreenshotService();
+            var emailController = new EmailService(tempPath, screenshotService, messageService, cleanup);
+            var soundController = new SoundService(messageService);
+            var globalAlarm = new GlobalAlarmService(emailController);
+
+            var xmlFile = new XmlFile(_configFilePathRoot, messageService, emailController, globalAlarm, soundController, (s, i) => new Check(i, c => { }, globalAlarm));
+            var listOfChecks = xmlFile.Load();
+
+            globalAlarm.PrepareList(listOfChecks);
+
+            foreach (var c in listOfChecks)
+                c.Activate();
 
             var random = new Random();
 

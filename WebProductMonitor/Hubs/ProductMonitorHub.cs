@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNet.SignalR;
 
-namespace WebProductMonitor
+namespace WebProductMonitor.Hubs
 {
 	public class ProductMonitorHub : Hub
 	{
