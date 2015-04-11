@@ -26,21 +26,21 @@ namespace ProductMonitor
             try
             {
                 _tempPath = AppDomain.CurrentDomain.BaseDirectory + "TEMP";
-                var cleanup = new CleanupService(_tempPath);
+                var cleanupService = new CleanupService(_tempPath);
                 var messageService = new MessageService();
                 var screenshotService = new ScreenshotService();
-                var emailController = new EmailService(_tempPath, screenshotService, messageService, cleanup);
+                var emailController = new EmailService(_tempPath, screenshotService, messageService, cleanupService);
                 var soundController = new SoundService(messageService);
-                var globalAlarm = new AlarmService(emailController);
+                var alarmService = new AlarmService(emailController);
 
                 var guiController = new GuiController();
 
                 guiController.StartUp(() => _listOfChecks ?? new Check[0]);
 
-                _listOfChecks = new XmlFile(_configFilePathRoot, messageService, emailController, globalAlarm, soundController, 
-                    (s, i) => new Check(i, c => guiController.Update(c), globalAlarm)).Load();
+                _listOfChecks = new XmlFile(_configFilePathRoot, messageService, emailController, alarmService, soundController,
+                    (s, i) => new Check(i, alarmService, c => guiController.Update(c))).Load();
 
-                globalAlarm.PrepareList(_listOfChecks);
+                alarmService.PrepareList(_listOfChecks);
 
                 foreach (var c in _listOfChecks)
                     c.Activate();

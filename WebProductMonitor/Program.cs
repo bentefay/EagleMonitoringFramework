@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace WebProductMonitor
         
         // Executing the command using code: GetPermission(url);
 
-        static void Main()
+        private static void Main()
         {
             const string url = "http://localhost:12345/";
 
@@ -37,9 +38,30 @@ namespace WebProductMonitor
                 .WriteTo.ColoredConsole()
                 .CreateLogger();
 
-            Log.Information("Application started");
+            Log.Information("Starting webapp at {0}", url);
 
-            Log.Information("Initializing services...");
+            using (WebApp.Start<Startup>(url))
+            {
+                Log.Information("Started successfully");
+
+                Log.Information("Opening browser");
+
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = url
+                });
+
+                var hubService = ProductMonitorHubService.Instance;
+
+                StartMonitoringFramework(hubService);
+
+                ProcessUserInput(url);
+            }
+        }
+
+        private static void StartMonitoringFramework(ProductMonitorHubService hubService)
+        {
+            Log.Information("Initializing services");
 
             var tempPath = AppDomain.CurrentDomain.BaseDirectory + "TEMP";
             var cleanup = new CleanupService(tempPath);
@@ -49,49 +71,25 @@ namespace WebProductMonitor
             var soundController = new SoundService(messageService);
             var alarmService = new AlarmService(emailController);
 
-            Log.Information("Loading configuration...");
+            Log.Information("Loading configuration");
 
-            var xmlFile = new XmlFile(_configFilePathRoot, messageService, emailController, alarmService, soundController, (s, i) => new Check(i, c => { }, alarmService));
+            var xmlFile = new XmlFile(_configFilePathRoot, messageService, emailController, alarmService, soundController,
+                checkFactory: (s, i) => new Check(i, alarmService, hubService.UpdateCheck));
+
             var listOfChecks = xmlFile.Load();
 
             alarmService.PrepareList(listOfChecks);
 
-            Log.Information("Running all checks offthread...");
+            Log.Information("Running all checks offthread");
 
-            Task.Factory.StartNew(() => {
-                    Parallel.ForEach(listOfChecks, check => check.Activate());
-                }, TaskCreationOptions.LongRunning);
-
-            Log.Information("Starting webapp...");
-
-            var random = new Random();
-
-            using (WebApp.Start<Startup>(url))
-            {
-                using (new Timer(state => GlobalHost
-                    .ConnectionManager
-                    .GetHubContext<ProductMonitorHub>()
-                    .Clients
-                    .All
-                    .BroadcastMessage(
-                        random.Next(2) == 0 ? "Ben" : "Dylan", 
-                        random.Next(2) == 0 ? "This is some kind of example message." : "This is a similar but different message."), 
-                        null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3)))
-                {
-                    ProcessUserInput(url);
-                }
-            }
+            Task.Factory.StartNew(() => Parallel.ForEach(listOfChecks, check => check.Activate()), TaskCreationOptions.LongRunning);
         }
 
         private static void ProcessUserInput(string url)
         {
-            Console.WriteLine("Running at {0}...", url);
-            Console.WriteLine("q to quit, anything else to launch your browser...");
-
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = url
-            });
+            Log.Information("Waiting for user input");
+            Log.Information("q => quit");
+            Log.Information("Anything else => launch your default browser");
 
             while (true)
             {
@@ -99,8 +97,10 @@ namespace WebProductMonitor
                 {
                     case "q":
                     case "Q":
+                        Log.Information("Shutting down");
                         return;
                     default:
+                        Log.Information("Opening browser");
                         Process.Start(new ProcessStartInfo
                         {
                             FileName = url

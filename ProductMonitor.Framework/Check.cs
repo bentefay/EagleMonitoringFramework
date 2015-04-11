@@ -27,7 +27,7 @@ namespace ProductMonitor.Framework
         private object _result;
         bool _actionActivated;
 
-        public Check(int index, Action<Check> update, AlarmService alarmService)
+        public Check(int index, AlarmService alarmService, Action<Check> update)
         {
             _index = index;
             _update = update;
