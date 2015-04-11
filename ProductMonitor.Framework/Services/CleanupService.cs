@@ -4,12 +4,11 @@ using System.Timers;
 
 namespace ProductMonitor.Framework.Generic
 {
-    //cleans up the temp file
-    public class Cleanup
+    public class CleanupService
     {
         private readonly string _tempPath;
 
-        public Cleanup(string tempPath)
+        public CleanupService(string tempPath)
         {
             _tempPath = tempPath;
             var cleanuptimer = new Timer();

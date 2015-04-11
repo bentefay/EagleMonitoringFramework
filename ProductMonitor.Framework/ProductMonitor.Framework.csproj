@@ -69,7 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generic\Cleanup.cs" />
+    <Compile Include="Services\CleanupService.cs" />
     <Compile Include="Generic\DataMatrix.cs" />
     <Compile Include="Generic\DictionaryExtensions.cs" />
     <Compile Include="Generic\Extensions.cs" />

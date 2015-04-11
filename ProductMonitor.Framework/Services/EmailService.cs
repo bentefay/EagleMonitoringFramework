@@ -17,7 +17,7 @@ namespace ProductMonitor.Framework.Services
         private readonly string _tempPath;
         private readonly IScreenshotService _screenshotService;
         private readonly IMessageService _messageService;
-        private readonly Cleanup _cleanup;
+        private readonly CleanupService _cleanupService;
         private readonly List<Message> _pendingMessages;
         private readonly List<string> _erroredTabs;
         private readonly Timer _timer;
@@ -29,12 +29,12 @@ namespace ProductMonitor.Framework.Services
         string _password = "hh48633yz";
         int _port = 25;
 
-        public EmailService(string tempPath, IScreenshotService screenshotService, IMessageService messageService, Cleanup cleanup) 
+        public EmailService(string tempPath, IScreenshotService screenshotService, IMessageService messageService, CleanupService cleanupService) 
         {
             _tempPath = tempPath;
             _screenshotService = screenshotService;
             _messageService = messageService;
-            _cleanup = cleanup;
+            _cleanupService = cleanupService;
 
             Directory.CreateDirectory(tempPath + "\\Screenshots");
             _pendingMessages = new List<Message>();
@@ -122,7 +122,7 @@ namespace ProductMonitor.Framework.Services
             foreach (var location in screenshotSaveLocations)
             {
                 email.Attachments.Add(new Attachment(location));
-                _cleanup.AddCleanup(location);
+                _cleanupService.AddCleanup(location);
             }
 
             // Attach files

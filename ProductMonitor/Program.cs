@@ -26,7 +26,7 @@ namespace ProductMonitor
             try
             {
                 _tempPath = AppDomain.CurrentDomain.BaseDirectory + "TEMP";
-                var cleanup = new Cleanup(_tempPath);
+                var cleanup = new CleanupService(_tempPath);
                 var messageService = new MessageService();
                 var screenshotService = new ScreenshotService();
                 var emailController = new EmailService(_tempPath, screenshotService, messageService, cleanup);

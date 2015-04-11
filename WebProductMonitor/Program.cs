@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using ProductMonitor.Framework;
@@ -36,23 +37,32 @@ namespace WebProductMonitor
                 .WriteTo.ColoredConsole()
                 .CreateLogger();
 
-            Log.Information("Application Start");
+            Log.Information("Application started");
+
+            Log.Information("Initializing services...");
 
             var tempPath = AppDomain.CurrentDomain.BaseDirectory + "TEMP";
-            var cleanup = new Cleanup(tempPath);
+            var cleanup = new CleanupService(tempPath);
             var messageService = new MessageService();
             var screenshotService = new ScreenshotService();
             var emailController = new EmailService(tempPath, screenshotService, messageService, cleanup);
             var soundController = new SoundService(messageService);
-            var globalAlarm = new AlarmService(emailController);
+            var alarmService = new AlarmService(emailController);
 
-            var xmlFile = new XmlFile(_configFilePathRoot, messageService, emailController, globalAlarm, soundController, (s, i) => new Check(i, c => { }, globalAlarm));
+            Log.Information("Loading configuration...");
+
+            var xmlFile = new XmlFile(_configFilePathRoot, messageService, emailController, alarmService, soundController, (s, i) => new Check(i, c => { }, alarmService));
             var listOfChecks = xmlFile.Load();
 
-            globalAlarm.PrepareList(listOfChecks);
+            alarmService.PrepareList(listOfChecks);
 
-            foreach (var c in listOfChecks)
-                c.Activate();
+            Log.Information("Running all checks offthread...");
+
+            Task.Factory.StartNew(() => {
+                    Parallel.ForEach(listOfChecks, check => check.Activate());
+                }, TaskCreationOptions.LongRunning);
+
+            Log.Information("Starting webapp...");
 
             var random = new Random();
 
