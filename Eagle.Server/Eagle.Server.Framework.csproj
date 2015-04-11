@@ -7,8 +7,8 @@
     <ProjectGuid>{2AA133A8-9DA4-482F-92A5-20EF7CE3AF08}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Eagle.Server</RootNamespace>
-    <AssemblyName>Eagle.Server</AssemblyName>
+    <RootNamespace>Eagle.Server.Framework</RootNamespace>
+    <AssemblyName>Eagle.Server.Framework</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
