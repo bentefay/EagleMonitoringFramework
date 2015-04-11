@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Generic\Cleanup.cs" />
     <Compile Include="Generic\DataMatrix.cs" />
+    <Compile Include="Generic\DictionaryExtensions.cs" />
     <Compile Include="Generic\Extensions.cs" />
     <Compile Include="Generic\LinqExtensions.cs" />
     <Compile Include="Generic\Maybe.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Entities\Frequencies\Frequency.cs" />
     <Compile Include="Entities\Frequencies\RegularFrequency.cs" />
     <Compile Include="Entities\Frequencies\SemiRegularFrequency.cs" />
-    <Compile Include="Services\GlobalAlarmService.cs" />
+    <Compile Include="Services\AlarmService.cs" />
     <Compile Include="Entities\Queries\Query.cs" />
     <Compile Include="Entities\Queries\TimeSinceGenerationByFuelTypeNemWatchWebApiUpdated.cs" />
     <Compile Include="Entities\Queries\TimeSinceGenerationByFuelTypeWidgetWebApiUpdated.cs" />

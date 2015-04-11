@@ -31,7 +31,7 @@ namespace ProductMonitor
                 var screenshotService = new ScreenshotService();
                 var emailController = new EmailService(_tempPath, screenshotService, messageService, cleanup);
                 var soundController = new SoundService(messageService);
-                var globalAlarm = new GlobalAlarmService(emailController);
+                var globalAlarm = new AlarmService(emailController);
 
                 var guiController = new GuiController();
 

@@ -44,7 +44,7 @@ namespace WebProductMonitor
             var screenshotService = new ScreenshotService();
             var emailController = new EmailService(tempPath, screenshotService, messageService, cleanup);
             var soundController = new SoundService(messageService);
-            var globalAlarm = new GlobalAlarmService(emailController);
+            var globalAlarm = new AlarmService(emailController);
 
             var xmlFile = new XmlFile(_configFilePathRoot, messageService, emailController, globalAlarm, soundController, (s, i) => new Check(i, c => { }, globalAlarm));
             var listOfChecks = xmlFile.Load();

@@ -13,15 +13,15 @@ namespace ProductMonitor.Framework.Generic
         {
             _tempPath = tempPath;
             var cleanuptimer = new Timer();
-            cleanuptimer.Interval = 15 * 60 * 1000; //15 minutes
-            cleanuptimer.Elapsed += cleanuptimer_Elapsed;
+            cleanuptimer.Interval = 15 * 60 * 1000; // 15 minutes
+            cleanuptimer.Elapsed += OnTimerElapsed;
             cleanuptimer.AutoReset = true;
             cleanuptimer.Start();
         }
 
-        void  cleanuptimer_Elapsed(object sender, ElapsedEventArgs e)
+        void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            foreach (string d in Directory.GetDirectories(_tempPath))
+            foreach (var d in Directory.GetDirectories(_tempPath))
             {
                 Directory.Delete(d, true);
             }
@@ -29,6 +29,7 @@ namespace ProductMonitor.Framework.Generic
 
         public void AddCleanup(string filepath)
         {
+            // Not implemented
         }
     }
 }

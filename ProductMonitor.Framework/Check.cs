@@ -16,7 +16,7 @@ namespace ProductMonitor.Framework
         private readonly LinkedList<Trigger> _triggers = new LinkedList<Trigger>();
         private readonly int _index;
         private readonly Action<Check> _update;
-        private readonly GlobalAlarmService _globalAlarmService;
+        private readonly AlarmService _alarmService;
         private string _type;
         private string _tabName;
         private bool _hasError;
@@ -27,11 +27,11 @@ namespace ProductMonitor.Framework
         private object _result;
         bool _actionActivated;
 
-        public Check(int index, Action<Check> update, GlobalAlarmService globalAlarmService)
+        public Check(int index, Action<Check> update, AlarmService alarmService)
         {
             _index = index;
             _update = update;
-            _globalAlarmService = globalAlarmService;
+            _alarmService = alarmService;
         }
 
         public string DefaultOkStatusMessage { get; set; }
@@ -94,7 +94,7 @@ namespace ProductMonitor.Framework
                     _hasError = true;
                     _errorMessage = e.ToString();
                     _result = e.Message;
-                    _globalAlarmService.ReportError(_index);
+                    _alarmService.ReportError(this);
                 }
                 // System.Windows.Forms.MessageBox.Show(query.GetDescription());
 
@@ -118,7 +118,7 @@ namespace ProductMonitor.Framework
                     }
 
                     //tell the error handler that it is working
-                    _globalAlarmService.ReportSuccess(_index);
+                    _alarmService.ReportSuccess(this);
                 }
             }
             else
@@ -137,12 +137,12 @@ namespace ProductMonitor.Framework
             {
                 if (paused)
                 {
-                    _globalAlarmService.MarkPaused(_index);
+                    _alarmService.MarkPaused(this);
                     _frequency.Pause(true);
                 }
                 else
                 {
-                    _globalAlarmService.MarkUnPaused(_index);
+                    _alarmService.MarkRunning(this);
                     _frequency.Pause(false);
                 }
             }

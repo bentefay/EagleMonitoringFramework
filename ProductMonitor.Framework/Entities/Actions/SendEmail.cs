@@ -33,7 +33,7 @@ namespace ProductMonitor.Framework.Entities.Actions
                 message += enumerator.Current.Key + " = " + enumerator.Current.Value + "\n";
             }
 
-            _emailService.sendEmailAlert(_address, message, trigger.getCheck().GetTab());
+            _emailService.SendErrorEmail(_address, message, trigger.getCheck().GetTab());
         }
     }
 }

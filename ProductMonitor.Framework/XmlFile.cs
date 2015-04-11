@@ -18,16 +18,16 @@ namespace ProductMonitor.Framework
         private readonly string _configFilePathRoot;
         private readonly IMessageService _messageService;
         private readonly EmailService _emailService;
-        private readonly GlobalAlarmService _globalAlarmService;
+        private readonly AlarmService _alarmService;
         private readonly SoundService _soundService;
         private readonly Func<string, int, Check> _checkFactory;
 
-        public XmlFile(string configFilePathRoot, IMessageService messageService, EmailService emailService, GlobalAlarmService globalAlarmService, SoundService soundService, Func<string, int, Check> checkFactory)
+        public XmlFile(string configFilePathRoot, IMessageService messageService, EmailService emailService, AlarmService alarmService, SoundService soundService, Func<string, int, Check> checkFactory)
         {
             _configFilePathRoot = configFilePathRoot;
             _messageService = messageService;
             _emailService = emailService;
-            _globalAlarmService = globalAlarmService;
+            _alarmService = alarmService;
             _soundService = soundService;
             _checkFactory = checkFactory;
         }
@@ -75,7 +75,7 @@ namespace ProductMonitor.Framework
                 switch (child.Name.ToUpper())
                 {
                     case "EMAILDELAY":
-                        _emailService.SetTimer(int.Parse(child.FirstChild.Value));
+                        _emailService.SetEmailBufferInterval(int.Parse(child.FirstChild.Value));
                         break;
                     case "SMTPHOST":
                         _emailService.Host = child.FirstChild.Value;
@@ -90,7 +90,7 @@ namespace ProductMonitor.Framework
                         _emailService.Port = int.Parse(child.FirstChild.Value);
                         break;
                     case "EMAIL1":
-                        _globalAlarmService.SetTarget(child.FirstChild.Value);
+                        _alarmService.SetTarget(child.FirstChild.Value);
                         break;
                 }
             }
