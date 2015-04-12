@@ -138,6 +138,7 @@
     <Content Include="Scripts\jquery-2.1.3.min.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Scripts\underscore-min.map" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eagle.Server.Framework\Eagle.Server.Framework.csproj">
