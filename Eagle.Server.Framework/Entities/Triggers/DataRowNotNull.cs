@@ -1,6 +1,5 @@
 using System;
 using System.Xml;
-using Action = Eagle.Server.Framework.Entities.Actions.Action;
 
 namespace Eagle.Server.Framework.Entities.Triggers
 {
@@ -24,7 +23,7 @@ namespace Eagle.Server.Framework.Entities.Triggers
             {
                 if (_triggeredLastTime == false)
                 {
-                    foreach (Action a in Actions)
+                    foreach (var a in Actions)
                     {
                         a.Execute();
                     }
@@ -32,6 +31,7 @@ namespace Eagle.Server.Framework.Entities.Triggers
 
                 _triggeredLastTime = true;
                 return true;
+
             }
             _triggeredLastTime = false;
             return false;

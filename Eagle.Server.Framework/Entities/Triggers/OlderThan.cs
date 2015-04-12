@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using System.Xml;
-using Action = Eagle.Server.Framework.Entities.Actions.Action;
 
 namespace Eagle.Server.Framework.Entities.Triggers
 {
@@ -9,24 +9,11 @@ namespace Eagle.Server.Framework.Entities.Triggers
         private readonly TimeSpan _timeTillOutOfDate;
         private bool _triggeredLastTime; //to stop the trigger activating alarms repeatedly
 
-        //exists for testing purposes
-        public OlderThan(object[] input)
-        {
-            this.Input = input;
-            _timeTillOutOfDate = (TimeSpan)input[0];
-
-        }
-
         public OlderThan(XmlNode input)
         {
-            
-            foreach (XmlNode childNode in input.ChildNodes)
+            foreach (var childNode in input.ChildNodes.Cast<XmlNode>().Where(childNode => childNode.Name == "Minutes"))
             {
-                if (childNode.Name == "Minutes")
-                {
-                    _timeTillOutOfDate =
-                        TimeSpan.FromMinutes(double.Parse(childNode.FirstChild.Value));
-                }
+                _timeTillOutOfDate = TimeSpan.FromMinutes(double.Parse(childNode.FirstChild.Value));
             }
         }
 
@@ -41,7 +28,7 @@ namespace Eagle.Server.Framework.Entities.Triggers
             {
                 if (!_triggeredLastTime)
                 {
-                    foreach (Action a in Actions)
+                    foreach (var a in Actions)
                     {
                         a.Execute();
                     }

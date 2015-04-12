@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading;
 using System.Timers;
 using System.Xml;
@@ -7,15 +9,14 @@ namespace Eagle.Server.Framework.Entities.Frequencies
 {
     public class RegularFrequency : Frequency
     {
-        private readonly int _minutes;
-
         public RegularFrequency(Check check, object[] input)
         {
             Check = check;
             Input = input;
-            _minutes = (int)input[0];
 
-            SetUpTimer(_minutes);
+            var minutes = (int)input[0];
+
+            SetUpTimer(minutes);
 
         }
 
@@ -23,16 +24,11 @@ namespace Eagle.Server.Framework.Entities.Frequencies
         {
             Check = check;
 
-            foreach (XmlNode childNode in frequencyNode.ChildNodes)
-            {
-                if (childNode.Name.ToUpper() == "Frequency".ToUpper())
-                {
-                    _minutes = int.Parse(childNode.FirstChild.Value);
-                    break;
-                }
-            }
+            var value = frequencyNode.ChildNodes.Cast<XmlNode>().First(childNode => String.Equals(childNode.Name, "Frequency", StringComparison.InvariantCultureIgnoreCase)).FirstChild.Value;
+            
+            var minutes = int.Parse(value);
 
-            SetUpTimer(_minutes);
+            SetUpTimer(minutes);
         }
 
         private void Tick(object sender, ElapsedEventArgs e)

@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Xml;
 using Eagle.Server.Framework.Services;
 
@@ -11,18 +13,15 @@ namespace Eagle.Server.Framework.Entities.Actions
         public SendEmail(XmlNode input, EmailService emailService)
         {
             _emailService = emailService;
-            foreach (XmlNode childNode in input.ChildNodes)
+            foreach (var childNode in input.ChildNodes.Cast<XmlNode>().Where(childNode => String.Equals(childNode.Name, "Address", StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (childNode.Name.ToUpper() == "Address".ToUpper())
-                {
-                    _address = childNode.FirstChild.Value;
-                }
+                _address = childNode.FirstChild.Value;
             }
         }
 
         public override void Execute()
         {
-            string message = Trigger.GetCheck().GetStatus() + "\n" + "Additional Data: \n";
+            var message = Trigger.GetCheck().GetStatus() + "\n" + "Additional Data: \n";
 
             var values = Trigger.GetCheck().GetExtraValues();
 

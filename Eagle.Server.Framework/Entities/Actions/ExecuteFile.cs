@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Xml;
 
 namespace Eagle.Server.Framework.Entities.Actions
@@ -9,12 +11,9 @@ namespace Eagle.Server.Framework.Entities.Actions
 
         public ExecuteFile(XmlNode input)
         {
-            foreach (XmlNode childNode in input.ChildNodes)
+            foreach (var childNode in input.ChildNodes.Cast<XmlNode>().Where(childNode => String.Equals(childNode.Name, "FilePath", StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (childNode.Name.ToUpper() == "FilePath".ToUpper())
-                {
-                    _filePath = childNode.FirstChild.Value;
-                }
+                _filePath = childNode.FirstChild.Value;
             }
         }
 

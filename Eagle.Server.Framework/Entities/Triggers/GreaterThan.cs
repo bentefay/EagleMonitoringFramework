@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using System.Xml;
-using Action = Eagle.Server.Framework.Entities.Actions.Action;
 
 namespace Eagle.Server.Framework.Entities.Triggers
 {
@@ -9,30 +9,17 @@ namespace Eagle.Server.Framework.Entities.Triggers
         private readonly int _triggerLevel;
         private bool _triggeredLastTime; //to stop the trigger activating alarms repeatedly
 
-        //exists for testing purposes
-        public GreaterThan(object[] input)
-        {
-            this.Input = input;
-            _triggerLevel = (int)input[0];
-
-        }
-
         public GreaterThan(XmlNode input)
         {
-            
-            foreach (XmlNode childNode in input.ChildNodes)
+            foreach (var childNode in input.ChildNodes.Cast<XmlNode>().Where(childNode => String.Equals(childNode.Name, "value", StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (childNode.Name.ToUpper() == "value".ToUpper())
-                {
-                    _triggerLevel =
-                        int.Parse(childNode.FirstChild.Value);
-                }
+                _triggerLevel = int.Parse(childNode.FirstChild.Value);
             }
         }
 
         public override Type GetValueType()
         {
-            return (1).GetType();
+            return typeof(Int32);
         }
 
         public override bool Test(object value)
@@ -41,7 +28,7 @@ namespace Eagle.Server.Framework.Entities.Triggers
             {
                 if (_triggeredLastTime == false)
                 {
-                    foreach (Action a in Actions)
+                    foreach (var a in Actions)
                     {
                         a.Execute();
                     }

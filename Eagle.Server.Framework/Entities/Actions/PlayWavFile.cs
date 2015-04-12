@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Xml;
 using Eagle.Server.Framework.Services;
 
@@ -11,12 +13,9 @@ namespace Eagle.Server.Framework.Entities.Actions
         public PlayWavFile(XmlNode input, SoundService soundService)
         {
             _soundService = soundService;
-            foreach (XmlNode childNode in input.ChildNodes)
+            foreach (var childNode in input.ChildNodes.Cast<XmlNode>().Where(childNode => String.Equals(childNode.Name, "File", StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (childNode.Name == "File")
-                {
-                    _soundFile = childNode.FirstChild.Value;
-                }
+                _soundFile = childNode.FirstChild.Value;
             }
         }
 
