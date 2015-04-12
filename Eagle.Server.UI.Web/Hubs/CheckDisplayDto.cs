@@ -6,6 +6,7 @@ namespace Eagle.Server.UI.Web.Hubs
     {
         public CheckDisplayDto(ICheckDisplay check)
         {
+            IsLoading = check.IsLoading();
             IsPaused = check.IsPaused();
             HasError = check.HasError();
             IsTriggered = check.IsTriggered();
@@ -17,6 +18,7 @@ namespace Eagle.Server.UI.Web.Hubs
             TabName = check.GetTab();
         }
 
+        public bool IsLoading { get; set; }
         public bool IsPaused { get; set; }
         public bool HasError { get; set; }
         public bool IsTriggered { get; set; }

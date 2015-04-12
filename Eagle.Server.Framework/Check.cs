@@ -25,7 +25,7 @@ namespace Eagle.Server.Framework
         public const string TimeAtQueryExecution = "Time at Query Execution";
 
         private object _result;
-        bool _actionActivated;
+        private bool _actionActivated;
 
         public Check(int index, AlarmService alarmService, Action<Check> update)
         {
@@ -180,13 +180,19 @@ namespace Eagle.Server.Framework
 
         public bool IsTriggered()
         {
-
             return _actionActivated;
         }
+
+        public bool IsLoading()
+        {
+            return _result == null;
+        }
+
         public string GetError()
         {
             return _errorMessage;
         }
+
         public string GetResult()
         {
             if (_result != null)
@@ -241,7 +247,7 @@ namespace Eagle.Server.Framework
                     }
                     else if (((TimeSpan)_result).Seconds > 0)
                     {
-                        formattedResult = ((TimeSpan)_result).Seconds.ToString() + " Seconds";
+                        formattedResult = ((TimeSpan)_result).Seconds + " Seconds";
                     }
                     else
                     {
@@ -249,24 +255,20 @@ namespace Eagle.Server.Framework
                     }
                     return formattedResult;
                 }
-                else
-                {
-                    return _result.ToString();
-                }
+                
+                return _result.ToString();
             }
-            else
+            
+            if (!string.IsNullOrWhiteSpace(DefaultOkStatusMessage))
             {
-                if (!string.IsNullOrWhiteSpace(DefaultOkStatusMessage))
-                {
-                    return DefaultOkStatusMessage;
-                }
-                return _type;
+                return DefaultOkStatusMessage;
             }
+            return "Loading...";
         }
 
         public string GetStatus()
         {
-            StringBuilder msg = new StringBuilder();
+            var msg = new StringBuilder();
             var values = _query.GetAdditionalValues();
             if (_result != null && _result is TimeSpan)
             {

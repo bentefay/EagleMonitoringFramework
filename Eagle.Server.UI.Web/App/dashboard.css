@@ -11,6 +11,9 @@
 .normal {
     background-color: rgb(92, 184, 92);
 }
+.loading {
+    background-color: rgb(240, 240, 240);
+}
 .notApplicable {
     background-color: rgb(119, 119, 119);
 }

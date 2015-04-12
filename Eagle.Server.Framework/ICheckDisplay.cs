@@ -2,6 +2,7 @@ namespace Eagle.Server.Framework
 {
     public interface ICheckDisplay
     {
+        bool IsLoading();
         bool IsPaused();
         bool HasError();
         bool IsTriggered();

@@ -105,6 +105,8 @@
             return { status: 'errored', tooltipContent: check.error };
         else if (check.isPaused)
             return { status: 'paused', tooltipContent: check.status };
+        else if (check.isLoading)
+            return { status: 'loading', tooltipContent: check.status };
         else
             return { status: 'normal', tooltipContent: check.status };
     }
