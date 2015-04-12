@@ -9,9 +9,11 @@ namespace Eagle.Server.UI.Web
 	{
 		public void Configuration(IAppBuilder app)
 		{
-            var settings = new JsonSerializerSettings();
-            settings.ContractResolver = new CamelCaseJsonContractResolver();
-            var serializer = JsonSerializer.Create(settings);
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCaseJsonContractResolver()
+            };
+		    var serializer = JsonSerializer.Create(settings);
             GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
 
 		    app

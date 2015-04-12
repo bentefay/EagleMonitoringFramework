@@ -5,7 +5,7 @@ namespace Eagle.Server.Framework.Entities.Actions
 {
     public class ExecuteFile : Action
     {
-        private string FilePath;
+        private readonly string _filePath;
 
         public ExecuteFile(XmlNode input)
         {
@@ -13,14 +13,14 @@ namespace Eagle.Server.Framework.Entities.Actions
             {
                 if (childNode.Name.ToUpper() == "FilePath".ToUpper())
                 {
-                    FilePath = childNode.FirstChild.Value;
+                    _filePath = childNode.FirstChild.Value;
                 }
             }
         }
 
         public override void Execute()
         {
-            Process.Start(FilePath);
+            Process.Start(_filePath);
             
         }
     }

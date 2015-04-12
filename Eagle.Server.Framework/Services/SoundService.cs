@@ -43,6 +43,7 @@ namespace Eagle.Server.Framework.Services
                     }
                     catch
                     {
+                        // TODO: Logging here
                     }
                     finally
                     {

@@ -6,7 +6,7 @@ namespace Eagle.Server.Framework.Entities.Actions
     public class PlayWavFile : Action
     {
         private readonly SoundService _soundService;
-        private readonly string soundFile;
+        private readonly string _soundFile;
 
         public PlayWavFile(XmlNode input, SoundService soundService)
         {
@@ -15,14 +15,14 @@ namespace Eagle.Server.Framework.Entities.Actions
             {
                 if (childNode.Name == "File")
                 {
-                    soundFile = childNode.FirstChild.Value;
+                    _soundFile = childNode.FirstChild.Value;
                 }
             }
         }
 
         public override void Execute()
         {
-            _soundService.PlayOnce(soundFile);
+            _soundService.PlayOnce(_soundFile);
         }
     }
 }

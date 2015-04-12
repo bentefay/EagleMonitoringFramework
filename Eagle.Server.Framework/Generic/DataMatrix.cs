@@ -1,4 +1,3 @@
-
 using System;
 
 namespace Eagle.Server.Framework.Generic

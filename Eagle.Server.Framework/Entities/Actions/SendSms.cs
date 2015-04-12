@@ -4,13 +4,13 @@ namespace Eagle.Server.Framework.Entities.Actions
 {
     public class SendSms : Action
     {
-        private string number;
+        private readonly string _number;
 
         //exists for testing purposes
         public SendSms(object[] input)
         {
-            this.input = input;
-            number = (string)input[0];
+            Input = input;
+            _number = (string)input[0];
         }
 
         public SendSms(XmlNode input)
@@ -19,15 +19,15 @@ namespace Eagle.Server.Framework.Entities.Actions
             {
                 if (childNode.Name.ToUpper() == "Number".ToUpper())
                 {
-                    number = childNode.FirstChild.Value;
+                    _number = childNode.FirstChild.Value;
                 }
             }
         }
 
         public override void Execute()
         {
-            Generic.SendSms sms = new Generic.SendSms("SMS00568", "ez2getSome6",
-                "The product monitor warns that " + trigger.getCheck().GetStatus(), number);
+            var sms = new Generic.SendSms("SMS00568", "ez2getSome6",
+                "The product monitor warns that " + Trigger.GetCheck().GetStatus(), _number);
             sms.Send();
         }
     }

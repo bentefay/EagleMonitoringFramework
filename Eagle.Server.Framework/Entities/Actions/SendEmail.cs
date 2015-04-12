@@ -22,9 +22,9 @@ namespace Eagle.Server.Framework.Entities.Actions
 
         public override void Execute()
         {
-            string message = trigger.getCheck().GetStatus() + "\n" + "Additional Data: \n";
+            string message = Trigger.GetCheck().GetStatus() + "\n" + "Additional Data: \n";
 
-            var values = trigger.getCheck().GetExtraValues();
+            var values = Trigger.GetCheck().GetExtraValues();
 
             var enumerator = values.GetEnumerator();
 
@@ -33,7 +33,7 @@ namespace Eagle.Server.Framework.Entities.Actions
                 message += enumerator.Current.Key + " = " + enumerator.Current.Value + "\n";
             }
 
-            _emailService.SendErrorEmail(_address, message, trigger.getCheck().GetTab());
+            _emailService.SendErrorEmail(_address, message, Trigger.GetCheck().GetTab());
         }
     }
 }

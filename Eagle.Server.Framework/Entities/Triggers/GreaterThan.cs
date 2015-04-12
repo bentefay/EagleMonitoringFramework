@@ -6,14 +6,14 @@ namespace Eagle.Server.Framework.Entities.Triggers
 {
     public class GreaterThan : Trigger
     {
-        private int triggerLevel;
-        private bool triggeredLastTime = false; //to stop the trigger activating alarms repeatedly
+        private readonly int _triggerLevel;
+        private bool _triggeredLastTime; //to stop the trigger activating alarms repeatedly
 
         //exists for testing purposes
         public GreaterThan(object[] input)
         {
-            this.input = input;
-            triggerLevel = (int)input[0];
+            this.Input = input;
+            _triggerLevel = (int)input[0];
 
         }
 
@@ -24,7 +24,7 @@ namespace Eagle.Server.Framework.Entities.Triggers
             {
                 if (childNode.Name.ToUpper() == "value".ToUpper())
                 {
-                    triggerLevel =
+                    _triggerLevel =
                         int.Parse(childNode.FirstChild.Value);
                 }
             }
@@ -37,24 +37,21 @@ namespace Eagle.Server.Framework.Entities.Triggers
 
         public override bool Test(object value)
         {
-            if (triggerLevel <= (int)value)
+            if (_triggerLevel <= (int)value)
             {
-                if (triggeredLastTime == false)
+                if (_triggeredLastTime == false)
                 {
-                    foreach (Action a in this.actions)
+                    foreach (Action a in Actions)
                     {
                         a.Execute();
                     }
                 }
 
-                triggeredLastTime = true;
+                _triggeredLastTime = true;
                 return true;
             }
-            else
-            {
-                triggeredLastTime = false;
-                return false;
-            }
+            _triggeredLastTime = false;
+            return false;
         }
     }
 }

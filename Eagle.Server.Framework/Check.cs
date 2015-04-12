@@ -65,7 +65,7 @@ namespace Eagle.Server.Framework
         {
             var myNode = new LinkedListNode<Trigger>(trigger);
             _triggers.AddLast(myNode);
-            trigger.setCheck(this);
+            trigger.SetCheck(this);
         }
 
         public string GetLongLocation()

@@ -6,14 +6,14 @@ namespace Eagle.Server.Framework.Entities.Triggers
 {
     public class OlderThan : Trigger
     {
-        private TimeSpan timeTillOutOfDate;
-        private bool triggeredLastTime = false; //to stop the trigger activating alarms repeatedly
+        private readonly TimeSpan _timeTillOutOfDate;
+        private bool _triggeredLastTime; //to stop the trigger activating alarms repeatedly
 
         //exists for testing purposes
         public OlderThan(object[] input)
         {
-            this.input = input;
-            timeTillOutOfDate = (TimeSpan)input[0];
+            this.Input = input;
+            _timeTillOutOfDate = (TimeSpan)input[0];
 
         }
 
@@ -24,7 +24,7 @@ namespace Eagle.Server.Framework.Entities.Triggers
             {
                 if (childNode.Name == "Minutes")
                 {
-                    timeTillOutOfDate =
+                    _timeTillOutOfDate =
                         TimeSpan.FromMinutes(double.Parse(childNode.FirstChild.Value));
                 }
             }
@@ -32,29 +32,27 @@ namespace Eagle.Server.Framework.Entities.Triggers
 
         public override Type GetValueType()
         {
-            return System.Type.GetType("DateTime");
+            return Type.GetType("DateTime");
         }
 
         public override bool Test(object value)
         {
-            if (timeTillOutOfDate <= (TimeSpan)value)
+            if (_timeTillOutOfDate <= (TimeSpan)value)
             {
-                if (!triggeredLastTime)
+                if (!_triggeredLastTime)
                 {
-                    foreach (Action a in this.actions)
+                    foreach (Action a in Actions)
                     {
                         a.Execute();
                     }
                 }
 
-                triggeredLastTime = true;
+                _triggeredLastTime = true;
                 return true;
             }
-            else
-            {
-                triggeredLastTime = false;
-                return false;
-            }
+            
+            _triggeredLastTime = false;
+            return false;
         }
     }
 }

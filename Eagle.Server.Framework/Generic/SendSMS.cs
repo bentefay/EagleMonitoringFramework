@@ -50,7 +50,7 @@ namespace Eagle.Server.Framework.Generic
 	        var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}?u={1}&p={2}&d={3}&m={4}", SmsBulletAddress, username, password, mobileNumber, message));
             var response = (HttpWebResponse)request.GetResponse();
 			var responseStream = response.GetResponseStream();
-		    var count = 0;
+		    int count;
 
 			do
 			{

@@ -37,15 +37,19 @@ namespace Eagle.Server.Framework.Entities.Frequencies
 
         private void Tick(object sender, ElapsedEventArgs e)
         {
-            var myActivatorThread = new Thread(Activate);
-            myActivatorThread.IsBackground = true;
+            var myActivatorThread = new Thread(Activate)
+            {
+                IsBackground = true
+            };
             myActivatorThread.Start();
         }
 
         private void SetUpTimer(int minutes)
         {
-            Timer = new Timer();
-            Timer.Interval = minutes * 60 * 1000;
+            Timer = new Timer
+            {
+                Interval = minutes * 60 * 1000
+            };
             Timer.Elapsed += Tick;
             Timer.Start();
         }

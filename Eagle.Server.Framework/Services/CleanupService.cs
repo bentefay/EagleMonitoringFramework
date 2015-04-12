@@ -10,10 +10,12 @@ namespace Eagle.Server.Framework.Services
         public CleanupService(string tempPath)
         {
             _tempPath = tempPath;
-            var cleanuptimer = new Timer();
-            cleanuptimer.Interval = 15 * 60 * 1000; // 15 minutes
+            var cleanuptimer = new Timer
+            {
+                Interval = 15 * 60 * 1000,
+                AutoReset = true
+            };
             cleanuptimer.Elapsed += OnTimerElapsed;
-            cleanuptimer.AutoReset = true;
             cleanuptimer.Start();
         }
 

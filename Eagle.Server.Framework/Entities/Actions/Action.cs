@@ -4,14 +4,14 @@ namespace Eagle.Server.Framework.Entities.Actions
 {
     public abstract class Action
     {
-        protected object[] input;
-        protected Trigger trigger;
+        protected object[] Input { get; set; }
+        protected Trigger Trigger { get; private set; }
 
         public abstract void Execute();
 
-        public void setTrigger(Trigger trigger)
+        public void SetTrigger(Trigger trigger)
         {
-            this.trigger = trigger;
+            Trigger = trigger;
         }
     }
 }

@@ -6,16 +6,16 @@ namespace Eagle.Server.Framework.Entities.Triggers
 {
     public class OlderThanRepeating : Trigger
     {
-        private TimeSpan origionalTime;
-        private TimeSpan timeTillOutOfDate;
-        private TimeSpan increaseBy;
+        private readonly TimeSpan _origionalTime;
+        private TimeSpan _timeTillOutOfDate;
+        private readonly TimeSpan _increaseBy;
 
         //exists for testing purposes
         public OlderThanRepeating(object[] input)
         {
-            this.input = input;
-            timeTillOutOfDate = origionalTime = (TimeSpan)input[0];
-            increaseBy = (TimeSpan)input[1];
+            this.Input = input;
+            _timeTillOutOfDate = _origionalTime = (TimeSpan)input[0];
+            _increaseBy = (TimeSpan)input[1];
 
         }
 
@@ -25,12 +25,12 @@ namespace Eagle.Server.Framework.Entities.Triggers
             {
                 if (childNode.Name == "Minutes")
                 {
-                    timeTillOutOfDate = origionalTime =
+                    _timeTillOutOfDate = _origionalTime =
                         TimeSpan.FromMinutes(double.Parse(childNode.FirstChild.Value));
                 }
                 else if (childNode.Name == "IncreaseBy")
                 {
-                    increaseBy =
+                    _increaseBy =
                         TimeSpan.FromMinutes(double.Parse(childNode.FirstChild.Value));
                 }
             }
@@ -38,34 +38,32 @@ namespace Eagle.Server.Framework.Entities.Triggers
 
         public override Type GetValueType()
         {
-            return System.Type.GetType("DateTime");
+            return Type.GetType("DateTime");
         }
 
         public override bool Test(object value)
         {
-            if (timeTillOutOfDate <= (TimeSpan)value)
+            if (_timeTillOutOfDate <= (TimeSpan)value)
             {
-                foreach (Action a in this.actions)
+                foreach (Action a in Actions)
                 {
                     a.Execute();
                     
                 }
                 
                 //increase the time till the next check
-                timeTillOutOfDate = ((TimeSpan)value).Add(increaseBy);
+                _timeTillOutOfDate = ((TimeSpan)value).Add(_increaseBy);
 
                 return true;
             }
-            else
+            
+            //reset the time span
+            if (_origionalTime >= (TimeSpan)value)
             {
-                //reset the time span
-                if (origionalTime >= (TimeSpan)value)
-                {
-                    timeTillOutOfDate = origionalTime;
-                }
-
-                return false;
+                _timeTillOutOfDate = _origionalTime;
             }
+
+            return false;
         }
     }
 }

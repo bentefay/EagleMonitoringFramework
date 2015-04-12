@@ -73,16 +73,20 @@ namespace Eagle.Server.Framework.Entities.Frequencies
 
         private void SetUpTimer(TimeSpan timeTillActivation)
         {
-            Timer = new Timer();
-            Timer.Interval = timeTillActivation.TotalMilliseconds;
+            Timer = new Timer
+            {
+                Interval = timeTillActivation.TotalMilliseconds
+            };
             Timer.Elapsed += Tick;
             Timer.Start();
         }
 
         private void Tick(object sender, ElapsedEventArgs e)
         {
-            var myActivatorThread = new Thread(Activate);
-            myActivatorThread.IsBackground = true;
+            var myActivatorThread = new Thread(Activate)
+            {
+                IsBackground = true
+            };
             myActivatorThread.Start();
 
             Timer.Stop();

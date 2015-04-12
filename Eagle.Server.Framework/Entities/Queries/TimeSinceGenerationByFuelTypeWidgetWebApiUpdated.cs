@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -120,7 +121,7 @@ namespace Eagle.Server.Framework.Entities.Queries
                 var uri = new UriBuilder(baseUri);
 
                 var queryParameters = HttpUtility.ParseQueryString(string.Empty);
-                queryParameters["requestCount"] = requestCount.ToString();
+                queryParameters["requestCount"] = requestCount.ToString(CultureInfo.InvariantCulture);
                 uri.Query = queryParameters.ToString();
 
                 client.BaseAddress = uri.Uri;

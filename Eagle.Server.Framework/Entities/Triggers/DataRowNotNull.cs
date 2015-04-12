@@ -6,9 +6,9 @@ namespace Eagle.Server.Framework.Entities.Triggers
 {
     public class ResultNotNull : Trigger
     {
-        private bool triggeredLastTime = false; //to stop the trigger activating alarms repeatedly
-
-
+        private bool _triggeredLastTime; //to stop the trigger activating alarms repeatedly
+        
+        // ReSharper disable once UnusedParameter.Local
         public ResultNotNull(XmlNode input)
         {
         }
@@ -22,22 +22,19 @@ namespace Eagle.Server.Framework.Entities.Triggers
         {
             if (value != null)
             {
-                if (triggeredLastTime == false)
+                if (_triggeredLastTime == false)
                 {
-                    foreach (Action a in this.actions)
+                    foreach (Action a in Actions)
                     {
                         a.Execute();
                     }
                 }
 
-                triggeredLastTime = true;
+                _triggeredLastTime = true;
                 return true;
             }
-            else
-            {
-                triggeredLastTime = false;
-                return false;
-            }
+            _triggeredLastTime = false;
+            return false;
         }
     }
 }

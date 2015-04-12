@@ -21,7 +21,7 @@ namespace Eagle.Server.Framework.Services
         private readonly List<string> _erroredTabs;
         private readonly Timer _timer;
 
-        private const string ProductMonitorEmailAddress = "productMonitor@global-roam.com";
+        private const string _productMonitorEmailAddress = "productMonitor@global-roam.com";
 
         string _host = "mail.internode.on.net";
         string _username = "groaminternode2@internode.on.net";
@@ -90,7 +90,7 @@ namespace Eagle.Server.Framework.Services
             }
         }
 
-        private List<string> TakeScreenshotsOfTabs(IEnumerable<string> tabs, string basePath)
+        private IEnumerable<string> TakeScreenshotsOfTabs(IEnumerable<string> tabs, string basePath)
         {
             var screenshotSaveLocations = new List<string>();
             foreach (var tab in tabs)
@@ -111,7 +111,7 @@ namespace Eagle.Server.Framework.Services
         {
             var aggregatedMessage = String.Join("\n", messages) + "\n";
 
-            var email = new MailMessage(ProductMonitorEmailAddress, target)
+            var email = new MailMessage(_productMonitorEmailAddress, target)
             {
                 Subject = subject,
                 Body = aggregatedMessage
@@ -132,11 +132,13 @@ namespace Eagle.Server.Framework.Services
 
             email.Priority = MailPriority.High;
 
-            var emailClient = new SmtpClient();
-            emailClient.Host = _host;
-            emailClient.Port = _port;
-            emailClient.Credentials = new NetworkCredential(_username, _password);
-            emailClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+            var emailClient = new SmtpClient
+            {
+                Host = _host,
+                Port = _port,
+                Credentials = new NetworkCredential(_username, _password),
+                DeliveryMethod = SmtpDeliveryMethod.Network
+            };
 
             try
             {
@@ -151,7 +153,7 @@ namespace Eagle.Server.Framework.Services
             }
         }
 
-        private void HandleSendEmailFailed(string target, List<string> screenshotSaveLocations, MailMessage email, SmtpClient emailClient)
+        private void HandleSendEmailFailed(string target, IEnumerable<string> screenshotSaveLocations, MailMessage email, SmtpClient emailClient)
         {
             email.Attachments.Clear();
 
@@ -184,8 +186,10 @@ namespace Eagle.Server.Framework.Services
                 {
                     Log.Warning(e2, "Failed to send email again. Sending warning email.");
 
-                    var warningEmail = new MailMessage(ProductMonitorEmailAddress, target);
-                    warningEmail.Body = "The Product Monitor failed to send an email to this address 3 times.";
+                    var warningEmail = new MailMessage(_productMonitorEmailAddress, target)
+                    {
+                        Body = "The Product Monitor failed to send an email to this address 3 times."
+                    };
 
                     try
                     {

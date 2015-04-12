@@ -5,7 +5,7 @@ namespace Eagle.Server.Framework.Entities.Queries
 {
     public abstract class Query
     {
-        protected object[] input;
+        protected object[] Input { get; set; }
 
         /// <summary>
         /// Run the query and get the result.

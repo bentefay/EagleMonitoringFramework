@@ -133,10 +133,8 @@ namespace Eagle.Server.Framework.Entities.Queries
                     var result = response.Content.ReadAsAsync<RegionGenerationByFuelTypeResult>().Result;
                     return result;
                 }
-                else
-                {
-                    throw new Exception(String.Format("Failed to contact web api {0} with error code {1} ({2})", uri, response.StatusCode, response.Content));
-                }
+                
+                throw new Exception(String.Format("Failed to contact web api {0} with error code {1} ({2})", uri, response.StatusCode, response.Content));
             }
         }
 

@@ -17,7 +17,7 @@ namespace Eagle.Server.Framework.Entities.Actions
 
         public override void Execute()
         {
-            _soundService.PlayRepeating(_soundFile, trigger.getCheck().GetStatus());            
+            _soundService.PlayRepeating(_soundFile, Trigger.GetCheck().GetStatus());            
         }
     }
 }

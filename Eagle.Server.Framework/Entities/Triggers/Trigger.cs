@@ -7,11 +7,9 @@ namespace Eagle.Server.Framework.Entities.Triggers
 
     public abstract class Trigger
     {
-        protected Check check;
-
-        protected object[] input;
-        protected LinkedList<Action> actions = 
-            new LinkedList<Action>();
+        protected Check Check;
+        protected object[] Input;
+        protected LinkedList<Action> Actions = new LinkedList<Action>();
 
         abstract public bool Test(object value);
 
@@ -19,21 +17,20 @@ namespace Eagle.Server.Framework.Entities.Triggers
 
         public void AddAction(Action action)
         {
-            LinkedListNode<Action> myNode =
-                new LinkedListNode<Action>(action);
-            actions.AddLast(myNode);
+            var myNode = new LinkedListNode<Action>(action);
+            Actions.AddLast(myNode);
 
-            action.setTrigger(this);
+            action.SetTrigger(this);
         }
 
-        public void setCheck(Check check)
+        public void SetCheck(Check check)
         {
-            this.check = check;
+            Check = check;
         }
 
-        public Check getCheck()
+        public Check GetCheck()
         {
-            return check;
+            return Check;
         }
     }
 }
