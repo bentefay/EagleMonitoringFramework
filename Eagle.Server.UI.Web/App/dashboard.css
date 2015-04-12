@@ -1,19 +1,22 @@
 ﻿
 .triggered { 
+    color: white;
     background-color: rgb(240, 173, 78);
 }
 .errored {
+    color: white;
     background-color: rgb(217, 83, 79);
 }
 .paused {
     background-color: rgb(203, 203, 203);
 }
 .normal {
+    color: white;
     background-color: rgb(92, 184, 92);
 }
 .loading {
     background-color: rgb(240, 240, 240);
 }
 .notApplicable {
-    background-color: rgb(119, 119, 119);
+    color: rgb(200, 200, 200);
 }

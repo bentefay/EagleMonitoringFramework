@@ -51,7 +51,7 @@
             function() { return { tabName: check.tabName, rows: ko.observableArray(), columnHeaders: ko.observableArray() }; });
 
         var columnIndex = _(tabViewModel.columnHeaders()).findIndex(function(columnHeader) { return columnHeader.location === check.location; });
-        if (columnIndex == -1) {
+        if (columnIndex === -1) {
             Enumerable.From(tabViewModel.rows()).ForEach(function(row) { row.cells.push(createEmptyCell()); });
             tabViewModel.columnHeaders.push({ location: check.location });
             columnIndex = tabViewModel.columnHeaders().length - 1;
@@ -80,7 +80,7 @@
     function getOrAdd(observableArray, predicate, factory) {
         var values = Enumerable.From(observableArray()).Where(predicate).ToArray();
 
-        if (values.length == 0) {
+        if (values.length === 0) {
             var value = factory();
             observableArray.push(value);
             return value;
