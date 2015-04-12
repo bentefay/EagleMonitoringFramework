@@ -1,4 +1,7 @@
-﻿using Owin;
+﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
+using Owin;
+using WebProductMonitor.Services;
 
 namespace WebProductMonitor
 {
@@ -6,6 +9,11 @@ namespace WebProductMonitor
 	{
 		public void Configuration(IAppBuilder app)
 		{
+            var settings = new JsonSerializerSettings();
+            settings.ContractResolver = new CamelCaseJsonContractResolver();
+            var serializer = JsonSerializer.Create(settings);
+            GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
+
 		    app
                 .UseStaticFiles("/Scripts", "../../Scripts")
                 .UseStaticFiles("/App", "../../App")

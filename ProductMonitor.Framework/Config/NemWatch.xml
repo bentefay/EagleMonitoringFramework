@@ -1,6 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Tab>
   <Checks>
+
+    <Check>
+      <Name>GenerationByFuelType Widget Web Api</Name>
+      <Online>true</Online>
+      <Frequency>
+        <Type>Regular</Type>
+        <Input>
+          <Frequency>15</Frequency>
+        </Input>
+      </Frequency>
+      <Query>
+        <Type>TimeSinceGenerationByFuelTypeWidgetWebApiUpdated</Type>
+        <Input>
+          <Location>http://widgets.global-roam.com/api/RegionGenerationByFuelType/get</Location>
+          <ApiToken>F1A01DC1-2F6C-4EC1-8DEF-B9C52A8D1621</ApiToken>
+          <SessionId>ce4a7e8b-b1e9-4345-8795-27e159381778</SessionId>
+          <CheckApviSolarData>True</CheckApviSolarData>
+          <UseOldestSolar>True</UseOldestSolar>
+          <CheckAemoData>True</CheckAemoData>
+        </Input>
+      </Query>
+      <Triggers>
+        <Trigger>
+          <Type>OlderThan</Type>
+          <Input>
+            <Minutes>10</Minutes>
+          </Input>
+          <Actions>
+            <Type>WAV</Type>
+            <Input>
+              <File>C:\alarm.wav</File>
+            </Input>
+          </Actions>
+        </Trigger>
+        <Trigger>
+          <Type>OlderThan</Type>
+          <Input>
+            <Minutes>15</Minutes>
+          </Input>
+          <Actions>
+            <Action>
+              <Type>WAV</Type>
+              <Input>
+                <File>C:\alarm.wav</File>
+              </Input>
+            </Action>
+          </Actions>
+        </Trigger>
+      </Triggers>
+    </Check>
+
+
+
     <Check>
       <Name>Gen Fuel Type (5min)</Name>
       <Online>true</Online>
@@ -49,5 +102,56 @@
         </Trigger>
       </Triggers>
     </Check>
+
+
+    <Check>
+      <Name>Gen Fuel Type (5min)</Name>
+      <Online>true</Online>
+      <Frequency>
+        <Type>Regular</Type>
+        <Input>
+          <Frequency>5</Frequency>
+        </Input>
+      </Frequency>
+      <Query>
+        <Type>TimeSinceGenerationByFuelTypeNemWatchWebApiUpdated</Type>
+        <Input>
+          <Location>https://nemwatch.datastripe1.com/web/api/NemWatch/GenerationByFuelTypeData</Location>
+          <CheckApviSolarData>False</CheckApviSolarData>
+          <UseOldestSolar>False</UseOldestSolar>
+          <CheckAemoData>True</CheckAemoData>
+          <Resolution>5</Resolution>
+        </Input>
+      </Query>
+      <Triggers>
+        <Trigger>
+          <Type>OlderThan</Type>
+          <Input>
+            <Minutes>10</Minutes>
+          </Input>
+          <Actions>
+            <Type>WAV</Type>
+            <Input>
+              <File>C:\alarm.wav</File>
+            </Input>
+          </Actions>
+        </Trigger>
+        <Trigger>
+          <Type>OlderThan</Type>
+          <Input>
+            <Minutes>15</Minutes>
+          </Input>
+          <Actions>
+            <Action>
+              <Type>WAV</Type>
+              <Input>
+                <File>C:\alarm.wav</File>
+              </Input>
+            </Action>
+          </Actions>
+        </Trigger>
+      </Triggers>
+    </Check>
+    
   </Checks>
 </Tab>

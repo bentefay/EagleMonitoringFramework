@@ -10,19 +10,23 @@ namespace WebProductMonitor.Hubs
     {
         private ProductMonitorHubService()
         {
-            Checks = new ICheckDisplay[0];
+            _checks = new ICheckDisplay[0];
         }
 
-        private readonly Lazy<dynamic> _clients = new Lazy<dynamic>(() => GlobalHost.ConnectionManager.GetHubContext<ProductMonitorHub>().Clients.All); 
+        private readonly Lazy<dynamic> _clients = new Lazy<dynamic>(() => GlobalHost.ConnectionManager.GetHubContext<ProductMonitorHub>().Clients.All);
+        private IReadOnlyList<ICheckDisplay> _checks;
 
         public static readonly ProductMonitorHubService Instance = new ProductMonitorHubService();
 
-        public IReadOnlyList<ICheckDisplay> Checks { get; private set; }
+        public IEnumerable<CheckDisplayDto> Checks
+        {
+            get { return _checks.Select(check => new CheckDisplayDto(check)); }
+        }
 
         public void UpdateChecks(IReadOnlyList<ICheckDisplay> checks)
         {
-            Checks = checks;
-            _clients.Value.UpdateChecks(checks.Select(check => new CheckDisplayDto(check)));
+            _checks = checks;
+            _clients.Value.UpdateChecks(Checks);
         }
 
         public void UpdateCheck(ICheckDisplay check)

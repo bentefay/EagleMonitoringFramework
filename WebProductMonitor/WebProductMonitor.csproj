@@ -96,6 +96,7 @@
     <Compile Include="Hubs\CheckDisplayDto.cs" />
     <Compile Include="Hubs\ProductMonitorHubService.cs" />
     <Compile Include="IAppBuilderExtensions.cs" />
+    <Compile Include="Services\CamelCaseJsonContractResolver.cs" />
     <Compile Include="Services\ScreenshotService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Hubs\ProductMonitorHub.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App\dashboard.css" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -125,6 +127,11 @@
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\linq-vsdoc.js" />
+    <Content Include="Scripts\linq.js" />
+    <Content Include="Scripts\linq.min.js" />
+    <Content Include="Scripts\underscore-min.js" />
+    <Content Include="Scripts\underscore.js" />
     <Content Include="Views\dashboard.html" />
     <None Include="App.config" />
     <None Include="packages.config" />

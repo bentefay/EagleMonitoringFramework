@@ -80,6 +80,8 @@ namespace WebProductMonitor
 
             alarmService.PrepareList(listOfChecks);
 
+            hubService.UpdateChecks(listOfChecks);
+
             Log.Information("Running all checks offthread");
 
             Task.Factory.StartNew(() => Parallel.ForEach(listOfChecks, check => check.Activate()), TaskCreationOptions.LongRunning);

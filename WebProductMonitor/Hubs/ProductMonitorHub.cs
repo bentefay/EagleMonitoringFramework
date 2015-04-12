@@ -8,7 +8,7 @@ namespace WebProductMonitor.Hubs
 {
 	public class ProductMonitorHub : Hub
 	{
-	    public IReadOnlyList<ICheckDisplay> GetChecks()
+	    public IEnumerable<CheckDisplayDto> GetChecks()
 	    {
 	        return ProductMonitorHubService.Instance.Checks;
 	    }

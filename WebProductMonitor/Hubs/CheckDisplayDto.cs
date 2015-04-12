@@ -14,7 +14,7 @@ namespace WebProductMonitor.Hubs
             Error = check.GetError();
             Location = check.GetLocation();
             CheckType = check.GetCheckType();
-            Tab = check.GetTab();
+            TabName = check.GetTab();
         }
 
         public bool IsPaused { get; set; }
@@ -25,6 +25,6 @@ namespace WebProductMonitor.Hubs
         public string Error { get; set; }
         public string Location { get; set; }
         public string CheckType { get; set; }
-        public string Tab { get; set; }
+        public string TabName { get; set; }
     }
 }
