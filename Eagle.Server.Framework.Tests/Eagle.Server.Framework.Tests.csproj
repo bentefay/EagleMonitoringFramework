@@ -53,12 +53,6 @@
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Eagle.Server\Eagle.Server.Framework.csproj">
-      <Project>{2aa133a8-9da4-482f-92a5-20ef7ce3af08}</Project>
-      <Name>Eagle.Server.Framework</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
