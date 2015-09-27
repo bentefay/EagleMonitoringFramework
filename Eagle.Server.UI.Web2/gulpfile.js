@@ -4,7 +4,8 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     cssmin = require("gulp-cssmin"),
     uglify = require("gulp-uglify"),
-    transform = require('vinyl-transform'),
+    gutil = require('gulp-util'),
+    source = require('vinyl-source-stream'),
     browserify = require('browserify'),
     watchify = require('watchify'),
     tsd = require('gulp-tsd'),
@@ -15,6 +16,7 @@ var paths = {
     webroot: "./" + project.webroot + "/"
 };
 
+paths.appRoots = [ paths.webroot + "js/builds.js" ];
 paths.js = paths.webroot + "js/**/*.js";
 paths.minJs = paths.webroot + "js/**/*.min.js";
 paths.css = paths.webroot + "css/**/*.css";
@@ -22,6 +24,7 @@ paths.minCss = paths.webroot + "css/**/*.min.css";
 paths.concatJsDest = paths.webroot + "js/site.min.js";
 paths.concatCssDest = paths.webroot + "css/site.min.css";
 paths.ts = paths.webroot + "js/**/*.ts";
+paths.browserifyDest = paths.webroot + "js";
 
 //gulp.task("clean:js", function (cb) {
 //    rimraf(paths.concatJsDest, cb);
@@ -74,12 +77,19 @@ gulp.task('watch', ['ts-compile'], function () {
     gulp.watch(paths.ts, ['ts-compile']);
 });
 
-gulp.task('browserify', function () {
-    var browserified = transform(function(filename) {
-        var b = watchify(browserify(filename));
-        return b.bundle();
-    });
-    return gulp.src(['./src/*.js'])
-      .pipe(browserified)
-      .pipe(gulp.dest('./dist'));
-});
+var b = watchify(browserify({
+    entries: paths.appRoots,
+    debug: false
+}));
+
+gulp.task('browserify', bundle);
+b.on('update', bundle); // on any dep update, runs the bundler
+b.on('log', gutil.log); // output build logs to terminal
+
+function bundle() {
+    return b.bundle()
+      // log errors if they happen
+      .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest(paths.browserifyDest));
+}
