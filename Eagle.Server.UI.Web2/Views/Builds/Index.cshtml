@@ -1,0 +1,10 @@
+﻿@{
+    ViewBag.Title = "Builds";
+}
+
+@section scripts
+{
+    <environment names="Staging,Production">
+        <script src="~/js/builds.js" asp-append-version="true"></script>
+    </environment>
+}

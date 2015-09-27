@@ -1,0 +1,7 @@
+{
+  "Data": {
+    "DefaultConnection": {
+      "ConnectionString": "Server=(localdb)\\mssqllocaldb;Database=aspnet5-Eagle.Server.UI.Web2-555642b2-4e5f-4ddb-9f09-7ff3499b2a8d;Trusted_Connection=True;MultipleActiveResultSets=true"
+    }
+  }
+}

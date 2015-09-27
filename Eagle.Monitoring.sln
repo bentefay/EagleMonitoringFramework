@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eagle.Client", "Eagle.Client\Eagle.Client.csproj", "{17DEA9CB-A971-4F08-AF6B-C227D1FB5E9D}"
 EndProject
@@ -16,6 +16,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eagle.Server.UI.WinForms", "Eagle.Server.UI.WinForms\Eagle.Server.UI.WinForms.csproj", "{D22718ED-48BF-463C-B51A-5B1A1F153196}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eagle.Server.UI.Example", "Eagle.Server.UI.Example\Eagle.Server.UI.Example.csproj", "{86A49166-A8EC-4F85-BFFA-9DE91D571E34}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69D982EE-F096-4D42-B560-F7DD5C9DF7F2}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Eagle.Server.UI.Web2", "Eagle.Server.UI.Web2\Eagle.Server.UI.Web2.xproj", "{1B4E4F60-B614-41FC-9B10-44BB21C37036}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +54,10 @@ Global
 		{86A49166-A8EC-4F85-BFFA-9DE91D571E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86A49166-A8EC-4F85-BFFA-9DE91D571E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86A49166-A8EC-4F85-BFFA-9DE91D571E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B4E4F60-B614-41FC-9B10-44BB21C37036}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B4E4F60-B614-41FC-9B10-44BB21C37036}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B4E4F60-B614-41FC-9B10-44BB21C37036}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B4E4F60-B614-41FC-9B10-44BB21C37036}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
