@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EagleMonitoring.Ui.Web.AppStartup;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Owin.Builder;
+using Owin;
+
+using AppFunc = System.Func<System.Collections.Generic.IDictionary<string, object>, System.Threading.Tasks.Task>;
 
 namespace EagleMonitoring.Ui.Web
 {
@@ -45,6 +50,8 @@ namespace EagleMonitoring.Ui.Web
 
             app.UseIISPlatformHandler();
 
+            app.UseSignalR();
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
@@ -55,7 +62,6 @@ namespace EagleMonitoring.Ui.Web
             });
         }
 
-        // Entry point for the application.
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }
