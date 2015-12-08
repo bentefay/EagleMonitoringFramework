@@ -1,0 +1,36 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "./typings",
+  "bundle": "./typings/tsd.d.ts",
+  "installed": {
+    "knockout/knockout.d.ts": {
+      "commit": "b937e64fc9245d299fa4ba26c6eddbeaed42a920"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "b937e64fc9245d299fa4ba26c6eddbeaed42a920"
+    },
+    "lodash/lodash.d.ts": {
+      "commit": "98d3168c2c570352a3a7393788e2ec9fbb08ade6"
+    },
+    "moment/moment-node.d.ts": {
+      "commit": "98d3168c2c570352a3a7393788e2ec9fbb08ade6"
+    },
+    "moment/moment.d.ts": {
+      "commit": "98d3168c2c570352a3a7393788e2ec9fbb08ade6"
+    },
+    "kendo-ui/kendo-ui.d.ts": {
+      "commit": "dc8494fbc793686888120bd23bc4c385ce37cdde"
+    },
+    "signalr/signalr.d.ts": {
+      "commit": "86b5a281ac2f62bcbd3476e6b86d451741f7bbdc"
+    },
+    "knockout-transformations/knockout-transformations.d.ts": {
+      "commit": "ea43bdc3d3be5eef770a30bcc5575c5dbdd157f8"
+    }, 
+    "jqueryui/jqueryui.d.ts": {
+      "commit": "a5fabe45ece37ea906252e1b7ab75444cfea8c73"
+    }
+  }
+}
