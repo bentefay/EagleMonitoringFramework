@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
+using Microsoft.TeamFoundation.Build.WebApi;
 
 namespace EagleMonitoring.Ui.Web.Controllers
 {

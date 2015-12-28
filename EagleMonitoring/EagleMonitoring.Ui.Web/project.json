@@ -1,4 +1,4 @@
-﻿{
+{
   "version": "1.0.0-*",
   "compilationOptions": {
     "emitEntryPoint": true
@@ -19,7 +19,8 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final",
     "Microsoft.AspNet.Owin": "1.0.0-rc1-final",
-    "Microsoft.AspNet.SignalR.SystemWeb": "2.2.0"
+    "Microsoft.AspNet.SignalR.SystemWeb": "2.2.0",
+    "Microsoft.TeamFoundationServer.Client": "14.83.2"
   },
 
   "commands": {

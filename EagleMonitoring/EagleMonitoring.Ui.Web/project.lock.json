@@ -887,6 +887,33 @@
           "lib/net451/Microsoft.AspNet.Tooling.Razor.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.2": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http"
+        ],
+        "compile": {
+          "lib/net45/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebApi.Core/5.2.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2"
+        },
+        "compile": {
+          "lib/net45/System.Web.Http.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Http.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebUtilities/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -1505,6 +1532,216 @@
         },
         "runtime": {
           "lib/net45/Microsoft.Owin.Security.dll": {}
+        }
+      },
+      "Microsoft.TeamFoundationServer.Client/14.83.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2",
+          "Microsoft.AspNet.WebApi.Core": "5.2.2",
+          "Microsoft.VisualStudio.Services.Client": "[14.83.2]",
+          "Newtonsoft.Json": "6.0.5"
+        },
+        "compile": {
+          "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll": {}
+        },
+        "resource": {
+          "lib/net45/cs/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/de/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/es/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/fr/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/it/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/ja/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ko/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/pl/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pt-BR/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/ru/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/tr/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/zh-Hans/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hant/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.VisualStudio.Services.Client/14.83.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2",
+          "Newtonsoft.Json": "6.0.5"
+        },
+        "compile": {
+          "lib/net45/Microsoft.TeamFoundation.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.TeamFoundation.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll": {}
+        },
+        "resource": {
+          "lib/net45/cs/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/cs/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/cs/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/de/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/de/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/de/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/es/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/es/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/es/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/fr/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/fr/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/fr/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/it/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/it/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/it/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/ja/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ja/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ja/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ko/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/ko/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/ko/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/pl/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pl/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pl/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pt-BR/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/pt-BR/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/pt-BR/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/ru/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/ru/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/ru/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/tr/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/tr/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/tr/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/zh-Hans/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hant/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "zh-Hant"
+          },
+          "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "zh-Hant"
+          },
+          "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "zh-Hant"
+          }
         }
       },
       "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0-rc1-final": {
@@ -2646,6 +2883,33 @@
           "lib/net451/Microsoft.AspNet.Tooling.Razor.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.2": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http"
+        ],
+        "compile": {
+          "lib/net45/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebApi.Core/5.2.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2"
+        },
+        "compile": {
+          "lib/net45/System.Web.Http.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Http.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebUtilities/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -3264,6 +3528,216 @@
         },
         "runtime": {
           "lib/net45/Microsoft.Owin.Security.dll": {}
+        }
+      },
+      "Microsoft.TeamFoundationServer.Client/14.83.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2",
+          "Microsoft.AspNet.WebApi.Core": "5.2.2",
+          "Microsoft.VisualStudio.Services.Client": "[14.83.2]",
+          "Newtonsoft.Json": "6.0.5"
+        },
+        "compile": {
+          "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll": {}
+        },
+        "resource": {
+          "lib/net45/cs/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/de/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/es/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/fr/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/it/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/ja/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ko/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/pl/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pt-BR/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/ru/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/tr/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/zh-Hans/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hant/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.VisualStudio.Services.Client/14.83.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2",
+          "Newtonsoft.Json": "6.0.5"
+        },
+        "compile": {
+          "lib/net45/Microsoft.TeamFoundation.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.TeamFoundation.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll": {}
+        },
+        "resource": {
+          "lib/net45/cs/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/cs/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/cs/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/de/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/de/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/de/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/es/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/es/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/es/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/fr/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/fr/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/fr/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/it/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/it/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/it/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/ja/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ja/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ja/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ko/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/ko/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/ko/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/pl/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pl/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pl/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pt-BR/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/pt-BR/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/pt-BR/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/ru/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/ru/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/ru/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/tr/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/tr/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/tr/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/zh-Hans/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hant/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "zh-Hant"
+          },
+          "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "zh-Hant"
+          },
+          "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "zh-Hant"
+          }
         }
       },
       "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0-rc1-final": {
@@ -4405,6 +4879,33 @@
           "lib/net451/Microsoft.AspNet.Tooling.Razor.dll": {}
         }
       },
+      "Microsoft.AspNet.WebApi.Client/5.2.2": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "6.0.4"
+        },
+        "frameworkAssemblies": [
+          "System.Net.Http"
+        ],
+        "compile": {
+          "lib/net45/System.Net.Http.Formatting.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Net.Http.Formatting.dll": {}
+        }
+      },
+      "Microsoft.AspNet.WebApi.Core/5.2.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2"
+        },
+        "compile": {
+          "lib/net45/System.Web.Http.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Web.Http.dll": {}
+        }
+      },
       "Microsoft.AspNet.WebUtilities/1.0.0-rc1-final": {
         "type": "package",
         "dependencies": {
@@ -5023,6 +5524,216 @@
         },
         "runtime": {
           "lib/net45/Microsoft.Owin.Security.dll": {}
+        }
+      },
+      "Microsoft.TeamFoundationServer.Client/14.83.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2",
+          "Microsoft.AspNet.WebApi.Core": "5.2.2",
+          "Microsoft.VisualStudio.Services.Client": "[14.83.2]",
+          "Newtonsoft.Json": "6.0.5"
+        },
+        "compile": {
+          "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll": {},
+          "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll": {}
+        },
+        "resource": {
+          "lib/net45/cs/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/de/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/es/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/fr/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/it/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/ja/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ko/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/pl/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pt-BR/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/ru/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/tr/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/zh-Hans/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hant/Microsoft.TeamFoundation.Core.WebApi.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.VisualStudio.Services.Client/14.83.2": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNet.WebApi.Client": "5.2.2",
+          "Newtonsoft.Json": "6.0.5"
+        },
+        "compile": {
+          "lib/net45/Microsoft.TeamFoundation.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Microsoft.TeamFoundation.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.Common.dll": {},
+          "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll": {}
+        },
+        "resource": {
+          "lib/net45/cs/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/cs/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/cs/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/net45/de/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/de/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/de/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net45/es/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/es/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/es/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net45/fr/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/fr/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/fr/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net45/it/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/it/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/it/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net45/ja/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ja/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ja/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net45/ko/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/ko/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/ko/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net45/pl/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pl/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pl/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net45/pt-BR/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/pt-BR/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/pt-BR/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/net45/ru/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/ru/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/ru/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net45/tr/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/tr/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/tr/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/net45/zh-Hans/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net45/zh-Hant/Microsoft.TeamFoundation.Common.resources.dll": {
+            "locale": "zh-Hant"
+          },
+          "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.Common.resources.dll": {
+            "locale": "zh-Hant"
+          },
+          "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.WebApi.resources.dll": {
+            "locale": "zh-Hant"
+          }
         }
       },
       "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0-rc1-final": {
@@ -5905,6 +6616,33 @@
         "Microsoft.AspNet.Tooling.Razor.nuspec"
       ]
     },
+    "Microsoft.AspNet.WebApi.Client/5.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "YVq+s0WeXrPxJk57CoElbtMYf95j76uJcW6nue3Cs4eIer9sgUp4rasSo0gALX3ls1Zf2jMceOLik9X/sJyrwA==",
+      "files": [
+        "lib/net45/System.Net.Http.Formatting.dll",
+        "lib/net45/System.Net.Http.Formatting.xml",
+        "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.dll",
+        "lib/portable-wp8+netcore45+net45+wp81+wpa81/System.Net.Http.Formatting.xml",
+        "Microsoft.AspNet.WebApi.Client.5.2.2.nupkg",
+        "Microsoft.AspNet.WebApi.Client.5.2.2.nupkg.sha512",
+        "Microsoft.AspNet.WebApi.Client.nuspec"
+      ]
+    },
+    "Microsoft.AspNet.WebApi.Core/5.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "P5boFqqGDq1XF7PVz1U4ju85wQLT0Pb5BbuiWy72cOmWXJKCCNqL+av6omi30knp62hpmfw+3rSCm+Nmt5zRgQ==",
+      "files": [
+        "Content/web.config.transform",
+        "lib/net45/System.Web.Http.dll",
+        "lib/net45/System.Web.Http.xml",
+        "Microsoft.AspNet.WebApi.Core.5.2.2.nupkg",
+        "Microsoft.AspNet.WebApi.Core.5.2.2.nupkg.sha512",
+        "Microsoft.AspNet.WebApi.Core.nuspec"
+      ]
+    },
     "Microsoft.AspNet.WebUtilities/1.0.0-rc1-final": {
       "type": "package",
       "serviceable": true,
@@ -6457,6 +7195,102 @@
         "Microsoft.Owin.Security.2.1.0.nupkg",
         "Microsoft.Owin.Security.2.1.0.nupkg.sha512",
         "Microsoft.Owin.Security.nuspec"
+      ]
+    },
+    "Microsoft.TeamFoundationServer.Client/14.83.2": {
+      "type": "package",
+      "sha512": "kBIwMnZVr3RriO6PL/WZ1aaOxlBcer7N2ZOu94xDiZGYqWKGA6+VnrI2/B3rTvxrQtV1RhuiQjLG532q87hg1w==",
+      "files": [
+        "lib/net45/cs/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/de/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/es/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/fr/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/it/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/ja/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/ko/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Build2.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Chat.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.Core.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Core.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Discussion.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Policy.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.SourceControl.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.Test.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Test.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.TestManagement.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.Work.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.Work.WebApi.xml",
+        "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.dll",
+        "lib/net45/Microsoft.TeamFoundation.WorkItemTracking.WebApi.xml",
+        "lib/net45/pl/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/pt-BR/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/ru/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/tr/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/zh-Hans/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "lib/net45/zh-Hant/Microsoft.TeamFoundation.Core.WebApi.resources.dll",
+        "Microsoft.TeamFoundationServer.Client.14.83.2.nupkg",
+        "Microsoft.TeamFoundationServer.Client.14.83.2.nupkg.sha512",
+        "Microsoft.TeamFoundationServer.Client.nuspec"
+      ]
+    },
+    "Microsoft.VisualStudio.Services.Client/14.83.2": {
+      "type": "package",
+      "sha512": "WPnPK9iE3TvjSLnYK5frSazCJM3XV9TIqgOZNICrsxYC1iRgMI2j2+wD3aQ4i+g4oASDE3ou/CHPdxcCDoJ25w==",
+      "files": [
+        "lib/net45/cs/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/cs/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/cs/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/de/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/de/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/de/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/es/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/es/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/es/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/fr/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/fr/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/fr/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/it/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/it/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/it/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/ja/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/ja/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/ja/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/ko/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/ko/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/ko/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/Microsoft.TeamFoundation.Common.dll",
+        "lib/net45/Microsoft.TeamFoundation.Common.xml",
+        "lib/net45/Microsoft.VisualStudio.Services.Common.dll",
+        "lib/net45/Microsoft.VisualStudio.Services.Common.xml",
+        "lib/net45/Microsoft.VisualStudio.Services.WebApi.dll",
+        "lib/net45/Microsoft.VisualStudio.Services.WebApi.xml",
+        "lib/net45/pl/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/pl/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/pl/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/pt-BR/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/pt-BR/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/pt-BR/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/ru/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/ru/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/ru/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/tr/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/tr/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/tr/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/zh-Hans/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/zh-Hans/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "lib/net45/zh-Hant/Microsoft.TeamFoundation.Common.resources.dll",
+        "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.Common.resources.dll",
+        "lib/net45/zh-Hant/Microsoft.VisualStudio.Services.WebApi.resources.dll",
+        "Microsoft.VisualStudio.Services.Client.14.83.2.nupkg",
+        "Microsoft.VisualStudio.Services.Client.14.83.2.nupkg.sha512",
+        "Microsoft.VisualStudio.Services.Client.nuspec"
       ]
     },
     "Microsoft.VisualStudio.Web.BrowserLink.Loader/14.0.0-rc1-final": {
@@ -7297,7 +8131,8 @@
       "Microsoft.Extensions.Logging.Debug >= 1.0.0-rc1-final",
       "Microsoft.VisualStudio.Web.BrowserLink.Loader >= 14.0.0-rc1-final",
       "Microsoft.AspNet.Owin >= 1.0.0-rc1-final",
-      "Microsoft.AspNet.SignalR.SystemWeb >= 2.2.0"
+      "Microsoft.AspNet.SignalR.SystemWeb >= 2.2.0",
+      "Microsoft.TeamFoundationServer.Client >= 14.83.2"
     ],
     "DNX,Version=v4.5.1": []
   }
