@@ -56,7 +56,9 @@ namespace Emf.Web.Ui.Models
             {
                 lock (_lock)
                 {
-                    o.OnNext(new ObservableRepositoryEvent<T, TKey>(newOrUpdateditems: _map.Values.ToList()));
+                    var items = _map.Values.ToList();
+                    if (items.Any())
+                        o.OnNext(new ObservableRepositoryEvent<T, TKey>(newOrUpdateditems: items));
                     return _subject.Subscribe(o);
                 }
             });
@@ -67,6 +69,9 @@ namespace Emf.Web.Ui.Models
             lock (_lock)
             {
                 var itemList = items.ToList();
+
+                if (!itemList.Any())
+                    return;
 
                 foreach (var item in itemList)
                     _map[_getKey(item)] = item;
@@ -80,6 +85,9 @@ namespace Emf.Web.Ui.Models
             lock (_lock)
             {
                 var removedKeys = keys.Where(key => _map.Remove(key)).ToList();
+
+                if (!removedKeys.Any())
+                    return;
 
                 _subject.OnNext(new ObservableRepositoryEvent<T, TKey>(deletedItems: removedKeys));
             }
