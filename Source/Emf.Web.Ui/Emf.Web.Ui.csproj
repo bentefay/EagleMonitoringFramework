@@ -153,6 +153,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="Client\apps\builds\main.ts" />
     <Content Include="gulpfile.js" />
+    <Content Include="Public\builds.js" />
+    <Content Include="Public\builds.min.js" />
     <Content Include="Public\index.html" />
   </ItemGroup>
   <ItemGroup>
