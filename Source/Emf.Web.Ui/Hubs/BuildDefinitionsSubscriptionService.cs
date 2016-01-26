@@ -11,7 +11,7 @@ namespace Emf.Web.Ui.Hubs
 
         public IDisposable CreateSubscription(IBuildDefinitionsHubClient client, BuildDefinitionsHubParams parameters)
         {
-            return null;
+            throw new AccessViolationException();
         }
     }
 }

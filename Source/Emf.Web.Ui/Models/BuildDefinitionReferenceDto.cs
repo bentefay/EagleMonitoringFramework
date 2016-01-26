@@ -1,4 +1,4 @@
-namespace Eagle.Server.Framework.Tests
+namespace Emf.Web.Ui.Models
 {
     public class BuildDefinitionReferenceDto
     {

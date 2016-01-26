@@ -2,6 +2,7 @@
 using Emf.Web.Ui.AppStartup;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
+using Microsoft.VisualStudio.Services.Common;
 using Owin;
 
 namespace Emf.Web.Ui
@@ -11,6 +12,9 @@ namespace Emf.Web.Ui
         private static void Main(string[] args)
         {
             SerilogConfig.Initialize();
+
+            var credentials = new VssCredentials(null, CredentialPromptType.PromptIfNeeded);
+            
 
             const string url = "http://+:8080";
 

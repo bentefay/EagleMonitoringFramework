@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.TeamFoundation.Build.WebApi;
 using Microsoft.VisualStudio.Services.Common;
-using System.Threading.Tasks;
-using EagleMonitoring.Ui.Web.Controllers;
-using Microsoft.TeamFoundation.TestManagement.WebApi;
 
-namespace Eagle.Server.Framework.Tests
+namespace Emf.Web.Ui.Models
 {
     public class TfsBuildDefinitionRepository
     {
@@ -16,13 +14,12 @@ namespace Eagle.Server.Framework.Tests
         private static readonly Uri _baseUrl = new Uri("http://tfs:8080/tfs/GRCollection");
         private readonly BuildHttpClient _buildClient;
 
-        public TfsBuildDefinitionRepository(CredentialsDto credentials)
+        public TfsBuildDefinitionRepository(VssCredentials credentials)
         {
-            var vssCredentials = new VssCredentials(new VssBasicCredential(credentials.Username, credentials.Password));
-            _buildClient = new BuildHttpClient(_baseUrl, vssCredentials);
+            _buildClient = new BuildHttpClient(_baseUrl, credentials);
         }
 
-        public async Task<IReadOnlyList<BuildDefinitionReferenceDto>> GetTestRuns(CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<BuildDefinitionReferenceDto>> GetDefinitions(CancellationToken cancellationToken)
         {
             var definitionReferences = await _buildClient.GetDefinitionsAsync(project: _tfsProject, cancellationToken: cancellationToken);
 
