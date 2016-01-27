@@ -8,7 +8,7 @@ namespace Emf.Web.Ui.Hubs.Core
         IDisposable CreateSubscription(TClient client);
     }
 
-    public interface ISubscriptionService<in TClient, in TSubscribeParameters>
+    public interface ISubscriptionFactory<in TClient, in TSubscribeParameters>
         where TClient : class
         where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
     {

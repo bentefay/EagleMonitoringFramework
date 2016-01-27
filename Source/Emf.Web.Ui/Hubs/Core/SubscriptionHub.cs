@@ -12,11 +12,11 @@ namespace Emf.Web.Ui.Hubs.Core
     {
         private static readonly ILogger _logger = Log.ForContext<SubscriptionHub<TClient>>();
         private static readonly HashSet<string> _activeConnectionIds = new HashSet<string>();
-        private readonly IHubManager<TClient> _manager;
+        private readonly IHubManager<TClient> _subscriptionManager;
 
-        protected SubscriptionHub(IHubManager<TClient> manager)
+        protected SubscriptionHub(IHubManager<TClient> subscriptionManager)
         {
-            _manager = manager;
+            _subscriptionManager = subscriptionManager;
         }
 
         protected IDisposable LogConnectionId()
@@ -28,7 +28,7 @@ namespace Emf.Web.Ui.Hubs.Core
         {
             using (LogConnectionId())
             {
-                _manager.OnUserConnected(this);
+                _subscriptionManager.OnUserConnected(this);
 
                 _logger.Debug("Client {ConnectionId} connected", Context.ConnectionId);
 
@@ -40,7 +40,7 @@ namespace Emf.Web.Ui.Hubs.Core
 
         public override Task OnReconnected()
         {
-            _manager.OnUserReconnected(this);
+            _subscriptionManager.OnUserReconnected(this);
 
             _logger.Debug("Client {connectionId} reconnected", Context.ConnectionId);
 
@@ -51,7 +51,7 @@ namespace Emf.Web.Ui.Hubs.Core
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            _manager.OnUserDisconnected(this);
+            _subscriptionManager.OnUserDisconnected(this);
 
             _logger.Debug(stopCalled ?
                 "Client {connectionId} explicitly closed the connection" :
@@ -78,18 +78,18 @@ namespace Emf.Web.Ui.Hubs.Core
         where TClient : class, ISubscriptionHubClient
         where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
     {
-        private readonly SubscriptionHubManager<TClient, TSubscribeParameters> _manager;
+        private readonly SubscriptionManager<TClient, TSubscribeParameters> _subscriptionManager;
 
-        protected SubscriptionHub(SubscriptionHubManager<TClient, TSubscribeParameters> manager) : base(manager)
+        protected SubscriptionHub(SubscriptionManager<TClient, TSubscribeParameters> subscriptionManager) : base(subscriptionManager)
         {
-            _manager = manager;
+            _subscriptionManager = subscriptionManager;
         }
 
         public void Subscribe(TSubscribeParameters parameters)
         {
             using (LogConnectionId())
             {
-                _manager.OnUserSubscribing(this, parameters);
+                _subscriptionManager.OnUserSubscribing(this, parameters);
             }
         }
     }

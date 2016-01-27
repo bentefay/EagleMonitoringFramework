@@ -232,13 +232,13 @@
     <Compile Include="Hubs\Core\ClientExceptionHandlerPipelineModule.cs" />
     <Compile Include="Hubs\Core\IHubManager.cs" />
     <Compile Include="Hubs\Core\ISubscriptionHubClient.cs" />
-    <Compile Include="Hubs\Core\ISubscriptionService.cs" />
+    <Compile Include="Hubs\Core\ISubscriptionFactory.cs" />
     <Compile Include="Hubs\Core\SerilogErrorPipelineModule.cs" />
     <Compile Include="Hubs\Core\SubscriptionHub.cs" />
-    <Compile Include="Hubs\Core\SubscriptionHubManager.cs" />
-    <Compile Include="Hubs\BuildDefinitionsHub.cs" />
-    <Compile Include="Hubs\BuildDefinitionsSubscriptionService.cs" />
+    <Compile Include="Hubs\Core\SubscriptionManager.cs" />
+    <Compile Include="Hubs\ObservableRepositoryHub.cs" />
     <Compile Include="Models\BuildDefinitionReferenceDto.cs" />
+    <Compile Include="Models\ObservableRepository.cs" />
     <Compile Include="Models\RepeatTask.cs" />
     <Compile Include="Models\TfsBuildDefinitionRepository.cs" />
     <Compile Include="Models\TfsMonitoringService.cs" />

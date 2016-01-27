@@ -4,7 +4,7 @@ using Microsoft.AspNet.SignalR;
 
 namespace Emf.Web.Ui.Hubs.Core
 {
-    public abstract class BaseSubscriptionHubManager<TClient> : IDisposable, IHubManager<TClient>
+    public abstract class BaseSubscriptionManager<TClient> : IDisposable, IHubManager<TClient>
         where TClient : class
     {
         protected readonly ConcurrentDictionary<string, IDisposable> _subscriptions = new ConcurrentDictionary<string, IDisposable>();
@@ -45,12 +45,12 @@ namespace Emf.Web.Ui.Hubs.Core
         }
     }
 
-    public abstract class SubscriptionHubManager<TClient> : BaseSubscriptionHubManager<TClient>
+    public abstract class SubscriptionManager<TClient> : BaseSubscriptionManager<TClient>
         where TClient : class
     {
         private readonly ISubscriptionService<TClient> _subscriptionService;
 
-        protected SubscriptionHubManager(ISubscriptionService<TClient> subscriptionService)
+        protected SubscriptionManager(ISubscriptionService<TClient> subscriptionService)
         {
             _subscriptionService = subscriptionService;
         }
@@ -61,15 +61,15 @@ namespace Emf.Web.Ui.Hubs.Core
         }
     }
 
-    public abstract class SubscriptionHubManager<TClient, TSubscribeParameters> : BaseSubscriptionHubManager<TClient>
+    public abstract class SubscriptionManager<TClient, TSubscribeParameters> : BaseSubscriptionManager<TClient>
         where TClient : class, ISubscriptionHubClient
         where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
     {
-        private readonly ISubscriptionService<TClient, TSubscribeParameters> _subscriptionService;
+        private readonly ISubscriptionFactory<TClient, TSubscribeParameters> _subscriptionFactory;
 
-        protected SubscriptionHubManager(ISubscriptionService<TClient, TSubscribeParameters> subscriptionService)
+        protected SubscriptionManager(ISubscriptionFactory<TClient, TSubscribeParameters> subscriptionFactory)
         {
-            _subscriptionService = subscriptionService;
+            _subscriptionFactory = subscriptionFactory;
         }
         
         protected override void OnUserConnected(Hub<TClient> hub, bool reconnected)
@@ -79,7 +79,7 @@ namespace Emf.Web.Ui.Hubs.Core
 
         public void OnUserSubscribing(Hub<TClient> hub, TSubscribeParameters parameters)
         {
-            AddSubscriptions(hub, _subscriptionService.CreateSubscription(hub.Clients.Caller, parameters));
+            AddSubscriptions(hub, _subscriptionFactory.CreateSubscription(hub.Clients.Caller, parameters));
         }
     }
 }
