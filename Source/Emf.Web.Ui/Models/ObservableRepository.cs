@@ -6,12 +6,22 @@ using System.Reactive.Subjects;
 
 namespace Emf.Web.Ui.Models
 {
-    public class ObservableRepository<TValue, TKey>
+    public interface IObservableRepository
+    {
+        IObservable<IObservableRepositoryEvent> GetChanges();
+    }
+
+    public interface IObservableRepository<TKey, TValue> : IObservableRepository
+    {
+        new IObservable<ObservableRepositoryEvent<TKey, TValue>> GetChanges();
+    }
+
+    public class ObservableRepository<TKey, TValue> : IObservableRepository<TKey, TValue>
     {
         private readonly object _lock = new object();
         private readonly Func<TValue, TKey> _getKey;
         private readonly Dictionary<TKey, TValue> _map;
-        private readonly Subject<ObservableRepositoryEvent<TValue, TKey>> _subject = new Subject<ObservableRepositoryEvent<TValue, TKey>>();
+        private readonly Subject<ObservableRepositoryEvent<TKey, TValue>> _subject = new Subject<ObservableRepositoryEvent<TKey, TValue>>();
 
         public ObservableRepository(Func<TValue, TKey> keyGetter)
         {
@@ -19,15 +29,15 @@ namespace Emf.Web.Ui.Models
             _map = new Dictionary<TKey, TValue>();
         }
 
-        public IObservable<ObservableRepositoryEvent<TValue, TKey>> GetChanges()
+        public IObservable<ObservableRepositoryEvent<TKey, TValue>> GetChanges()
         {
-            return Observable.Create<ObservableRepositoryEvent<TValue, TKey>>(o =>
+            return Observable.Create<ObservableRepositoryEvent<TKey, TValue>>(o =>
             {
                 lock (_lock)
                 {
                     var items = _map.Select(p => KeyValue.Create(p.Key, p.Value)).ToList();
                     if (items.Any())
-                        o.OnNext(new ObservableRepositoryEvent<TValue, TKey>(items: items, reset: true));
+                        o.OnNext(new ObservableRepositoryEvent<TKey, TValue>(items: items, reset: true));
                     return _subject.Subscribe(o);
                 }
             });
@@ -45,7 +55,7 @@ namespace Emf.Web.Ui.Models
                 foreach (var pair in pairList)
                     _map[pair.Key] = pair.Value;
 
-                _subject.OnNext(new ObservableRepositoryEvent<TValue, TKey>(newOrUpdateditems: pairList));
+                _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(newOrUpdateditems: pairList));
             }
         }
 
@@ -58,8 +68,13 @@ namespace Emf.Web.Ui.Models
                 if (!removedKeys.Any())
                     return;
 
-                _subject.OnNext(new ObservableRepositoryEvent<TValue, TKey>(deletedItems: removedKeys));
+                _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(deletedItems: removedKeys));
             }
+        }
+
+        IObservable<IObservableRepositoryEvent> IObservableRepository.GetChanges()
+        {
+            return GetChanges().Select(c => (IObservableRepositoryEvent)c);
         }
     }
 
@@ -106,7 +121,7 @@ namespace Emf.Web.Ui.Models
         bool Reset { get; }
     }
 
-    public struct ObservableRepositoryEvent<TValue, TKey> : IObservableRepositoryEvent
+    public class ObservableRepositoryEvent<TKey, TValue> : IObservableRepositoryEvent
     {
         private static readonly IReadOnlyList<KeyValue<TKey, TValue>> _emptyItemsList = new List<KeyValue<TKey, TValue>>();
         private static readonly IReadOnlyList<TKey> _emptyKeysList = new List<TKey>();

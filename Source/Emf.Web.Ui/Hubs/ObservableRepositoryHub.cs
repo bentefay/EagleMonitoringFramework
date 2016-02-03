@@ -8,10 +8,10 @@ using Serilog;
 
 namespace Emf.Web.Ui.Hubs
 {
-    [HubName("Repositories")]
-    public class ObservableRepositoryHub<TKey, TValue> : SubscriptionHub<IObservableRepositoryHubClient<TKey, TValue>, ObservableRepositoryHubParams>
+    [HubName("repositories")]
+    public class ObservableRepositoryHub : SubscriptionHub<IObservableRepositoryHubClient, ObservableRepositoryHubParams>
     {
-        public ObservableRepositoryHub(ObservableRepositoryHubSubscriptionManager<TKey, TValue> subscriptionManager)
+        public ObservableRepositoryHub(ObservableRepositoryHubSubscriptionManager subscriptionManager)
             : base(subscriptionManager)
         {
         }
@@ -19,47 +19,60 @@ namespace Emf.Web.Ui.Hubs
 
     public class ObservableRepositoryHubParams : IEquatable<ObservableRepositoryHubParams>
     {
+        public string RepositoryId { get; set; }
+
         public bool Equals(ObservableRepositoryHubParams other)
         {
-            return true;
+            if (ReferenceEquals(other, null))
+                return false;
+
+            return RepositoryId == other.RepositoryId;
         }
     }
 
-    public interface IObservableRepositoryHubClient<TKey, TValue> : ISubscriptionHubClient
+    public interface IObservableRepositoryHubClient : ISubscriptionHubClient
     {
-        void OnNewEvent(ObservableRepositoryEvent<TKey, TValue> repositoryEvent);
+        void OnNewEvent(IObservableRepositoryEvent repositoryEvent);
         void OnError(string message);
     }
 
-    public class ObservableRepositoryHubSubscriptionManager<TKey, TValue> : SubscriptionManager<IObservableRepositoryHubClient<TKey, TValue>, ObservableRepositoryHubParams>
+    public class ObservableRepositoryHubSubscriptionManager : SubscriptionManager<IObservableRepositoryHubClient, ObservableRepositoryHubParams>
     {
-        public ObservableRepositoryHubSubscriptionManager(ObservableRepositoryHubSubscriptionFactory<TKey, TValue> subscriptionFactory)
+        public ObservableRepositoryHubSubscriptionManager(ObservableRepositoryHubSubscriptionFactory subscriptionFactory)
             : base(subscriptionFactory)
         {
         }
     }
 
-    public class ObservableRepositoryHubSubscriptionFactory<TKey, TValue> : ISubscriptionFactory<IObservableRepositoryHubClient<TKey, TValue>, ObservableRepositoryHubParams>
+    public class ObservableRepositoryHubSubscriptionFactory : ISubscriptionFactory<IObservableRepositoryHubClient, ObservableRepositoryHubParams>
     {
-        private readonly ObservableRepository<TKey, TValue> _repository;
+        private readonly Dictionary<string, IObservableRepository> _repositoryMap;
 
-        public ObservableRepositoryHubSubscriptionFactory(ObservableRepository<TKey, TValue> repository)
+        public ObservableRepositoryHubSubscriptionFactory(Dictionary<string, IObservableRepository> repositoryMap)
         {
-            _repository = repository;
+            _repositoryMap = repositoryMap;
         }
 
-        public IDisposable CreateSubscription(IObservableRepositoryHubClient<TKey, TValue> client, ObservableRepositoryHubParams parameters)
+        public IDisposable CreateSubscription(IObservableRepositoryHubClient client, ObservableRepositoryHubParams parameters)
         {
-            return _repository
-                .GetChanges()
-                .Do(_ => { },
-                    exception =>
-                    {
-                        Log.Error(exception, "GetChanges error");
-                        client.OnError(exception.Message);
-                    })
-                .Retry()
-                .Subscribe(client.OnNewEvent);
+            IObservableRepository repository;
+            if (_repositoryMap.TryGetValue(parameters.RepositoryId, out repository))
+            {
+                return repository
+                    .GetChanges()
+                    .Do(_ => { },
+                        exception =>
+                        {
+                            Log.Error(exception, "GetChanges error");
+                            client.OnError(exception.Message);
+                        })
+                    .Retry()
+                    .Subscribe(client.OnNewEvent);
+            }
+            else
+            {
+                throw new ArgumentException($"Repository with id '{nameof(parameters.RepositoryId)}' does not exist");
+            }
         }
     }
 }

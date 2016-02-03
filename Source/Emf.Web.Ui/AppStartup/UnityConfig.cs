@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using Emf.Web.Ui.Hubs;
+using Emf.Web.Ui.Models;
 using Microsoft.Practices.Unity;
+using Microsoft.VisualStudio.Services.Common;
 using Serilog;
 
 namespace Emf.Web.Ui.AppStartup
@@ -25,6 +29,17 @@ namespace Emf.Web.Ui.AppStartup
         public static void RegisterTypes(IUnityContainer container)
         {
             Log.Information("Registering IoC dependencies with container");
+
+            var credentials = new VssCredentials(null, CredentialPromptType.PromptIfNeeded);
+            var tfsBuildDefinitionRepository = new TfsBuildDefinitionRepository(credentials);
+            var tfsMonitoringService = new TfsMonitoringService(tfsBuildDefinitionRepository, TimeSpan.FromSeconds(30));
+            var observableCollections = new Dictionary<string, IObservableRepository>
+            {
+                { "buildDefinitionReferences", tfsMonitoringService.BuildDefinitionReferences }
+            };
+
+            var observableRepositoryHubSubscriptionFactory = new ObservableRepositoryHubSubscriptionFactory(observableCollections);
+            container.RegisterInstance(observableRepositoryHubSubscriptionFactory);
         }
     }
 }

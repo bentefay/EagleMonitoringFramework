@@ -2,7 +2,6 @@
 using Emf.Web.Ui.AppStartup;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
-using Microsoft.VisualStudio.Services.Common;
 using Owin;
 
 namespace Emf.Web.Ui
@@ -11,18 +10,29 @@ namespace Emf.Web.Ui
     {
         private static void Main(string[] args)
         {
-            SerilogConfig.Initialize();
-
-            var credentials = new VssCredentials(null, CredentialPromptType.PromptIfNeeded);
-            
+            SerilogConfig.Initialize();         
 
             const string url = "http://+:8080";
 
             using (WebApp.Start<Startup>(url))
             {
                 Console.WriteLine("Running on {0}", url);
-                Console.WriteLine("Press enter to exit");
-                Console.ReadLine();
+                Console.WriteLine("Press:");
+                Console.WriteLine("b - to open your default browser");
+                Console.WriteLine("q - to exit");
+
+                while (true)
+                {
+                    var key = Console.ReadKey();
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.B:
+                            System.Diagnostics.Process.Start(url.Replace("+", "localhost"));
+                            break;
+                        case ConsoleKey.Q:
+                            return;
+                    }
+                }
             }
         }
     }
