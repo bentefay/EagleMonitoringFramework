@@ -3,9 +3,9 @@
 import _ = require("lodash");
 
 import { LogEvent } from "./core";
-import { IDisposable, Disposable, CompositeDisposable } from "./disposable";
+import { IDisposable, Disposable, CompositeDisposable } from "../disposable";
 
-export * from "./disposable";
+export * from "../disposable";
 
 export interface IObserver<T> {
     onNext(value: T);

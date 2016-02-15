@@ -20,7 +20,7 @@ namespace Emf.Web.Ui.Models
 
         public Task Start()
         {
-            return RepeatTask.Every(new Func<CancellationToken, Task>(OnTimerTick), _interval, _tokenSource.Token);
+            return RepeatTask.Every(OnTimerTick, _interval, _tokenSource.Token);
         }
 
         private async Task OnTimerTick(CancellationToken token)

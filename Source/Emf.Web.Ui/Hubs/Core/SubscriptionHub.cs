@@ -74,6 +74,36 @@ namespace Emf.Web.Ui.Hubs.Core
         }
     }
 
+    public class SubscriptionId : IEquatable<SubscriptionId>
+    {
+        public static readonly SubscriptionId Default = new SubscriptionId("Default");
+
+        public SubscriptionId(string id)
+        {
+            Id = id;
+        }
+
+        public string Id { get; }
+
+        public bool Equals(SubscriptionId other)
+        {
+            if (ReferenceEquals(other, null))
+                return false;
+
+            return Id == other.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as SubscriptionId);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
+    }
+
     public abstract class SubscriptionHub<TClient, TSubscribeParameters> : SubscriptionHub<TClient>
         where TClient : class, ISubscriptionHubClient
         where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
@@ -85,11 +115,19 @@ namespace Emf.Web.Ui.Hubs.Core
             _subscriptionManager = subscriptionManager;
         }
 
-        public void Subscribe(TSubscribeParameters parameters)
+        public void Unsubscribe(SubscriptionId subscriptionId)
         {
             using (LogConnectionId())
             {
-                _subscriptionManager.OnUserSubscribing(this, parameters);
+                _subscriptionManager.OnUserUnsubscribing(this, subscriptionId);
+            }
+        }
+
+        public SubscriptionId Subscribe(TSubscribeParameters parameters)
+        {
+            using (LogConnectionId())
+            {
+                return _subscriptionManager.OnUserSubscribing(this, parameters);
             }
         }
     }

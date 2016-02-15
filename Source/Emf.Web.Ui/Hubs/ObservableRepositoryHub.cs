@@ -32,7 +32,7 @@ namespace Emf.Web.Ui.Hubs
 
     public interface IObservableRepositoryHubClient : ISubscriptionHubClient
     {
-        void OnNewEvent(IObservableRepositoryEvent repositoryEvent);
+        void OnNewEvent(string repositoryId, IObservableRepositoryEvent repositoryEvent);
         void OnError(string message);
     }
 
@@ -67,7 +67,7 @@ namespace Emf.Web.Ui.Hubs
                             client.OnError(exception.Message);
                         })
                     .Retry()
-                    .Subscribe(client.OnNewEvent);
+                    .Subscribe(e => client.OnNewEvent(parameters.RepositoryId, e));
             }
             else
             {

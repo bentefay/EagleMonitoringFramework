@@ -1,13 +1,32 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNet.SignalR;
 
 namespace Emf.Web.Ui.Hubs.Core
 {
+    public class ConnectionSubscriptions : IDisposable
+    {
+        public ConnectionSubscriptions(string connectionId)
+        {
+            ConnectionId = connectionId;
+        }
+
+        public string ConnectionId { get; }
+        public Dictionary<SubscriptionId, IDisposable> Subscriptions { get; } = new Dictionary<SubscriptionId, IDisposable>();
+
+        public void Dispose()
+        {
+            foreach (var subscription in Subscriptions)
+                subscription.Value.Dispose();
+        }
+    }
+
     public abstract class BaseSubscriptionManager<TClient> : IDisposable, IHubManager<TClient>
         where TClient : class
     {
-        protected readonly ConcurrentDictionary<string, IDisposable> _subscriptions = new ConcurrentDictionary<string, IDisposable>();
+        protected readonly Dictionary<string, ConnectionSubscriptions> SubscriptionsByConnectionId = new Dictionary<string, ConnectionSubscriptions>();
 
         public void OnUserConnected(Hub<TClient> hub)
         {
@@ -21,26 +40,30 @@ namespace Emf.Web.Ui.Hubs.Core
 
         protected abstract void OnUserConnected(Hub<TClient> hub, bool reconnected);
 
-        protected void AddSubscriptions(Hub<TClient> hub, IDisposable subscriptions)
+        protected void AddSubscriptions(Hub<TClient> hub, SubscriptionId subscriptionId, IDisposable subscription)
         {
-            _subscriptions.AddOrUpdate(hub.Context.ConnectionId, subscriptions, (key, existingSubscriptions) =>
+            lock (SubscriptionsByConnectionId)
             {
-                existingSubscriptions.Dispose();
-                return subscriptions;
-            });
+                var existingSubscriptions = SubscriptionsByConnectionId.GetValueOrAdd(hub.Context.ConnectionId, () => new ConnectionSubscriptions(hub.Context.ConnectionId));
+
+                existingSubscriptions.Subscriptions.GetValueAndDo(subscriptionId, oldSubscription => oldSubscription.Dispose());
+
+                existingSubscriptions.Subscriptions.Add(subscriptionId, subscription);
+            }
         }
 
         public void OnUserDisconnected(Hub<TClient> hub)
         {
-            IDisposable subscriptions;
-
-            if (_subscriptions.TryRemove(hub.Context.ConnectionId, out subscriptions))
-                subscriptions.Dispose();
+            lock (SubscriptionsByConnectionId)
+            {
+                SubscriptionsByConnectionId.GetValueAndDo(hub.Context.ConnectionId, subscriptions => subscriptions.Dispose());
+                SubscriptionsByConnectionId.Remove(hub.Context.ConnectionId);
+            }
         }
 
         public void Dispose()
         {
-            foreach (var subscription in _subscriptions.Values)
+            foreach (var subscription in SubscriptionsByConnectionId.Values)
                 subscription.Dispose();
         }
     }
@@ -80,6 +103,32 @@ namespace Emf.Web.Ui.Hubs.Core
         public void OnUserSubscribing(Hub<TClient> hub, TSubscribeParameters parameters)
         {
             AddSubscriptions(hub, _subscriptionFactory.CreateSubscription(hub.Clients.Caller, parameters));
+        }
+
+        public void OnUserUnsubscribing(SubscriptionHub<object, object> subscriptionHub, IEquatable<object> parameters)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public static class DictionaryExtensions
+    {
+        public static TValue GetValueOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> factory)
+        {
+            TValue value;
+            if (dictionary.TryGetValue(key, out value))
+                return value;
+
+            var newValue = factory();
+            dictionary.Add(key, newValue);
+            return newValue;
+        }
+
+        public static void GetValueAndDo<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Action<TValue> action)
+        {
+            TValue value;
+            if (dictionary.TryGetValue(key, out value))
+                action(value);
         }
     }
 }
