@@ -284,7 +284,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="Client\apps\builds\observable-collection-manager.ts" />
     <TypeScriptCompile Include="Client\apps\builds\observable.ts" />
+    <TypeScriptCompile Include="Client\libs\disposable.ts" />
     <TypeScriptCompile Include="Client\libs\duration-with-backoff.ts" />
+    <TypeScriptCompile Include="Client\libs\observable-collection-manager.ts" />
     <TypeScriptCompile Include="Client\libs\stateful-error-handler.ts" />
     <TypeScriptCompile Include="Client\libs\jquery.ts" />
     <TypeScriptCompile Include="Client\libs\log.ts" />

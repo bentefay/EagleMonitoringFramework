@@ -7,26 +7,44 @@ using Serilog.Context;
 
 namespace Emf.Web.Ui.Hubs.Core
 {
-    public abstract class SubscriptionHub<TClient> : Hub<TClient>
-        where TClient : class
-    {
-        private static readonly ILogger _logger = Log.ForContext<SubscriptionHub<TClient>>();
-        private static readonly HashSet<string> _activeConnectionIds = new HashSet<string>();
-        private readonly IHubManager<TClient> _subscriptionManager;
+    public abstract class SubscriptionHub<TClient, TSubscribeParameters> : Hub<TClient>
+            where TClient : class, ISubscriptionHubClient
+            where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
 
-        protected SubscriptionHub(IHubManager<TClient> subscriptionManager)
+    {
+        private static readonly ILogger _logger = Log.ForContext<SubscriptionHub<TClient, TSubscribeParameters>>();
+        private static readonly HashSet<string> _activeConnectionIds = new HashSet<string>();
+        private readonly SubscriptionManager<TClient, TSubscribeParameters> _subscriptionManager;
+
+        protected SubscriptionHub(SubscriptionManager<TClient, TSubscribeParameters> subscriptionManager)
         {
             _subscriptionManager = subscriptionManager;
         }
 
-        protected IDisposable LogConnectionId()
+        public void Subscribe(int subscriptionId, TSubscribeParameters parameters)
+        {
+            using (ConnectionIdInLogContext())
+            {
+                _subscriptionManager.OnUserSubscribing(this, subscriptionId, parameters);
+            }
+        }
+
+        public void Unsubscribe(int subscriptionId)
+        {
+            using (ConnectionIdInLogContext())
+            {
+                _subscriptionManager.OnUserUnsubscribing(this, subscriptionId);
+            }
+        }
+
+        protected IDisposable ConnectionIdInLogContext()
         {
             return LogContext.PushProperty("ConnectionId", Context.ConnectionId);
         }
 
         public override Task OnConnected()
         {
-            using (LogConnectionId())
+            using (ConnectionIdInLogContext())
             {
                 _subscriptionManager.OnUserConnected(this);
 
@@ -70,64 +88,6 @@ namespace Emf.Web.Ui.Hubs.Core
                     _activeConnectionIds.Add(Context.ConnectionId);
                 else
                     _activeConnectionIds.Remove(Context.ConnectionId);
-            }
-        }
-    }
-
-    public class SubscriptionId : IEquatable<SubscriptionId>
-    {
-        public static readonly SubscriptionId Default = new SubscriptionId("Default");
-
-        public SubscriptionId(string id)
-        {
-            Id = id;
-        }
-
-        public string Id { get; }
-
-        public bool Equals(SubscriptionId other)
-        {
-            if (ReferenceEquals(other, null))
-                return false;
-
-            return Id == other.Id;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as SubscriptionId);
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-    }
-
-    public abstract class SubscriptionHub<TClient, TSubscribeParameters> : SubscriptionHub<TClient>
-        where TClient : class, ISubscriptionHubClient
-        where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
-    {
-        private readonly SubscriptionManager<TClient, TSubscribeParameters> _subscriptionManager;
-
-        protected SubscriptionHub(SubscriptionManager<TClient, TSubscribeParameters> subscriptionManager) : base(subscriptionManager)
-        {
-            _subscriptionManager = subscriptionManager;
-        }
-
-        public void Unsubscribe(SubscriptionId subscriptionId)
-        {
-            using (LogConnectionId())
-            {
-                _subscriptionManager.OnUserUnsubscribing(this, subscriptionId);
-            }
-        }
-
-        public SubscriptionId Subscribe(TSubscribeParameters parameters)
-        {
-            using (LogConnectionId())
-            {
-                return _subscriptionManager.OnUserSubscribing(this, parameters);
             }
         }
     }

@@ -6,6 +6,104 @@ using Microsoft.AspNet.SignalR;
 
 namespace Emf.Web.Ui.Hubs.Core
 {
+    public abstract class SubscriptionManager<TClient, TSubscribeParameters> : IDisposable, IHubManager<TClient>
+        where TClient : class, ISubscriptionHubClient
+        where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
+    {
+        private readonly Dictionary<string, ConnectionSubscriptions> _subscriptionsByConnectionId = new Dictionary<string, ConnectionSubscriptions>();
+        private readonly ISubscriptionFactory<TClient, TSubscribeParameters> _subscriptionFactory;
+
+        protected SubscriptionManager(ISubscriptionFactory<TClient, TSubscribeParameters> subscriptionFactory)
+        {
+            _subscriptionFactory = subscriptionFactory;
+        }
+
+        public void OnUserConnected(Hub<TClient> hub)
+        {
+            hub.Clients.Caller.InitializeSubscriptions();
+        }
+
+        public void OnUserReconnected(Hub<TClient> hub)
+        {
+            hub.Clients.Caller.InitializeSubscriptions();
+        }
+        
+        public void OnUserSubscribing(Hub<TClient> hub, int subscriptionId, TSubscribeParameters parameters)
+        {
+            var newSubscription = _subscriptionFactory.CreateSubscription(hub.Clients.Caller, parameters);
+
+            var existingSubscriptions = GetClientSubscriptions(hub.Context.ConnectionId);
+
+            lock (existingSubscriptions)
+            {
+                if (existingSubscriptions.Subscriptions.ContainsKey(subscriptionId))
+                    throw new InvalidOperationException($"Subscription already exists for subscriptionId '{subscriptionId}'");
+
+                existingSubscriptions.Subscriptions.Add(subscriptionId, newSubscription);
+
+                if (existingSubscriptions.Deleted)
+                {
+                    existingSubscriptions.Deleted = false;
+
+                    lock (_subscriptionsByConnectionId)
+                        _subscriptionsByConnectionId.Add(hub.Context.ConnectionId, existingSubscriptions);
+                }
+            }
+        }
+
+        private ConnectionSubscriptions GetClientSubscriptions(string connectionId)
+        {
+            lock (_subscriptionsByConnectionId)
+                return _subscriptionsByConnectionId.GetValueOrAdd(connectionId, () => new ConnectionSubscriptions(connectionId));
+        }
+
+        public void OnUserUnsubscribing(Hub<TClient> hub, int subscriptionId)
+        {
+            var existingSubscriptions = GetClientSubscriptions(hub.Context.ConnectionId);
+
+            RemoveClientSubscriptions(existingSubscriptions, hub.Context.ConnectionId, new[] { subscriptionId });
+        }
+
+        private void RemoveClientSubscriptions(ConnectionSubscriptions existingSubscriptions, string connectionId, IEnumerable<int> subscriptionIds = null)
+        {
+            lock (existingSubscriptions)
+            {
+                if (existingSubscriptions.Deleted)
+                {
+                    return;
+                }
+
+                foreach (var subscriptionId in subscriptionIds ?? existingSubscriptions.Subscriptions.Keys.ToArray())
+                {
+                    existingSubscriptions.Subscriptions.GetValueAndDo(subscriptionId, oldSubscription => oldSubscription.Dispose());
+
+                    existingSubscriptions.Subscriptions.Remove(subscriptionId);
+                }
+
+                if (existingSubscriptions.Subscriptions.Count == 0)
+                {
+                    existingSubscriptions.Deleted = true;
+
+                    lock (_subscriptionsByConnectionId)
+                        _subscriptionsByConnectionId.Remove(connectionId);
+                }
+            }
+        }
+
+        public void OnUserDisconnected(Hub<TClient> hub)
+        {
+            var subscriptions = GetClientSubscriptions(hub.Context.ConnectionId);
+
+            RemoveClientSubscriptions(subscriptions, hub.Context.ConnectionId);
+        }
+
+        public void Dispose()
+        {
+            foreach (var subscription in _subscriptionsByConnectionId.Values)
+                subscription.Dispose();
+        }
+    }
+
     public class ConnectionSubscriptions : IDisposable
     {
         public ConnectionSubscriptions(string connectionId)
@@ -13,8 +111,9 @@ namespace Emf.Web.Ui.Hubs.Core
             ConnectionId = connectionId;
         }
 
+        public bool Deleted { get; set; }
         public string ConnectionId { get; }
-        public Dictionary<SubscriptionId, IDisposable> Subscriptions { get; } = new Dictionary<SubscriptionId, IDisposable>();
+        public Dictionary<int, IDisposable> Subscriptions { get; } = new Dictionary<int, IDisposable>();
 
         public void Dispose()
         {
@@ -23,93 +122,6 @@ namespace Emf.Web.Ui.Hubs.Core
         }
     }
 
-    public abstract class BaseSubscriptionManager<TClient> : IDisposable, IHubManager<TClient>
-        where TClient : class
-    {
-        protected readonly Dictionary<string, ConnectionSubscriptions> SubscriptionsByConnectionId = new Dictionary<string, ConnectionSubscriptions>();
-
-        public void OnUserConnected(Hub<TClient> hub)
-        {
-            OnUserConnected(hub, reconnected: false);
-        }
-
-        public void OnUserReconnected(Hub<TClient> hub)
-        {
-            OnUserConnected(hub, reconnected: true);
-        }
-
-        protected abstract void OnUserConnected(Hub<TClient> hub, bool reconnected);
-
-        protected void AddSubscriptions(Hub<TClient> hub, SubscriptionId subscriptionId, IDisposable subscription)
-        {
-            lock (SubscriptionsByConnectionId)
-            {
-                var existingSubscriptions = SubscriptionsByConnectionId.GetValueOrAdd(hub.Context.ConnectionId, () => new ConnectionSubscriptions(hub.Context.ConnectionId));
-
-                existingSubscriptions.Subscriptions.GetValueAndDo(subscriptionId, oldSubscription => oldSubscription.Dispose());
-
-                existingSubscriptions.Subscriptions.Add(subscriptionId, subscription);
-            }
-        }
-
-        public void OnUserDisconnected(Hub<TClient> hub)
-        {
-            lock (SubscriptionsByConnectionId)
-            {
-                SubscriptionsByConnectionId.GetValueAndDo(hub.Context.ConnectionId, subscriptions => subscriptions.Dispose());
-                SubscriptionsByConnectionId.Remove(hub.Context.ConnectionId);
-            }
-        }
-
-        public void Dispose()
-        {
-            foreach (var subscription in SubscriptionsByConnectionId.Values)
-                subscription.Dispose();
-        }
-    }
-
-    public abstract class SubscriptionManager<TClient> : BaseSubscriptionManager<TClient>
-        where TClient : class
-    {
-        private readonly ISubscriptionService<TClient> _subscriptionService;
-
-        protected SubscriptionManager(ISubscriptionService<TClient> subscriptionService)
-        {
-            _subscriptionService = subscriptionService;
-        }
-
-        protected override void OnUserConnected(Hub<TClient> hub, bool reconnected)
-        {
-            AddSubscriptions(hub, _subscriptionService.CreateSubscription(hub.Clients.Caller));
-        }
-    }
-
-    public abstract class SubscriptionManager<TClient, TSubscribeParameters> : BaseSubscriptionManager<TClient>
-        where TClient : class, ISubscriptionHubClient
-        where TSubscribeParameters : class, IEquatable<TSubscribeParameters>
-    {
-        private readonly ISubscriptionFactory<TClient, TSubscribeParameters> _subscriptionFactory;
-
-        protected SubscriptionManager(ISubscriptionFactory<TClient, TSubscribeParameters> subscriptionFactory)
-        {
-            _subscriptionFactory = subscriptionFactory;
-        }
-        
-        protected override void OnUserConnected(Hub<TClient> hub, bool reconnected)
-        {
-            hub.Clients.Caller.InitializeSubscriptions();
-        }
-
-        public void OnUserSubscribing(Hub<TClient> hub, TSubscribeParameters parameters)
-        {
-            AddSubscriptions(hub, _subscriptionFactory.CreateSubscription(hub.Clients.Caller, parameters));
-        }
-
-        public void OnUserUnsubscribing(SubscriptionHub<object, object> subscriptionHub, IEquatable<object> parameters)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
     public static class DictionaryExtensions
     {

@@ -28,6 +28,16 @@ namespace Emf.Web.Ui.Hubs
 
             return RepositoryId == other.RepositoryId;
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ObservableRepositoryHubParams);
+        }
+
+        public override int GetHashCode()
+        {
+            return RepositoryId.GetHashCode();
+        }
     }
 
     public interface IObservableRepositoryHubClient : ISubscriptionHubClient

@@ -12,6 +12,7 @@ export class ObservableCollectionManager {
     private repositoryIds: string[] = [];
     private hubs: HubConnection;
     private proxyHub;
+    private subscriptionCount = 0;
 
     constructor(signalRUrl: string, private statefulErrorHandler: IStatefulErrorHandler) {
 
@@ -89,11 +90,27 @@ export class ObservableCollectionManager {
     }
 
     subscribe(repositoryId: string): IDisposable {
+
+        const subscriptionId = this.subscriptionCount++;
+
+        if (repositoryId)
+            throw new Error(`Already subscribed to repository with id ${repositoryId}`);
+            
+        this.repositoryIds.push(repositoryId);
+
         this.proxyHub.server
-            .subscribe({ repositoryId: repositoryId })
+            .subscribe(subscriptionId, { repositoryId: repositoryId })
             .fail((errorThrown) => {
                 this.statefulErrorHandler.showError(errorThrown);
             });
+
+        return new Disposable(() => {
+            this.proxyHub.server
+                .unsubscribe(subscriptionId)
+                .fail((errorThrown) => {
+                    this.statefulErrorHandler.showError(errorThrown);
+                });
+        });
     }
 }
 
