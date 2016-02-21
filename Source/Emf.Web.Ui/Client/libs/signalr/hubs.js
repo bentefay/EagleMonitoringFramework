@@ -81,8 +81,12 @@
         proxies['repositories'] = this.createHubProxy('repositories'); 
         proxies['repositories'].client = { };
         proxies['repositories'].server = {
-            subscribe: function (parameters) {
+            subscribe: function (subscriptionId, parameters) {
                 return proxies['repositories'].invoke.apply(proxies['repositories'], $.merge(["Subscribe"], $.makeArray(arguments)));
+             },
+
+            unsubscribe: function (subscriptionId) {
+                return proxies['repositories'].invoke.apply(proxies['repositories'], $.merge(["Unsubscribe"], $.makeArray(arguments)));
              }
         };
 

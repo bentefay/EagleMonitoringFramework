@@ -4,27 +4,30 @@ import moment = require("moment");
 import { DurationWithBackoff } from "./duration-with-backoff"
 import { IStatefulErrorHandler } from "./stateful-error-handler";
 import { Disposable, IDisposable } from "./disposable";
+import "../libs/signalr";
+import $ = require("../libs/jquery");
 
 export class ObservableCollectionManager {
 
     private signalRStateLookup = {};
     private reconnectInterval = new DurationWithBackoff({ startingDuration: moment.duration(5, "seconds"), backoffFactor: 1.2, maxDuration: moment.duration(1, "minute") });
     private repositoryIds: string[] = [];
-    private observersByRepositoryId: { [repositoryId: string]: IEventObserver };
+    private subscriptionsByRepositoryId: { [repositoryId: string]: { observer: IEventObserver, subscriptionId: number } } = {};
     private hubs: HubConnection;
     private proxyHub;
     private subscriptionCount = 0;
+    private initialized = false;
 
     constructor(signalRUrl: string, private statefulErrorHandler: IStatefulErrorHandler) {
 
         const signalROptions = { transport: ["webSockets", "longPolling"], jsonp: false };
 
-        this.proxyHub = $.connection.liveGenerationDataHub;
+        this.proxyHub = $.connection.repositories;
         this.hubs = $.connection.hub;
         this.hubs.url = signalRUrl;
 
         // Uncomment for verbose SignalR logging
-        // controlHub.logging = true;
+        this.hubs.logging = true;
         // More detailed errors can then be enabled on the server with:
         // var hubConfiguration = new HubConfiguration();
         // hubConfiguration.EnableDetailedErrors = true;
@@ -59,6 +62,8 @@ export class ObservableCollectionManager {
 
                 case connectionEnum.disconnected:
 
+                    this.initialized = false;
+
                     const reconnectInterval = this.reconnectInterval.get();
 
                     statefulErrorHandler.showError(`Disconnected from server. Will attempt to reconnect in ${Math.round(reconnectInterval.asSeconds())} seconds...`);
@@ -80,50 +85,57 @@ export class ObservableCollectionManager {
 
         this.proxyHub.client.initializeSubscriptions = () => {
             _.forEach(this.repositoryIds, repositoryId => {
-                this.proxyHub.server.subscribe({ repositoryId: repositoryId });
+                this._subscribe(this.subscriptionsByRepositoryId[repositoryId].subscriptionId, repositoryId);
                 return true;
             });
+
+            this.initialized = true;
         };
 
-        this.hubs.start(signalROptions);
-
         this.proxyHub.client.onNewEvent = (repositoryId: string, event: IObservableRepositoryEvent) => {
-            var observer = this.observersByRepositoryId[repositoryId];
+            var observer = this.subscriptionsByRepositoryId[repositoryId].observer;
             if (observer)
                 observer.onNewEvent(event);
         };
 
-        this.proxyHub.client.onNewEvent = (message: string) => {
-            
-        };
+        this.hubs.start(signalROptions);
     }
 
     subscribe(repositoryId: string, observer: IEventObserver): IDisposable {
 
         const subscriptionId = this.subscriptionCount++;
 
-        if (this.observersByRepositoryId[repositoryId])
+        if (this.subscriptionsByRepositoryId[repositoryId])
             throw new Error(`Already subscribed to repository with id ${repositoryId}`);
             
         this.repositoryIds.push(repositoryId);
+        this.subscriptionsByRepositoryId[repositoryId] = { observer, subscriptionId };
 
-        this.proxyHub.server
-            .subscribe(subscriptionId, { repositoryId: repositoryId })
-            .fail((errorThrown) => {
-                this.statefulErrorHandler.showError(errorThrown);
-            });
+        if (this.initialized) {
+            this._subscribe(subscriptionId, repositoryId);
+        }
 
         return new Disposable(() => {
 
             _.remove(this.repositoryIds, repositoryId);
-            delete this.observersByRepositoryId[repositoryId];
+            delete this.subscriptionsByRepositoryId[repositoryId];
 
-            this.proxyHub.server
-                .unsubscribe(subscriptionId)
-                .fail((errorThrown) => {
-                    this.statefulErrorHandler.showError(errorThrown);
-                });
+            if (this.initialized) {
+                this.proxyHub.server
+                    .unsubscribe(subscriptionId)
+                    .fail((errorThrown) => {
+                        this.statefulErrorHandler.showError(errorThrown);
+                    });
+            }
         });
+    }
+
+    private _subscribe(subscriptionId: number, repositoryId: string) {
+        return this.proxyHub.server
+            .subscribe(subscriptionId, { repositoryId: repositoryId })
+            .fail((errorThrown) => {
+                this.statefulErrorHandler.showError(errorThrown);
+            });
     }
 }
 

@@ -5,5 +5,8 @@
   },
   "files": [
     "./typings/all.d.ts"
+  ],
+  "exclude": [
+    "../node_modules"
   ]
 }

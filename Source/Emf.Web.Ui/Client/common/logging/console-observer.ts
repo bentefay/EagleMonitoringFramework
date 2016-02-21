@@ -55,7 +55,7 @@ export class ConsoleObserver implements IObserver<LogEvent> {
         const args = [];
         args.push(event.renderedMessage({ maxJsonLength: this._maxJsonLength }));
 
-        if (_.any(_.keys(event.boundProperties))) {
+        if (_.some(_.keys(event.boundProperties))) {
             args.push("\r\n");
             args.push(event.boundProperties);
         }

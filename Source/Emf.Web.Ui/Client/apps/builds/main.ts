@@ -1,23 +1,17 @@
 ﻿/// <reference path="../../typings/all.d.ts"/>
 
-import $ = require("../../libs/jquery");
-import _ = require("lodash");
-var log = require<any>("../../libs/log");
-var x = require("./observable");
+import * as log from "../../common/log";
+import { ObservableCollectionManager, IObservableRepositoryEvent } from "../../common/observable-collection-manager";
 
-console.log(x);
-console.log(_.contains(['bye'], 'bye'));
+log.logger.setLogLevel(log.LogLevel.Debug);
+log.logger.logEvents.subscribe(new log.ConsoleObserver());
 
-// log.error("!");
+var manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
 
-//import { ObservableCollectionManager, IObservableRepositoryEvent } from "../../libs/observable-collection-manager";
-
-//var manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
-
-//manager.subscribe("buildDefinitionReferences", {
-//    onNewEvent: event => {
-//        _.forEach(event.newOrUpdatedItems, item => {
-//            document.write(item.value);
-//        });
-//    }
-//});
+manager.subscribe("buildDefinitionReferences", {
+    onNewEvent: event => {
+        _.forEach(event.newOrUpdatedItems, item => {
+            document.write(JSON.stringify(item.value));
+        });
+    }
+});

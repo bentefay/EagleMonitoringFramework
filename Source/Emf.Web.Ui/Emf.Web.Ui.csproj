@@ -270,6 +270,7 @@
     <None Include="Client\tsd.json" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Client\apps\builds\check.ts" />
     <TypeScriptCompile Include="Client\apps\builds\main.ts" />
     <Content Include="Client\apps\builds\observable.js" />
     <Content Include="Client\libs\signalr\hubs.js" />
@@ -279,21 +280,20 @@
     <Content Include="Public\index.html" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Client\common\" />
     <Folder Include="Gulp\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Client\libs\disposable.ts" />
-    <TypeScriptCompile Include="Client\libs\duration-with-backoff.ts" />
-    <TypeScriptCompile Include="Client\libs\observable-collection-manager.ts" />
-    <TypeScriptCompile Include="Client\libs\stateful-error-handler.ts" />
+    <TypeScriptCompile Include="Client\common\disposable.ts" />
+    <TypeScriptCompile Include="Client\common\duration-with-backoff.ts" />
+    <TypeScriptCompile Include="Client\common\observable-collection-manager.ts" />
+    <TypeScriptCompile Include="Client\common\stateful-error-handler.ts" />
     <TypeScriptCompile Include="Client\libs\jquery.ts" />
-    <TypeScriptCompile Include="Client\libs\log.ts" />
-    <TypeScriptCompile Include="Client\libs\logging\buffering-observer.ts" />
-    <TypeScriptCompile Include="Client\libs\logging\console-observer.ts" />
-    <TypeScriptCompile Include="Client\libs\logging\core.ts" />
-    <TypeScriptCompile Include="Client\libs\logging\http-observer.ts" />
-    <TypeScriptCompile Include="Client\libs\logging\rx.ts" />
+    <TypeScriptCompile Include="Client\common\log.ts" />
+    <TypeScriptCompile Include="Client\common\logging\buffering-observer.ts" />
+    <TypeScriptCompile Include="Client\common\logging\console-observer.ts" />
+    <TypeScriptCompile Include="Client\common\logging\core.ts" />
+    <TypeScriptCompile Include="Client\common\logging\http-observer.ts" />
+    <TypeScriptCompile Include="Client\common\logging\rx.ts" />
     <TypeScriptCompile Include="Client\libs\signalr.ts" />
     <TypeScriptCompile Include="Client\typings\all.d.ts" />
     <TypeScriptCompile Include="Client\typings\jquery\jquery.d.ts" />

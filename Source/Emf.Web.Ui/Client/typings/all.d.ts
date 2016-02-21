@@ -9,7 +9,7 @@ declare var require: {
 // SignalR extensions
 
 interface SignalR {
-    liveGenerationDataHub: any;
+    repositories: any;
 }
 
 interface HubConnection {

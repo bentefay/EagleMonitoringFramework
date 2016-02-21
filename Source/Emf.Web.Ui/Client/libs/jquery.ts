@@ -1,6 +1,5 @@
-﻿var $ = <JQueryStatic>require("jquery");
-const jQuery = $;
+﻿import $ = require("jquery");
 
-jQuery.noConflict(true);
+$.noConflict(true);
 
-export = jQuery;
+export = $;

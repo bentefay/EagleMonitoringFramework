@@ -7,7 +7,7 @@
     "gulp-util": "3.0.7",
     "webpack": "1.12.12",
     "typescript": "1.7.5",
-    "ts-loader": "0.8.0",
+    "ts-loader": "0.8.1",
     "gulp-tsd": "0.1.0",
 
     "jquery": "2.2.0",

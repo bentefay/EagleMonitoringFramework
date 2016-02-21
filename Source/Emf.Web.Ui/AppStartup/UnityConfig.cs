@@ -33,6 +33,7 @@ namespace Emf.Web.Ui.AppStartup
             var credentials = new VssCredentials(null, CredentialPromptType.PromptIfNeeded);
             var tfsBuildDefinitionRepository = new TfsBuildDefinitionRepository(credentials);
             var tfsMonitoringService = new TfsMonitoringService(tfsBuildDefinitionRepository, TimeSpan.FromSeconds(30));
+            tfsMonitoringService.Start();
             var observableCollections = new Dictionary<string, IObservableRepository>
             {
                 { "buildDefinitionReferences", tfsMonitoringService.BuildDefinitionReferences }

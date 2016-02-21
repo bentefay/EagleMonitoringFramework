@@ -25,12 +25,12 @@ var webpackConfig = {
         filename: config.appOutputFileName
     },
     resolve: {
-        exensions: [ ".ts", ".js", ".tsx" ]
+        extensions: [ "", ".ts", ".js", ".tsx" ]
     },
     plugins: [],
     module: {
         loaders: [
-            { test: /\.tsx?$/, loader: 'ts-loader' }
+            { test: /\.tsx?$/, loader: "ts-loader" }
         ]
     }
 };
