@@ -44,9 +44,22 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/// <reference path="../../typings/all.d.ts"/>
 	var _ = __webpack_require__(1);
-	var list = ["a", "b", "Z!!!"];
-	_.forEach(list, function (item) { return document.write(item); });
+	var log = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"../../libs/log\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var x = __webpack_require__(3);
+	console.log(x);
+	console.log(_.contains(['bye'], 'bye'));
+	// log.error("!");
+	//import { ObservableCollectionManager, IObservableRepositoryEvent } from "../../libs/observable-collection-manager";
+	//var manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
+	//manager.subscribe("buildDefinitionReferences", {
+	//    onNewEvent: event => {
+	//        _.forEach(event.newOrUpdatedItems, item => {
+	//            document.write(item.value);
+	//        });
+	//    }
+	//}); 
 
 
 /***/ },
@@ -14501,6 +14514,15 @@
 		return module;
 	}
 
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(module) {
+	var x = "bye4";
+	module.export = x;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)(module)))
 
 /***/ }
 /******/ ]);

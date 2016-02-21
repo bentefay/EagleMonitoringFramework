@@ -77,7 +77,7 @@ namespace Emf.Web.Ui.Hubs
                             client.OnError(exception.Message);
                         })
                     .Retry()
-                    .Subscribe(e => client.OnNewEvent(parameters.RepositoryId, e));
+                    .Subscribe(e => client.OnNewEvent(parameters.RepositoryId, e), e => client.OnError(e.Message));
             }
             else
             {

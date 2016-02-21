@@ -271,6 +271,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Client\apps\builds\main.ts" />
+    <Content Include="Client\apps\builds\observable.js" />
     <Content Include="Client\libs\signalr\hubs.js" />
     <Content Include="gulpfile.js" />
     <Content Include="Public\builds.js" />
@@ -282,8 +283,6 @@
     <Folder Include="Gulp\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Client\apps\builds\observable-collection-manager.ts" />
-    <TypeScriptCompile Include="Client\apps\builds\observable.ts" />
     <TypeScriptCompile Include="Client\libs\disposable.ts" />
     <TypeScriptCompile Include="Client\libs\duration-with-backoff.ts" />
     <TypeScriptCompile Include="Client\libs\observable-collection-manager.ts" />
@@ -293,7 +292,6 @@
     <TypeScriptCompile Include="Client\libs\logging\buffering-observer.ts" />
     <TypeScriptCompile Include="Client\libs\logging\console-observer.ts" />
     <TypeScriptCompile Include="Client\libs\logging\core.ts" />
-    <TypeScriptCompile Include="Client\libs\logging\disposable.ts" />
     <TypeScriptCompile Include="Client\libs\logging\http-observer.ts" />
     <TypeScriptCompile Include="Client\libs\logging\rx.ts" />
     <TypeScriptCompile Include="Client\libs\signalr.ts" />

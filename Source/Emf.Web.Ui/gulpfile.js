@@ -5,7 +5,7 @@ var typescriptDefinitions = require('gulp-tsd');
 var path = require('path');
 
 var dirs = {};
-dirs.root = "./client/";
+dirs.root = "./Client/";
 dirs.appsRoot = dirs.root + "apps/";
 dirs.outputRoot = "./public/";
 
@@ -25,7 +25,7 @@ var webpackConfig = {
         filename: config.appOutputFileName
     },
     resolve: {
-        exensions: [ '.ts', '.js', '.tsx' ]
+        exensions: [ ".ts", ".js", ".tsx" ]
     },
     plugins: [],
     module: {

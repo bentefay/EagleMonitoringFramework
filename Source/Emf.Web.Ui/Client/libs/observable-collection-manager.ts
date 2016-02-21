@@ -10,6 +10,7 @@ export class ObservableCollectionManager {
     private signalRStateLookup = {};
     private reconnectInterval = new DurationWithBackoff({ startingDuration: moment.duration(5, "seconds"), backoffFactor: 1.2, maxDuration: moment.duration(1, "minute") });
     private repositoryIds: string[] = [];
+    private observersByRepositoryId: { [repositoryId: string]: IEventObserver };
     private hubs: HubConnection;
     private proxyHub;
     private subscriptionCount = 0;
@@ -86,14 +87,22 @@ export class ObservableCollectionManager {
 
         this.hubs.start(signalROptions);
 
-        this.proxyHub.client.onNewEvent = (repositoryId: string) => { };
+        this.proxyHub.client.onNewEvent = (repositoryId: string, event: IObservableRepositoryEvent) => {
+            var observer = this.observersByRepositoryId[repositoryId];
+            if (observer)
+                observer.onNewEvent(event);
+        };
+
+        this.proxyHub.client.onNewEvent = (message: string) => {
+            
+        };
     }
 
-    subscribe(repositoryId: string): IDisposable {
+    subscribe(repositoryId: string, observer: IEventObserver): IDisposable {
 
         const subscriptionId = this.subscriptionCount++;
 
-        if (repositoryId)
+        if (this.observersByRepositoryId[repositoryId])
             throw new Error(`Already subscribed to repository with id ${repositoryId}`);
             
         this.repositoryIds.push(repositoryId);
@@ -105,6 +114,10 @@ export class ObservableCollectionManager {
             });
 
         return new Disposable(() => {
+
+            _.remove(this.repositoryIds, repositoryId);
+            delete this.observersByRepositoryId[repositoryId];
+
             this.proxyHub.server
                 .unsubscribe(subscriptionId)
                 .fail((errorThrown) => {
@@ -112,6 +125,10 @@ export class ObservableCollectionManager {
                 });
         });
     }
+}
+
+export interface IEventObserver {
+    onNewEvent(event: IObservableRepositoryEvent): void;
 }
 
 export interface IKeyValue {
