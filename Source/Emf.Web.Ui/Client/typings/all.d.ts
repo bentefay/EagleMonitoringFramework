@@ -6,6 +6,12 @@ declare var require: {
     ensure: (paths: string[], callback: (require: <T>(path: string) => T) => void) => void;
 };
 
+// JQuery
+
+interface JQuery {
+    gridster(options: any);
+}
+
 // SignalR extensions
 
 interface SignalR {

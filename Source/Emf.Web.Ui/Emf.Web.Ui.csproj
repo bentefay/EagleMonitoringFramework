@@ -261,6 +261,7 @@
     <Compile Include="Models\TfsMonitoringService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -287,6 +288,7 @@
     <TypeScriptCompile Include="Client\common\duration-with-backoff.ts" />
     <TypeScriptCompile Include="Client\common\observable-collection-manager.ts" />
     <TypeScriptCompile Include="Client\common\stateful-error-handler.ts" />
+    <TypeScriptCompile Include="Client\libs\jquery.gridlist.ts" />
     <TypeScriptCompile Include="Client\libs\jquery.ts" />
     <TypeScriptCompile Include="Client\common\log.ts" />
     <TypeScriptCompile Include="Client\common\logging\buffering-observer.ts" />
@@ -294,6 +296,7 @@
     <TypeScriptCompile Include="Client\common\logging\core.ts" />
     <TypeScriptCompile Include="Client\common\logging\http-observer.ts" />
     <TypeScriptCompile Include="Client\common\logging\rx.ts" />
+    <TypeScriptCompile Include="Client\libs\using-variable-overrides.ts" />
     <TypeScriptCompile Include="Client\libs\signalr.ts" />
     <TypeScriptCompile Include="Client\typings\all.d.ts" />
     <TypeScriptCompile Include="Client\typings\jquery\jquery.d.ts" />

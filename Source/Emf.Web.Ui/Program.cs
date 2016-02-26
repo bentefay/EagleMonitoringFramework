@@ -1,8 +1,6 @@
 ﻿using System;
 using Emf.Web.Ui.AppStartup;
-using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
-using Owin;
 
 namespace Emf.Web.Ui
 {
@@ -35,16 +33,5 @@ namespace Emf.Web.Ui
                 }
             }
         }
-    }
-
-    public class Startup
-    {
-        public void Configuration(IAppBuilder app)
-        {
-            app.UseCors(CorsOptions.AllowAll);
-            SignalRConfig.Initialize(app);
-            FileSystemConfig.Initialize(app);
-            app.UseNancy();
-        }        
     }
 }

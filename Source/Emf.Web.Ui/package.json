@@ -11,6 +11,7 @@
     "gulp-tsd": "0.1.0",
 
     "jquery": "2.2.0",
+    "grid-list": "0.3.3",
     "moment": "2.11.1",
     "lodash": "4.0.1",
     "ms-signalr-client": "2.2.2"
