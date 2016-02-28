@@ -13,16 +13,27 @@ var manager = new ObservableCollectionManager("./signalr", { clearError: () => {
 manager.subscribe("buildDefinitionReferences", {
     onNewEvent: event => {
         _.forEach(event.newOrUpdatedItems, item => {
-            // document.write(JSON.stringify(item.value));
+            var element = createElement(item.value);
+
+            $('#grid').append(element);
+
+            $('#grid').gridList({
+                lanes: 10,
+                direction: "vertical",
+                widthHeightRatio: 1,
+                heightToFontSizeRatio: 0.25
+            });
         });
     }
 });
 
-$(() => {
+function createElement(text: string) {
+    const item =
+`<li data-w="1" data-h="1" data-x="0" data-y="0">
+    <div class="inner">
+        ${text}
+    </div>
+</li>`;
 
-    $(".gridster ul").gridster({
-        widget_margins: [10, 10],
-        widget_base_dimensions: [140, 140]
-    });
-
-});
+    return $(item);
+}

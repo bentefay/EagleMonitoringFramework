@@ -15,7 +15,7 @@ export class DurationWithBackoff {
     backoffFactor: number;
     maxDuration: moment.Duration;
 
-    private currentDuration: moment.Duration;
+    private _currentDuration: moment.Duration;
 
     constructor(config: IDurationWithBackoff) {
         this.startingDuration = config.startingDuration;
@@ -26,15 +26,15 @@ export class DurationWithBackoff {
     }
 
     increase() {
-        const newMilliseconds = this.currentDuration.asMilliseconds() * this.backoffFactor;
-        this.currentDuration = moment.duration(Math.min(newMilliseconds, this.maxDuration.asMilliseconds()));
+        const newMilliseconds = this._currentDuration.asMilliseconds() * this.backoffFactor;
+        this._currentDuration = moment.duration(Math.min(newMilliseconds, this.maxDuration.asMilliseconds()));
     }
 
     reset() {
-        this.currentDuration = moment.duration(this.startingDuration.asMilliseconds() + this.maxRandomStartingOffset.asMilliseconds() * Math.random());
+        this._currentDuration = moment.duration(this.startingDuration.asMilliseconds() + this.maxRandomStartingOffset.asMilliseconds() * Math.random());
     }
 
     get() {
-        return this.currentDuration;
+        return this._currentDuration;
     }
 }

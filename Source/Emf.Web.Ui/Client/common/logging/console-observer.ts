@@ -2,7 +2,7 @@
 import _ = require("lodash");
 
 import { LogEvent, LogLevel } from "./core";
-import { IObserver } from "./rx";
+import { IObserver } from "../rx";
 
 export class ConsoleObserver implements IObserver<LogEvent> {
 

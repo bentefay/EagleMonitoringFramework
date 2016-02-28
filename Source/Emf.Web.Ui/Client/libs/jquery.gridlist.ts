@@ -1,10 +1,10 @@
 ﻿import $ = require("jquery");
-import usingVariableOverrides = require("./using-variable-overrides");
+import { usingOverride } from "../common/variables";
+import "./jquery-ui"
 
-usingVariableOverrides(window, { $, jQuery: $ }, window => {
+var override = usingOverride(window, { $, jQuery: $ });
+    
+require("./gridlist/gridlist");
+require("./gridlist/jquery.gridlist");
 
-    require("grid-list");
-
-});
-
-export = $;
+override.dispose();

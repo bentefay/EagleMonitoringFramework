@@ -11,7 +11,7 @@ namespace Emf.Web.Ui.Models
     public class TfsBuildDefinitionRepository
     {
         private const string _tfsProject = "GlobalRoam";
-        private static readonly Uri _baseUrl = new Uri("http://tfs:8080/tfs/GRCollection");
+        private static readonly Uri _baseUrl = new Uri("http://tfs.gr.local:8080/tfs/GRCollection");
         private readonly BuildHttpClient _buildClient;
 
         public TfsBuildDefinitionRepository(VssCredentials credentials)

@@ -10,6 +10,7 @@ declare var require: {
 
 interface JQuery {
     gridster(options: any);
+    gridList(options: any);
 }
 
 // SignalR extensions

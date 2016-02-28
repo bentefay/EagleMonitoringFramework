@@ -30,8 +30,14 @@ var webpackConfig = {
     plugins: [],
     module: {
         loaders: [
-            { test: /\.tsx?$/, loader: "ts-loader" }
+            { test: /\.tsx?$/, loader: "prefix-file-name-loader!ts-loader" },
+            { test: /\.css$/, loader: "style-loader!css-loader" },
+            { test: /\.png$/, loader: "url-loader?limit=100000" },
+            { test: /\.jpg$/, loader: "file-loader" }
         ]
+    },
+    resolveLoader: {
+        modulesDirectories: [ "node_modules", "WebpackLoaders" ]
     }
 };
 

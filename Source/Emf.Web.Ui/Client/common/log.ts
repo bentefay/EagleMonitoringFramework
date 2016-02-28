@@ -1,6 +1,6 @@
 ﻿
 import { LogLevel, LogEvent } from "./logging/core";
-import { Observable, IObserver, Subject } from "./logging/rx";
+import { Observable, IObserver, Subject } from "./rx";
 import { ConsoleObserver } from "./logging/console-observer"
 
 export * from "./logging/core";

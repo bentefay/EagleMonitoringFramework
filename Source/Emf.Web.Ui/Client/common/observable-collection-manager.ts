@@ -9,40 +9,40 @@ import $ = require("../libs/jquery");
 
 export class ObservableCollectionManager {
 
-    private signalRStateLookup = {};
-    private reconnectInterval = new DurationWithBackoff({ startingDuration: moment.duration(5, "seconds"), backoffFactor: 1.2, maxDuration: moment.duration(1, "minute") });
-    private repositoryIds: string[] = [];
-    private subscriptionsByRepositoryId: { [repositoryId: string]: { observer: IEventObserver, subscriptionId: number } } = {};
-    private hubs: HubConnection;
-    private proxyHub;
-    private subscriptionCount = 0;
-    private initialized = false;
+    private _signalRStateLookup = {};
+    private _reconnectInterval = new DurationWithBackoff({ startingDuration: moment.duration(5, "seconds"), backoffFactor: 1.2, maxDuration: moment.duration(1, "minute") });
+    private _repositoryIds: string[] = [];
+    private _subscriptionsByRepositoryId: { [repositoryId: string]: { observer: IEventObserver, subscriptionId: number } } = {};
+    private _hubs: HubConnection;
+    private _proxyHub;
+    private _subscriptionCount = 0;
+    private _initialized = false;
 
-    constructor(signalRUrl: string, private statefulErrorHandler: IStatefulErrorHandler) {
+    constructor(signalRUrl: string, private _statefulErrorHandler: IStatefulErrorHandler) {
 
         const signalROptions = { transport: ["webSockets", "longPolling"], jsonp: false };
 
-        this.proxyHub = $.connection.repositories;
-        this.hubs = $.connection.hub;
-        this.hubs.url = signalRUrl;
+        this._proxyHub = $.connection.repositories;
+        this._hubs = $.connection.hub;
+        this._hubs.url = signalRUrl;
 
         // Uncomment for verbose SignalR logging
-        this.hubs.logging = true;
+        this._hubs.logging = true;
         // More detailed errors can then be enabled on the server with:
         // var hubConfiguration = new HubConfiguration();
         // hubConfiguration.EnableDetailedErrors = true;
         // app.MapSignalR(hubConfiguration);
 
-        this.signalRStateLookup = _.invert($.signalR.connectionState);
+        this._signalRStateLookup = _.invert($.signalR.connectionState);
 
-        this.hubs.connectionSlow(() => log.debug("SignalR connection slow"));
+        this._hubs.connectionSlow(() => log.debug("SignalR connection slow"));
 
-        this.hubs.error(error =>
+        this._hubs.error(error =>
             log.debug("SignalR error: {error}", error));
 
-        this.hubs.stateChanged(change => {
+        this._hubs.stateChanged(change => {
 
-            log.debug("SignalR connection change: {oldState} => {newState}", this.signalRStateLookup[change.oldState], this.signalRStateLookup[change.newState]);
+            log.debug("SignalR connection change: {oldState} => {newState}", this._signalRStateLookup[change.oldState], this._signalRStateLookup[change.newState]);
 
             var connectionEnum = $.signalR.connectionState;
 
@@ -52,89 +52,89 @@ export class ObservableCollectionManager {
                     break;
 
                 case connectionEnum.reconnecting:
-                    statefulErrorHandler.showError("Disconnected from server. Reconnecting...");
+                    _statefulErrorHandler.showError("Disconnected from server. Reconnecting...");
                     break;
 
                 case connectionEnum.connected:
-                    statefulErrorHandler.clearError();
-                    this.reconnectInterval.reset();
+                    _statefulErrorHandler.clearError();
+                    this._reconnectInterval.reset();
                     break;
 
                 case connectionEnum.disconnected:
 
-                    this.initialized = false;
+                    this._initialized = false;
 
-                    const reconnectInterval = this.reconnectInterval.get();
+                    const reconnectInterval = this._reconnectInterval.get();
 
-                    statefulErrorHandler.showError(`Disconnected from server. Will attempt to reconnect in ${Math.round(reconnectInterval.asSeconds())} seconds...`);
+                    _statefulErrorHandler.showError(`Disconnected from server. Will attempt to reconnect in ${Math.round(reconnectInterval.asSeconds())} seconds...`);
 
-                    if (this.hubs.lastError) {
-                        log.debug("Reason for disconnection: {message}", this.hubs.lastError.message);
+                    if (this._hubs.lastError) {
+                        log.debug("Reason for disconnection: {message}", this._hubs.lastError.message);
                     }
 
                     log.debug("Will attempt to reconnect in {time} seconds", reconnectInterval.asSeconds());
                     setTimeout(() => {
-                        this.hubs.start(signalROptions);
+                        this._hubs.start(signalROptions);
                     }, reconnectInterval.asMilliseconds());
 
-                    this.reconnectInterval.increase();
+                    this._reconnectInterval.increase();
 
                     break;
             }
         });
 
-        this.proxyHub.client.initializeSubscriptions = () => {
-            _.forEach(this.repositoryIds, repositoryId => {
-                this._subscribe(this.subscriptionsByRepositoryId[repositoryId].subscriptionId, repositoryId);
+        this._proxyHub.client.initializeSubscriptions = () => {
+            _.forEach(this._repositoryIds, repositoryId => {
+                this._subscribe(this._subscriptionsByRepositoryId[repositoryId].subscriptionId, repositoryId);
                 return true;
             });
 
-            this.initialized = true;
+            this._initialized = true;
         };
 
-        this.proxyHub.client.onNewEvent = (repositoryId: string, event: IObservableRepositoryEvent) => {
-            var observer = this.subscriptionsByRepositoryId[repositoryId].observer;
+        this._proxyHub.client.onNewEvent = (repositoryId: string, event: IObservableRepositoryEvent) => {
+            var observer = this._subscriptionsByRepositoryId[repositoryId].observer;
             if (observer)
                 observer.onNewEvent(event);
         };
 
-        this.hubs.start(signalROptions);
+        this._hubs.start(signalROptions);
     }
 
     subscribe(repositoryId: string, observer: IEventObserver): IDisposable {
 
-        const subscriptionId = this.subscriptionCount++;
+        const subscriptionId = this._subscriptionCount++;
 
-        if (this.subscriptionsByRepositoryId[repositoryId])
+        if (this._subscriptionsByRepositoryId[repositoryId])
             throw new Error(`Already subscribed to repository with id ${repositoryId}`);
             
-        this.repositoryIds.push(repositoryId);
-        this.subscriptionsByRepositoryId[repositoryId] = { observer, subscriptionId };
+        this._repositoryIds.push(repositoryId);
+        this._subscriptionsByRepositoryId[repositoryId] = { observer, subscriptionId };
 
-        if (this.initialized) {
+        if (this._initialized) {
             this._subscribe(subscriptionId, repositoryId);
         }
 
         return new Disposable(() => {
 
-            _.remove(this.repositoryIds, repositoryId);
-            delete this.subscriptionsByRepositoryId[repositoryId];
+            _.remove(this._repositoryIds, repositoryId);
+            delete this._subscriptionsByRepositoryId[repositoryId];
 
-            if (this.initialized) {
-                this.proxyHub.server
+            if (this._initialized) {
+                this._proxyHub.server
                     .unsubscribe(subscriptionId)
                     .fail((errorThrown) => {
-                        this.statefulErrorHandler.showError(errorThrown);
+                        this._statefulErrorHandler.showError(errorThrown);
                     });
             }
         });
     }
 
     private _subscribe(subscriptionId: number, repositoryId: string) {
-        return this.proxyHub.server
+        return this._proxyHub.server
             .subscribe(subscriptionId, { repositoryId: repositoryId })
             .fail((errorThrown) => {
-                this.statefulErrorHandler.showError(errorThrown);
+                this._statefulErrorHandler.showError(errorThrown);
             });
     }
 }

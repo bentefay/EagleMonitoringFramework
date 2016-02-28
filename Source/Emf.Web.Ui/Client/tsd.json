@@ -6,16 +6,19 @@
   "bundle": "./typings/tsd.d.ts",
   "installed": {
     "jquery/jquery.d.ts": {
-      "commit": "b937e64fc9245d299fa4ba26c6eddbeaed42a920"
+      "commit": "470954c4f427e0805a2d633636a7c6aa7170def8"
+    },
+    "jqueryui/jqueryui.d.ts": {
+      "commit": "a3a5cd5554dc2c0ff8955d1db0673879af3095bc"
     },
     "lodash/lodash.d.ts": {
-      "commit": "98d3168c2c570352a3a7393788e2ec9fbb08ade6"
+      "commit": "f696b8c0c2d6e2a31c794a3752f68de85dce4c2b"
     },
     "moment/moment-node.d.ts": {
       "commit": "98d3168c2c570352a3a7393788e2ec9fbb08ade6"
     },
     "moment/moment.d.ts": {
-      "commit": "98d3168c2c570352a3a7393788e2ec9fbb08ade6"
+      "commit": "b090bcf9ba9f756ec8ff53e7707269729172a325"
     },
     "signalr/signalr.d.ts": {
       "commit": "86b5a281ac2f62bcbd3476e6b86d451741f7bbdc"

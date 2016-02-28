@@ -4,11 +4,11 @@ import moment = require("moment");
 
 export class LogLevel {
 
-    constructor(public id: string, private priority: number) {
+    constructor(public id: string, private _priority: number) {
     }
 
     isPriorityGreaterThanOrEqualTo(level: LogLevel) : boolean {
-        return this.priority >= level.priority;
+        return this._priority >= level._priority;
     }
 
     static Fatal = new LogLevel("Fatal", 5); 
@@ -32,7 +32,7 @@ export class MessageTemplate {
     raw: string;
     tokens: (TextNode | TemplateNode)[];
 
-    private static findProperties = /\{@?\w+}/g;
+    private static _findProperties = /\{@?\w+}/g;
 
     constructor(messageTemplate: string) {
 
@@ -45,7 +45,7 @@ export class MessageTemplate {
         let result: RegExpExecArray;
         let textStart = 0;
 
-        while ((result = MessageTemplate.findProperties.exec(messageTemplate)) !== null) {
+        while ((result = MessageTemplate._findProperties.exec(messageTemplate)) !== null) {
 
             if (result && result.index !== textStart) {
                 this.tokens.push({ text: messageTemplate.slice(textStart, result.index) });
@@ -60,7 +60,7 @@ export class MessageTemplate {
             }
 
             this.tokens.push({ name: token, destructure: destructure, raw: result[0] });
-            textStart = MessageTemplate.findProperties.lastIndex;
+            textStart = MessageTemplate._findProperties.lastIndex;
         }
 
         if (textStart >= 0 && textStart < messageTemplate.length) {

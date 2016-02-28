@@ -1,4 +1,6 @@
-﻿import $ = require("jquery");
+﻿/// <reference path="../typings/all.d.ts" />
+
+import $ = require("jquery");
 
 $.noConflict(true);
 

@@ -5,7 +5,7 @@ import $ = require("jquery");
 import log = require("../log");
 
 import { LogEvent, LogLevel } from "./core";
-import { IObserver } from "./rx";
+import { IObserver } from "../rx";
 import { DurationWithBackoff, IDurationWithBackoff } from "../duration-with-backoff";
 
 export class HttpObserver implements IObserver<LogEvent> {

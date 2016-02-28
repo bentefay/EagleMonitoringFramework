@@ -1,6 +1,6 @@
 ﻿
 import { LogEvent } from "./core";
-import { IObserver } from "./rx";
+import { IObserver } from "../rx";
 
 export class BufferingObserver implements IObserver<LogEvent> {
 

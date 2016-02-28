@@ -47,6 +47,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
@@ -261,28 +264,47 @@
     <Compile Include="Models\TfsMonitoringService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CredentialManagement\CredentialsService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <TypeScriptCompile Include="Client\common\logging\rx.ts" />
+    <TypeScriptCompile Include="Client\libs\jquery-ui.ts" />
     <None Include="package.json" />
     <None Include="packages.config" />
     <None Include="Client\tsconfig.json" />
     <None Include="Client\tsd.json" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="readme.md" />
     <TypeScriptCompile Include="Client\apps\builds\check.ts" />
     <TypeScriptCompile Include="Client\apps\builds\main.ts" />
-    <Content Include="Client\apps\builds\observable.js" />
+    <Content Include="Client\libs\gridlist\gridlist.js" />
+    <Content Include="Client\libs\gridlist\jquery.gridlist.js" />
+    <Content Include="Client\libs\jquery-ui\images\ui-icons_444444_256x240.png" />
+    <Content Include="Client\libs\jquery-ui\images\ui-icons_555555_256x240.png" />
+    <Content Include="Client\libs\jquery-ui\images\ui-icons_777620_256x240.png" />
+    <Content Include="Client\libs\jquery-ui\images\ui-icons_777777_256x240.png" />
+    <Content Include="Client\libs\jquery-ui\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Client\libs\jquery-ui\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Client\libs\jquery-ui\index.html" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.css" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.js" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.min.css" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.min.js" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.structure.css" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.structure.min.css" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.theme.css" />
+    <Content Include="Client\libs\jquery-ui\jquery-ui.theme.min.css" />
     <Content Include="Client\libs\signalr\hubs.js" />
     <Content Include="gulpfile.js" />
+    <Content Include="WebpackLoaders\prefix-file-name-loader.js" />
     <Content Include="Public\builds.js" />
     <Content Include="Public\builds.min.js" />
     <Content Include="Public\index.html" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gulp\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <TypeScriptCompile Include="Client\common\disposable.ts" />
     <TypeScriptCompile Include="Client\common\duration-with-backoff.ts" />
@@ -295,10 +317,11 @@
     <TypeScriptCompile Include="Client\common\logging\console-observer.ts" />
     <TypeScriptCompile Include="Client\common\logging\core.ts" />
     <TypeScriptCompile Include="Client\common\logging\http-observer.ts" />
-    <TypeScriptCompile Include="Client\common\logging\rx.ts" />
-    <TypeScriptCompile Include="Client\libs\using-variable-overrides.ts" />
+    <TypeScriptCompile Include="Client\common\rx.ts" />
+    <TypeScriptCompile Include="Client\common\variables.ts" />
     <TypeScriptCompile Include="Client\libs\signalr.ts" />
     <TypeScriptCompile Include="Client\typings\all.d.ts" />
+    <TypeScriptCompile Include="Client\typings\jqueryui\jqueryui.d.ts" />
     <TypeScriptCompile Include="Client\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Client\typings\lodash\lodash.d.ts" />
     <TypeScriptCompile Include="Client\typings\moment\moment-node.d.ts" />
@@ -317,6 +340,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Windows.CredentialManagement\Windows.CredentialManagement.csproj">
+      <Project>{4958e63a-cefb-40d6-ad9c-b022ca44373a}</Project>
+      <Name>Windows.CredentialManagement</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
