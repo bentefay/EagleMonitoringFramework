@@ -4,7 +4,6 @@ using Emf.Web.Ui.Hubs;
 using Emf.Web.Ui.Models;
 using Microsoft.Practices.Unity;
 using Serilog;
-using Emf.Web.Ui.Services.CredentialManagement;
 
 namespace Emf.Web.Ui.AppStartup
 {

@@ -1,6 +1,7 @@
 ﻿using System;
 using Emf.Web.Ui.AppStartup;
 using Emf.Web.Ui.Services.CredentialManagement;
+using Emf.Web.Ui.Services.Settings;
 using Microsoft.Owin.Hosting;
 using Microsoft.VisualStudio.Services.Common;
 using Serilog;
@@ -9,13 +10,18 @@ namespace Emf.Web.Ui
 {
     internal class Program
     {
+        
+
         private static void Main(string[] args)
         {
             SerilogConfig.Initialize();
 
             try
             {
-                Credentials = CredentialsService.Get();
+                var settingStore = new SettingStore();
+                var credentialService = new CredentialsService(settingStore.ForKey(SettingKeys.Credentials));
+
+                Credentials = credentialService.Get();
 
                 UnityConfig.GetConfiguredContainer();
 
@@ -40,7 +46,7 @@ namespace Emf.Web.Ui
                             case ConsoleKey.Q:
                                 return;
                             case ConsoleKey.D:
-                                CredentialsService.Delete();
+                                credentialService.Delete();
                                 break;
                         }
                     }
