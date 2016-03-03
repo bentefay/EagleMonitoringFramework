@@ -283,7 +283,7 @@
   <ItemGroup>
     <None Include="readme.md" />
     <TypeScriptCompile Include="Client\apps\builds\check.ts" />
-    <TypeScriptCompile Include="Client\apps\builds\main.ts" />
+    <TypeScriptCompile Include="Client\apps\builds\main.tsx" />
     <Content Include="Client\libs\gridlist\gridlist.js" />
     <Content Include="Client\libs\gridlist\jquery.gridlist.js" />
     <Content Include="Client\libs\jquery-ui\images\ui-icons_444444_256x240.png" />

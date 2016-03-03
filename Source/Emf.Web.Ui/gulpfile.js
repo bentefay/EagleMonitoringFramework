@@ -12,7 +12,7 @@ dirs.outputRoot = "./public/";
 dirs.appRoot = dirs.appsRoot + "builds/";
 
 var config = {};
-config.appEntryPath = dirs.appRoot + "main.ts";
+config.appEntryPath = dirs.appRoot + "main.tsx";
 config.appOutputDirectory = dirs.outputRoot;
 config.appOutputFileName = "builds.js";
 config.appFileWatcherGlob = dirs.root + "**/*";

@@ -11549,7 +11549,7 @@ declare module _ {
          * @param value The value to check.
          * @returns Returns true if value is correctly classified, else false.
          */
-        isMap<K, V>(value?: any): value is { [index: string]: V };
+        isMap<K, V>(value?: any): value is Map<K, V>;
     }
 
     interface LoDashImplicitWrapperBase<T, TWrapper> {
@@ -18284,3 +18284,6 @@ declare module _ {
 declare module "lodash" {
     export = _;
 }
+
+// Backward compatibility with --target es5
+interface Map<K, V> {}

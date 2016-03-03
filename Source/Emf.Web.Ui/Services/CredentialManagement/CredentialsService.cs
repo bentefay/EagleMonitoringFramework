@@ -112,7 +112,6 @@ namespace Emf.Web.Ui.Services.CredentialManagement
                     }
                 }
             }
-            
 
             if (!deletedAnything)
                 Log.Information("Nothing to delete");

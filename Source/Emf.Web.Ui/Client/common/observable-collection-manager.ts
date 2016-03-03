@@ -12,7 +12,7 @@ export class ObservableCollectionManager {
     private _signalRStateLookup = {};
     private _reconnectInterval = new DurationWithBackoff({ startingDuration: moment.duration(5, "seconds"), backoffFactor: 1.2, maxDuration: moment.duration(1, "minute") });
     private _repositoryIds: string[] = [];
-    private _subscriptionsByRepositoryId: { [repositoryId: string]: { observer: IEventObserver, subscriptionId: number } } = {};
+    private _subscriptionsByRepositoryId: { [repositoryId: string]: { observer: IEventObserver<any>, subscriptionId: number } } = {};
     private _hubs: HubConnection;
     private _proxyHub;
     private _subscriptionCount = 0;
@@ -92,7 +92,7 @@ export class ObservableCollectionManager {
             this._initialized = true;
         };
 
-        this._proxyHub.client.onNewEvent = (repositoryId: string, event: IObservableRepositoryEvent) => {
+        this._proxyHub.client.onNewEvent = (repositoryId: string, event: IObservableRepositoryEvent<any>) => {
             var observer = this._subscriptionsByRepositoryId[repositoryId].observer;
             if (observer)
                 observer.onNewEvent(event);
@@ -101,7 +101,7 @@ export class ObservableCollectionManager {
         this._hubs.start(signalROptions);
     }
 
-    subscribe(repositoryId: string, observer: IEventObserver): IDisposable {
+    subscribe<T>(repositoryId: string, observer: IEventObserver<T>): IDisposable {
 
         const subscriptionId = this._subscriptionCount++;
 
@@ -139,17 +139,17 @@ export class ObservableCollectionManager {
     }
 }
 
-export interface IEventObserver {
-    onNewEvent(event: IObservableRepositoryEvent): void;
+export interface IEventObserver<T> {
+    onNewEvent(event: IObservableRepositoryEvent<T>): void;
 }
 
-export interface IKeyValue {
+export interface IKeyValue<T> {
     key: string;
-    value: any;
+    value: T;
 }
 
-export interface IObservableRepositoryEvent {
-    newOrUpdatedItems: IKeyValue[];
+export interface IObservableRepositoryEvent<T> {
+    newOrUpdatedItems: IKeyValue<T>[];
     deletedItemKeys: string[];
     reset: boolean;
 }

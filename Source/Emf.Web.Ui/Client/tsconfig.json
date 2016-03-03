@@ -1,7 +1,8 @@
 ﻿{
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs"
+    "module": "commonjs",
+    "jsx": "react"
   },
   "files": [
     "./typings/all.d.ts"
