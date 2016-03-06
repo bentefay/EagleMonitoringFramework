@@ -5,6 +5,8 @@ import { ObservableCollectionManager, IObservableRepositoryEvent } from "../../c
 import $ = require("../../libs/jquery");
 import React = require("react");
 import ReactDOM = require("react-dom");
+import ReactGridLayout = require("../../libs/react-grid-layout");
+import "./main.less";
 
 log.logger.setLogLevel(log.LogLevel.Debug);
 log.logger.logEvents.subscribe(new log.ConsoleObserver());
@@ -24,10 +26,23 @@ manager.subscribe<IBuildDefinitionReferenceDto>("buildDefinitionReferences", {
         });
 
         var values = _(list).map((value: IBuildDefinitionReferenceDto, key: string) => {
-            return <h1 key={key}>{value.name}</h1>
+            return <div key={key}>{value.name}</div>;
         }).value();
 
-        ReactDOM.render(<div>{values}</div>,
+        var x = 0;
+        var y = 0;
+
+        var layout = _(list).map((value: IBuildDefinitionReferenceDto, key: string) => {
+            var layoutItem: ReactGridLayout.ItemProps = { i: key, x: x, y: y, w: 2, h: 1 };
+            x += 2;
+            if (x >= 12) {
+                x = 0;
+                y++;
+            }
+            return layoutItem;
+        }).value();
+
+        ReactDOM.render(<ReactGridLayout layout={layout} cols={12} rowHeight={30}>{values}</ReactGridLayout>,
             $(".builds")[0]
         );
     }

@@ -282,8 +282,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.md" />
-    <TypeScriptCompile Include="Client\apps\builds\check.ts" />
     <TypeScriptCompile Include="Client\apps\builds\main.tsx" />
+    <None Include="Client\apps\builds\main.less" />
     <Content Include="Client\libs\gridlist\gridlist.js" />
     <Content Include="Client\libs\gridlist\jquery.gridlist.js" />
     <Content Include="Client\libs\jquery-ui\images\ui-icons_444444_256x240.png" />
@@ -323,6 +323,7 @@
     <TypeScriptCompile Include="Client\common\logging\http-observer.ts" />
     <TypeScriptCompile Include="Client\common\rx.ts" />
     <TypeScriptCompile Include="Client\common\variables.ts" />
+    <TypeScriptCompile Include="Client\libs\react-grid-layout.tsx" />
     <TypeScriptCompile Include="Client\libs\signalr.ts" />
     <TypeScriptCompile Include="Client\typings\all.d.ts" />
     <TypeScriptCompile Include="Client\typings\jqueryui\jqueryui.d.ts" />
@@ -330,6 +331,9 @@
     <TypeScriptCompile Include="Client\typings\lodash\lodash.d.ts" />
     <TypeScriptCompile Include="Client\typings\moment\moment-node.d.ts" />
     <TypeScriptCompile Include="Client\typings\moment\moment.d.ts" />
+    <TypeScriptCompile Include="Client\typings\react-grid-layout\react-grid-layout.d.ts" />
+    <TypeScriptCompile Include="Client\typings\react\react-dom.d.ts" />
+    <TypeScriptCompile Include="Client\typings\react\react.d.ts" />
     <TypeScriptCompile Include="Client\typings\signalr\signalr.d.ts" />
     <TypeScriptCompile Include="Client\typings\tsd.d.ts" />
   </ItemGroup>
