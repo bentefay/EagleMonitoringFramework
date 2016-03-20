@@ -41,7 +41,8 @@ namespace Emf.Web.Ui.AppStartup
             tfsMonitoringService.Start();
             var observableCollections = new Dictionary<string, IObservableRepository>
             {
-                {"buildDefinitionReferences", tfsMonitoringService.BuildDefinitions}
+                {"buildDefinitions", tfsMonitoringService.BuildDefinitions },
+                {"builds", tfsMonitoringService.Builds }
             };
 
             var observableRepositoryHubSubscriptionFactory = new ObservableRepositoryHubSubscriptionFactory(observableCollections);

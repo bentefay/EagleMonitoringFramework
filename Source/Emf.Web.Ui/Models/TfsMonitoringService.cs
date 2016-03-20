@@ -36,6 +36,14 @@ namespace Emf.Web.Ui.Models
 
         private async Task UpdateDefinitions(CancellationToken token)
         {
+            var buildDefinitions = await _repository.GetLatestDefinitionReferences(_tokenSource.Token);
+
+            lock (_buildDefinitions)
+                _buildDefinitions.AddOrUpdate(buildDefinitions);
+        }
+
+        private async Task UpdateBuilds(CancellationToken token)
+        {
             Dictionary<int, BuildDefinitionReference> buildDefinitions;
             lock (_buildDefinitions)
                 buildDefinitions = _buildDefinitions.Map.ToDictionary(p => p.Key, p => p.Value);
@@ -45,15 +53,8 @@ namespace Emf.Web.Ui.Models
             _builds.AddOrUpdate(builds.Values);
         }
 
-        private async Task UpdateBuilds(CancellationToken token)
-        {
-            var buildDefinitions = await _repository.GetLatestDefinitionReferences(_tokenSource.Token);
-
-            lock (_buildDefinitions)
-                _buildDefinitions.AddOrUpdate(buildDefinitions);
-        }
-
         public IObservableRepository<int, BuildDefinitionReference> BuildDefinitions => _buildDefinitions;
+        public IObservableRepository<int, Build> Builds => _builds;
 
         public void Dispose()
         {
