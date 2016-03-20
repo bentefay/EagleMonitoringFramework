@@ -1,4 +1,15 @@
-﻿:global .react-grid-layout {
+﻿
+:global * {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+:global body {
+    background: rgb(232, 232, 232);
+}
+
+:global .react-grid-layout {
     position: relative;
     transition: height 200ms ease;
 }
@@ -21,18 +32,6 @@
     z-index: 3;
 }
 
-:global .react-grid-item.react-grid-placeholder {
-    background: red;
-    opacity: 0.2;
-    transition-duration: 100ms;
-    z-index: 2;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-
 :global .react-grid-item > .react-resizable-handle {
     position: absolute;
     width: 20px;
@@ -48,13 +47,10 @@
     cursor: se-resize;
 }
 
-:global .react-grid-layout {
-    background: #eee;
-}
-
 :global .react-grid-item:not(.react-grid-placeholder) {
-    background: #ccc;
-    border: 1px solid black;
+    background: white;
+    border: 1px rgb(242, 242, 242) solid; 
+    box-shadow: 2px 2px 2px rgb(220, 220, 220);
 }
 
 :global .react-grid-item.resizing {
@@ -62,7 +58,7 @@
 }
 
 :global .react-grid-item.static {
-    background: #cce;
+    background: white;
 }
 
 :global .react-grid-item .add {

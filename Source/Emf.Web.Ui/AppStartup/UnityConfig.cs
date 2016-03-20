@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Emf.Web.Ui.Hubs;
 using Emf.Web.Ui.Models;
+using Emf.Web.Ui.Services.CredentialManagement;
+using Emf.Web.Ui.Services.Settings;
 using Microsoft.Practices.Unity;
 using Serilog;
 
@@ -29,16 +31,23 @@ namespace Emf.Web.Ui.AppStartup
         {
             Log.Information("Registering IoC dependencies with container");
 
-            var tfsBuildDefinitionRepository = new TfsBuildDefinitionRepository(Program.Credentials);
-            var tfsMonitoringService = new TfsMonitoringService(tfsBuildDefinitionRepository, TimeSpan.FromSeconds(30));
+            var settingStore = new SettingStore();
+            var credentialService = new CredentialsService(settingStore.ForKey(SettingKeys.Credentials));
+
+            var credentials = credentialService.Get();
+
+            var tfsBuildDefinitionRepository = new TfsBuildDefinitionRepository(credentials, settingStore.ForKey(SettingKeys.BuildDefinitions), settingStore.ForKey(SettingKeys.Builds));
+            var tfsMonitoringService = new TfsMonitoringService(tfsBuildDefinitionRepository, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(30));
             tfsMonitoringService.Start();
             var observableCollections = new Dictionary<string, IObservableRepository>
             {
-                {"buildDefinitionReferences", tfsMonitoringService.BuildDefinitionReferences}
+                {"buildDefinitionReferences", tfsMonitoringService.BuildDefinitions}
             };
 
             var observableRepositoryHubSubscriptionFactory = new ObservableRepositoryHubSubscriptionFactory(observableCollections);
+
             container.RegisterInstance(observableRepositoryHubSubscriptionFactory);
+            container.RegisterInstance(credentialService);
         }
     }
 }

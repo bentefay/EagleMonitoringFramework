@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Emf.Web.Ui.Services.Settings;
 using Microsoft.TeamFoundation.Build.WebApi;
-using Microsoft.VisualStudio.Services.Common;
+using Microsoft.TeamFoundation.TestManagement.WebApi;
+using VssCredentials = Microsoft.VisualStudio.Services.Common.VssCredentials;
 
 namespace Emf.Web.Ui.Models
 {
@@ -12,18 +14,121 @@ namespace Emf.Web.Ui.Models
     {
         private const string _tfsProject = "GlobalRoam";
         private static readonly Uri _baseUrl = new Uri("http://tfs.gr.local:8080/tfs/GRCollection");
-        private readonly BuildHttpClient _buildClient;
 
-        public TfsBuildDefinitionRepository(VssCredentials credentials)
+        private readonly SettingStore<Dictionary<int, BuildDefinition>> _buildDefinitionStore;
+        private readonly SettingStore<BuildCollection> _buildStore;
+        private readonly BuildHttpClient _buildClient;
+        private readonly TestManagementHttpClient _testManagementClient;
+
+        public TfsBuildDefinitionRepository(VssCredentials credentials, SettingStore<Dictionary<int, BuildDefinition>> buildDefinitionStore, SettingStore<BuildCollection> buildStore)
         {
+            _buildDefinitionStore = buildDefinitionStore;
+            _buildStore = buildStore;
             _buildClient = new BuildHttpClient(_baseUrl, credentials);
+            _testManagementClient = new TestManagementHttpClient(_baseUrl, credentials);
         }
 
-        public async Task<IReadOnlyList<BuildDefinitionReferenceDto>> GetDefinitions(CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<BuildDefinitionReference>> GetLatestDefinitionReferences(CancellationToken cancellationToken)
         {
             var definitionReferences = await _buildClient.GetDefinitionsAsync(project: _tfsProject, cancellationToken: cancellationToken);
 
-            return definitionReferences.Select(d => new BuildDefinitionReferenceDto { Id = d.Id, Name = d.Name }).ToList();
+            return definitionReferences.Select(r => new BuildDefinitionReference(r.Id, r.Name, r.Revision, r.Type)).ToList();
+        }
+
+        public async Task<IReadOnlyDictionary<int, BuildDefinition>> GetLatestDefinitions(IReadOnlyList<BuildDefinitionReference> latestReferences, CancellationToken cancellationToken)
+        {
+            var existingDefinitionsLookup = _buildDefinitionStore.GetOrCreate(() => new Dictionary<int, BuildDefinition>());
+
+            var anyChanges = false;
+
+            foreach (var latestReference in latestReferences)
+            {
+                BuildDefinition oldFullBuildDefinition;
+                if (existingDefinitionsLookup.TryGetValue(latestReference.Id, out oldFullBuildDefinition) && latestReference.Revision <= oldFullBuildDefinition.Reference.Revision)
+                    continue;
+
+                var baseDefinition = await _buildClient.GetDefinitionAsync(project: _tfsProject, definitionId: latestReference.Id, cancellationToken: cancellationToken);
+
+                existingDefinitionsLookup[latestReference.Id] = GetBuildDefinition(latestReference, baseDefinition);
+                anyChanges = true;
+            }
+
+            var idsToBeDeleted = existingDefinitionsLookup.Select(b => b.Key).Except(latestReferences.Select(b => b.Id)).ToArray();
+
+            if (idsToBeDeleted.Any())
+                anyChanges = true;
+
+            foreach (var idToBeDeleted in idsToBeDeleted)
+                existingDefinitionsLookup.Remove(idToBeDeleted);
+
+            if (anyChanges)
+                _buildDefinitionStore.Set(existingDefinitionsLookup);
+
+            return existingDefinitionsLookup;
+        }
+
+        private static BuildDefinition GetBuildDefinition(BuildDefinitionReference latestDefinitionReference, DefinitionReference baseDefinition)
+        {
+            var xamlDefinition = baseDefinition as XamlBuildDefinition;
+            if (xamlDefinition != null)
+                return new BuildDefinition(latestDefinitionReference);
+
+            var definition = baseDefinition as Microsoft.TeamFoundation.Build.WebApi.BuildDefinition;
+            if (definition != null)
+                return new BuildDefinition(latestDefinitionReference);
+
+            throw new Exception($"{nameof(baseDefinition)} has unexpected type {baseDefinition.GetType()}");
+        }
+
+        public async Task<IDictionary<int, Build>> GetLatestBuilds(IReadOnlyDictionary<int, BuildDefinitionReference> latestReferences, CancellationToken cancellationToken)
+        {
+            if (!latestReferences.Any())
+                return new Dictionary<int, Build>();
+
+            var buildCollection = _buildStore.GetOrCreate(() => new BuildCollection());
+
+            await AddBuilds(latestReferences, cancellationToken, buildCollection);
+
+            var latestBuildFinishTime = buildCollection.BuildsByDefinitionId.Values.Select(b => b.FinishTime).DefaultIfEmpty(null).Max();
+
+            if (latestBuildFinishTime != buildCollection.LatestBuildFinishTime)
+            {
+                buildCollection.LatestBuildFinishTime = latestBuildFinishTime;
+                _buildStore.Set(buildCollection);
+            }
+
+            return buildCollection.BuildsByDefinitionId;
+        }
+
+        private async Task AddBuilds(IReadOnlyDictionary<int, BuildDefinitionReference> latestReferences, CancellationToken cancellationToken, BuildCollection buildCollection)
+        {
+            var completedBuilds = await _buildClient.GetBuildsAsync(
+                _tfsProject,
+                cancellationToken: cancellationToken);
+
+            var completedBuildsByDefinition = completedBuilds
+                .Where(b => latestReferences.ContainsKey(b.Definition.Id) && (b.FinishTime ?? b.StartTime) > buildCollection.LatestBuildFinishTime)
+                .ToLookup(b => b.Definition.Id)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Where(b => b.Uri != null)
+                        .OrderByDescending(b => b.FinishTime ?? b.StartTime)
+                        .ToArray());
+
+            foreach (var completedBuildsForDefinition in completedBuildsByDefinition)
+            {
+                BuildDefinitionReference buildReference;
+                if (!latestReferences.TryGetValue(completedBuildsForDefinition.Key, out buildReference))
+                    continue;
+
+                var latestCompletedBuild = completedBuildsForDefinition.Value.FirstOrDefault();
+
+                if (latestCompletedBuild == null)
+                    continue;
+
+                var testRuns = await _testManagementClient.GetTestRunsAsync(projectId: _tfsProject, buildUri: latestCompletedBuild.Uri.ToString(), includeRunDetails: true);
+                buildCollection.BuildsByDefinitionId[completedBuildsForDefinition.Key] = new Build(buildReference, latestCompletedBuild, testRuns);
+            }
         }
 
         //public async Task GetOtherStuff(int definitionId)

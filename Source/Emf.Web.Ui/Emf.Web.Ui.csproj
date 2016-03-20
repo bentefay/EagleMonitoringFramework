@@ -51,6 +51,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Comparers, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Comparers.4.0.0\lib\net40-client\Comparers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
@@ -202,6 +206,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.0\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
       <Private>True</Private>
@@ -257,9 +262,13 @@
     <Compile Include="Hubs\Core\SubscriptionHub.cs" />
     <Compile Include="Hubs\Core\SubscriptionManager.cs" />
     <Compile Include="Hubs\ObservableRepositoryHub.cs" />
-    <Compile Include="Models\BuildDefinitionReferenceDto.cs" />
+    <Compile Include="Models\Build.cs" />
+    <Compile Include="Models\BuildCollection.cs" />
+    <Compile Include="Models\BuildDefinitionReference.cs" />
+    <Compile Include="Models\BuildDefinition.cs" />
     <Compile Include="Models\ObservableRepository.cs" />
     <Compile Include="Models\RepeatTask.cs" />
+    <Compile Include="Models\TestRun.cs" />
     <Compile Include="Models\TfsBuildDefinitionRepository.cs" />
     <Compile Include="Models\TfsMonitoringService.cs" />
     <Compile Include="Program.cs" />

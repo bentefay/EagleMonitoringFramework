@@ -3,6 +3,7 @@ using Emf.Web.Ui.AppStartup;
 using Emf.Web.Ui.Services.CredentialManagement;
 using Emf.Web.Ui.Services.Settings;
 using Microsoft.Owin.Hosting;
+using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.Services.Common;
 using Serilog;
 
@@ -18,12 +19,8 @@ namespace Emf.Web.Ui
 
             try
             {
-                var settingStore = new SettingStore();
-                var credentialService = new CredentialsService(settingStore.ForKey(SettingKeys.Credentials));
-
-                Credentials = credentialService.Get();
-
-                UnityConfig.GetConfiguredContainer();
+                var unity = UnityConfig.GetConfiguredContainer();
+                var credentialService = unity.Resolve<CredentialsService>();
 
                 const string url = "http://+:8080";
 
@@ -58,7 +55,5 @@ namespace Emf.Web.Ui
                 Log.Fatal(e, "Application has terminated");
             }
         }
-
-        public static VssCredentials Credentials { get; private set; }
     }
 }

@@ -17,6 +17,7 @@ namespace Emf.Web.Ui.Models
     }
 
     public class ObservableRepository<TKey, TValue> : IObservableRepository<TKey, TValue>
+        where TValue : IEquatable<TValue>
     {
         private readonly object _lock = new object();
         private readonly Func<TValue, TKey> _getKey;
@@ -52,10 +53,21 @@ namespace Emf.Web.Ui.Models
                 if (!pairList.Any())
                     return;
 
+                var newOrUpdated = new List<KeyValue<TKey, TValue>>();
                 foreach (var pair in pairList)
-                    _map[pair.Key] = pair.Value;
+                {
+                    TValue value;
+                    if (_map.TryGetValue(pair.Key, out value) && EqualityComparer<TValue>.Default.Equals(pair.Value, value))
+                        continue;
 
-                _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(newOrUpdateditems: pairList));
+                    _map[pair.Key] = pair.Value;
+                    newOrUpdated.Add(pair);
+                }
+
+                if (!newOrUpdated.Any())
+                    return;
+
+                _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(newOrUpdateditems: newOrUpdated));
             }
         }
 
@@ -72,6 +84,8 @@ namespace Emf.Web.Ui.Models
             }
         }
 
+        public IReadOnlyDictionary<TKey, TValue> Map => _map;
+
         IObservable<IObservableRepositoryEvent> IObservableRepository.GetChanges()
         {
             return GetChanges().Select(c => (IObservableRepositoryEvent)c);
@@ -80,7 +94,7 @@ namespace Emf.Web.Ui.Models
 
     public struct KeyValue
     {
-        public static KeyValue<TKey, TValue> Create<TKey, TValue> (TKey key, TValue value)
+        public static KeyValue<TKey, TValue> Create<TKey, TValue>(TKey key, TValue value)
         {
             return new KeyValue<TKey, TValue>(key, value);
         }

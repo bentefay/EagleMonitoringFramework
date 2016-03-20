@@ -32,16 +32,16 @@ namespace Emf.Web.Ui.Services.Settings
             }
         }
 
-        public bool TryGet<T>(string settingName, out T setting)
+        public bool TryGet<T>(string settingId, out T setting)
         {
             object settingUntyped;
-            if (_settings.TryGetValue(settingName, out settingUntyped))
+            if (_settings.TryGetValue(settingId, out settingUntyped))
             {
                 setting = (T)settingUntyped;
                 return true;
             }
 
-            var filePath = GetFilePath(settingName);
+            var filePath = GetFilePath(settingId);
 
             if (!File.Exists(filePath))
             {
@@ -53,23 +53,29 @@ namespace Emf.Web.Ui.Services.Settings
             using (var streamReader = new StreamReader(fileStream))
             using (var jsonReader = new JsonTextReader(streamReader))
             {
+                if (fileStream.Length == 0)
+                {
+                    setting = default(T);
+                    return false;
+                }
+
                 var serializer = new JsonSerializer();
                 setting = serializer.Deserialize<T>(jsonReader);
                 return true;
             }
         }
 
-        public T GetOrCreate<T>(string settingName, Func<T> factory)
+        public T GetOrCreate<T>(string settingId, Func<T> factory)
         {
             T setting;
-            return TryGet(settingName, out setting) ? setting : factory();
+            return TryGet(settingId, out setting) ? setting : factory();
         }
 
-        public bool Delete(string settingName)
+        public bool Delete(string settingId)
         {
-            var filePath = GetFilePath(settingName);
+            var filePath = GetFilePath(settingId);
 
-            _settings.Remove(settingName);
+            _settings.Remove(settingId);
 
             if (!File.Exists(filePath))
                 return false;

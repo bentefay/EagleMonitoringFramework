@@ -33,16 +33,16 @@ manager.subscribe<IBuildDefinitionReferenceDto>("buildDefinitionReferences", {
         var y = 0;
 
         var layout = _(list).map((value: IBuildDefinitionReferenceDto, key: string) => {
-            var layoutItem: ReactGridLayout.ItemProps = { i: key, x: x, y: y, w: 2, h: 1 };
-            x += 2;
-            if (x >= 12) {
+            var layoutItem: ReactGridLayout.ItemProps = { i: key, x: x, y: y, w: 1, h: 1 };
+            x += 1;
+            if (x >= 6) {
                 x = 0;
                 y++;
             }
             return layoutItem;
         }).value();
 
-        ReactDOM.render(<ReactGridLayout layout={layout} cols={12} rowHeight={30}>{values}</ReactGridLayout>,
+        ReactDOM.render(<ReactGridLayout layout={layout} cols={6} rowHeight={30}>{values}</ReactGridLayout>,
             $(".builds")[0]
         );
     }

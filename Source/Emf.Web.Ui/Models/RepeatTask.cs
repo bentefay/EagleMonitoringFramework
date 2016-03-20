@@ -11,11 +11,10 @@ namespace Emf.Web.Ui.Models
             while (true)
             {
                 action(token);
-                var task = Task.Delay(interval, token);
 
                 try
                 {
-                    await task;
+                    await Task.Delay(interval, token);
                 }
                 catch (TaskCanceledException)
                 {
@@ -29,11 +28,10 @@ namespace Emf.Web.Ui.Models
             while (true)
             {
                 await action(token);
-                var task = Task.Delay(interval, token);
 
                 try
                 {
-                    await task;
+                    await Task.Delay(interval, token);
                 }
                 catch (TaskCanceledException)
                 {
