@@ -21,7 +21,7 @@ namespace Emf.Web.Ui.Models
             _checkForDefinitionsInterval = checkForDefinitionsInterval;
             _checkForBuildsInterval = checkForBuildsInterval;
             _buildDefinitions = new ObservableRepository<int, BuildDefinitionReference>(d => d.Id);
-            _builds = new ObservableRepository<int, Build>(b => b.Id);
+            _builds = new ObservableRepository<int, Build>(b => b.Definition.Id);
         }
 
         public async Task Start()

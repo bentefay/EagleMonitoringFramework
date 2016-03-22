@@ -56,48 +56,6 @@
 	__webpack_require__(289);
 	log.logger.setLogLevel(log.LogLevel.Debug);
 	log.logger.logEvents.subscribe(new log.ConsoleObserver());
-	var MainComponent = (function () {
-	    function MainComponent() {
-	        var _this = this;
-	        var manager = new observable_collection_manager_1.ObservableCollectionManager("./signalr", { clearError: function () { }, showError: function (message) { } });
-	        var buildStates = new BuildStateCollection();
-	        manager.subscribe("buildDefinitions", {
-	            onNewEvent: function (event) {
-	                _.forEach(event.newOrUpdatedItems, function (buildDefinition) {
-	                    var buildState = buildStates.get(buildDefinition.key);
-	                    buildState.definition = buildDefinition.value;
-	                });
-	                _.forEach(event.deletedItemKeys, function (key) {
-	                    buildStates.deleteDefinition(key);
-	                });
-	                var values = _(buildStates.map).map(function (value, key) {
-	                    return React.createElement("div", {key: key}, value.name);
-	                }).value();
-	                var x = 0;
-	                var y = 0;
-	                var layout = _(buildStates.map).map(function (value, key) {
-	                    var layoutItem = { i: key, x: x, y: y, w: 1, h: 1 };
-	                    x += 1;
-	                    if (x >= 6) {
-	                        x = 0;
-	                        y++;
-	                    }
-	                    return layoutItem;
-	                }).value();
-	                _this.render(layout, values);
-	            }
-	        });
-	        manager.subscribe("builds", {
-	            onNewEvent: function (event) {
-	            }
-	        });
-	    }
-	    MainComponent.prototype.render = function (layout, values) {
-	        ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: 6, rowHeight: 30}, values), $(".builds")[0]);
-	    };
-	    return MainComponent;
-	}());
-	var mainComponent = new MainComponent();
 	var BuildStateCollection = (function () {
 	    function BuildStateCollection() {
 	        this.map = {};
@@ -129,6 +87,78 @@
 	    };
 	    return BuildStateCollection;
 	}());
+	var MainComponent = (function () {
+	    function MainComponent() {
+	        var _this = this;
+	        this.render = function () {
+	            var buildStates = _(_this.buildStates.map).map(function (value) { return value; }).filter(function (value) { return value.definition; }).value();
+	            var values = _.map(buildStates, function (buildState) {
+	                return React.createElement("div", {key: buildState.definition.id, style: { backgroundColor: _this.getBuildStateColor(buildState) }}, React.createElement("span", null, buildState.definition.name), (function () {
+	                    if (buildState.latestBuild && buildState.latestBuild.testRuns.length > 0) {
+	                        var firstRun = buildState.latestBuild.testRuns[0];
+	                        return React.createElement("span", {style: { marginLeft: '4px' }}, firstRun.passedTests, "/", firstRun.totalTests);
+	                    }
+	                })());
+	            });
+	            var x = 0;
+	            var y = 0;
+	            var layout = _.map(buildStates, function (buildState) {
+	                var layoutItem = { i: buildState.definition.id.toString(), x: x, y: y, w: 1, h: 1 };
+	                x += 1;
+	                if (x >= 6) {
+	                    x = 0;
+	                    y++;
+	                }
+	                return layoutItem;
+	            });
+	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: 6, rowHeight: 30}, values), $(".builds")[0]);
+	        };
+	        this.manager = new observable_collection_manager_1.ObservableCollectionManager("./signalr", { clearError: function () { }, showError: function (message) { } });
+	        this.buildStates = new BuildStateCollection();
+	        this.manager.subscribe("buildDefinitions", {
+	            onNewEvent: function (event) {
+	                _.forEach(event.newOrUpdatedItems, function (buildDefinition) {
+	                    var buildState = _this.buildStates.get(buildDefinition.key);
+	                    buildState.definition = buildDefinition.value;
+	                });
+	                _.forEach(event.deletedItemKeys, function (key) {
+	                    _this.buildStates.deleteDefinition(key);
+	                });
+	                _this.render();
+	            }
+	        });
+	        this.manager.subscribe("builds", {
+	            onNewEvent: function (event) {
+	                _.forEach(event.newOrUpdatedItems, function (build) {
+	                    var buildState = _this.buildStates.get(build.key);
+	                    buildState.latestBuild = build.value;
+	                });
+	                _.forEach(event.deletedItemKeys, function (key) {
+	                    _this.buildStates.deleteLatestBuild(key);
+	                });
+	                _this.render();
+	            }
+	        });
+	    }
+	    MainComponent.prototype.getBuildStateColor = function (buildState) {
+	        if (!buildState.latestBuild)
+	            return "#F7F7F9";
+	        switch (buildState.latestBuild.result) {
+	            case BuildResult.None:
+	                return "#F7F7F9";
+	            case BuildResult.Succeeded:
+	                return "#5CB85C";
+	            case BuildResult.PartiallySucceeded:
+	                return "#F0AD4E";
+	            case BuildResult.Failed:
+	                return "#D9534F";
+	            case BuildResult.Canceled:
+	                return "#5BC0DE";
+	        }
+	    };
+	    return MainComponent;
+	}());
+	var mainComponent = new MainComponent();
 	var BuildState = (function () {
 	    function BuildState() {
 	    }

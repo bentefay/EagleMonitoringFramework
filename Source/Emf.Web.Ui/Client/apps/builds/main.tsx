@@ -11,69 +11,11 @@ import "./main.less";
 log.logger.setLogLevel(log.LogLevel.Debug);
 log.logger.logEvents.subscribe(new log.ConsoleObserver());
 
-class MainComponent {
-
-    constructor() {
-
-        var manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
-
-        var buildStates = new BuildStateCollection();
-
-        manager.subscribe<IBuildDefinitionReference>("buildDefinitions", {
-            onNewEvent: event => {
-                _.forEach(event.newOrUpdatedItems, buildDefinition => {
-                    const buildState = buildStates.get(buildDefinition.key);
-                    buildState.definition = buildDefinition.value;
-                });
-
-                _.forEach(event.deletedItemKeys, key => {
-                    buildStates.deleteDefinition(key);
-                });
-
-                var values = _(buildStates.map).map((value: IBuildDefinitionReference, key: string) => {
-                    return <div key={key}>{value.name}</div>;
-                }).value();
-
-                var x = 0;
-                var y = 0;
-
-                var layout = _(buildStates.map).map((value: IBuildDefinitionReference, key: string) => {
-                    var layoutItem: ReactGridLayout.ItemProps = { i: key, x: x, y: y, w: 1, h: 1 };
-                    x += 1;
-                    if (x >= 6) {
-                        x = 0;
-                        y++;
-                    }
-                    return layoutItem;
-                }).value();
-
-                this.render(layout, values);
-            }
-        });
-
-        manager.subscribe<IBuild>("builds", {
-            onNewEvent: event => {
-
-            }
-        });
-    }
-
-    render(layout: ReactGridLayout.ItemProps[], values: JSX.Element[]) {
-        ReactDOM.render(<ReactGridLayout layout={layout} cols={6} rowHeight={30}>{values}</ReactGridLayout>,
-            $(".builds")[0]
-        );
-    }
-
-    
-}
-
-var mainComponent = new MainComponent();
-
 class BuildStateCollection {
 
     map: { [buildDefinitionId: string]: BuildState } = {};
 
-    get(buildDefinitionId: string) : BuildState {
+    get(buildDefinitionId: string): BuildState {
         var value = this.map[buildDefinitionId];
         if (value) {
             return value;
@@ -101,6 +43,103 @@ class BuildStateCollection {
         }
     }
 }
+
+class MainComponent {
+
+    buildStates: BuildStateCollection;
+    manager: ObservableCollectionManager;
+
+    constructor() {
+
+        this.manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
+        this.buildStates = new BuildStateCollection();
+
+        this.manager.subscribe<IBuildDefinitionReference>("buildDefinitions", {
+            onNewEvent: event => {
+                _.forEach(event.newOrUpdatedItems, buildDefinition => {
+                    const buildState = this.buildStates.get(buildDefinition.key);
+                    buildState.definition = buildDefinition.value;
+                });
+
+                _.forEach(event.deletedItemKeys, key => {
+                    this.buildStates.deleteDefinition(key);
+                });
+
+                this.render();
+            }
+        });
+
+        this.manager.subscribe<IBuild>("builds", {
+            onNewEvent: event => {
+                _.forEach(event.newOrUpdatedItems, build => {
+                    const buildState = this.buildStates.get(build.key);
+                    buildState.latestBuild = build.value;
+                });
+
+                _.forEach(event.deletedItemKeys, key => {
+                    this.buildStates.deleteLatestBuild(key);
+                });
+
+                this.render();
+            }
+        });
+    }
+
+    render = () => {
+
+        const buildStates = _(this.buildStates.map).map((value: BuildState) => value).filter((value: BuildState) => value.definition).value();
+
+        var values = _.map(buildStates, buildState => {
+            return <div key={buildState.definition.id} style={{ backgroundColor: this.getBuildStateColor(buildState) }}>
+                <span>{buildState.definition.name}</span>
+                {(() => {
+                    if (buildState.latestBuild && buildState.latestBuild.testRuns.length > 0) {
+                        var firstRun = buildState.latestBuild.testRuns[0];
+                        return <span style={{ marginLeft: '4px' }}>{firstRun.passedTests}/{firstRun.totalTests}</span>;
+                    }
+                })() }
+            </div>;
+        });
+
+        var x = 0;
+        var y = 0;
+
+        var layout = _.map(buildStates, buildState => {
+            var layoutItem: ReactGridLayout.ItemProps = { i: buildState.definition.id.toString(), x: x, y: y, w: 1, h: 1 };
+            x += 1;
+            if (x >= 6) {
+                x = 0;
+                y++;
+            }
+            return layoutItem;
+        });
+
+        ReactDOM.render(<ReactGridLayout layout={layout} cols={6} rowHeight={30}>{values}</ReactGridLayout>,
+            $(".builds")[0]
+        );
+    }
+
+    getBuildStateColor(buildState: BuildState) {
+
+        if (!buildState.latestBuild)
+            return "#F7F7F9";
+
+        switch (buildState.latestBuild.result) {
+            case BuildResult.None:
+                return "#F7F7F9";
+            case BuildResult.Succeeded:
+                return "#5CB85C";
+            case BuildResult.PartiallySucceeded:
+                return "#F0AD4E";
+            case BuildResult.Failed:
+                return "#D9534F";
+            case BuildResult.Canceled: 
+                return "#5BC0DE";
+        }
+    }
+}
+
+var mainComponent = new MainComponent();
 
 class BuildState {
     definition: IBuildDefinitionReference;

@@ -107,7 +107,13 @@ namespace Emf.Web.Ui.Models
                 cancellationToken: cancellationToken);
 
             var completedBuildsByDefinition = completedBuilds
-                .Where(b => latestReferences.ContainsKey(b.Definition.Id) && (b.FinishTime ?? b.StartTime) > buildCollection.LatestBuildFinishTime)
+                .Where(b => latestReferences.ContainsKey(b.Definition.Id))
+                .Where(b =>
+                {
+                    if (buildCollection.LatestBuildFinishTime == null || (b.StartTime == null && b.FinishTime == null))
+                        return true;
+                    return (b.FinishTime ?? b.StartTime) > buildCollection.LatestBuildFinishTime;
+                })
                 .ToLookup(b => b.Definition.Id)
                 .ToDictionary(
                     g => g.Key,
