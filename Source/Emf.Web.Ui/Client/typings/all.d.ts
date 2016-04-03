@@ -1,5 +1,5 @@
-﻿/// <reference path="tsd.d.ts" />
-/// <reference path="react-grid-layout/react-grid-layout.d.ts" />
+﻿/// <reference path="./browser.d.ts" />
+/// <reference path="./custom/react-grid-layout/react-grid-layout.d.ts" />
 
 declare var require: {
     <T>(path: string): T;

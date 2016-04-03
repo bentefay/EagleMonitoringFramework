@@ -30,6 +30,8 @@ namespace Emf.Web.Ui.Services.CredentialManagement
 
             using (var credentials = new Credential(SettingName))
             {
+                credentials.PersistanceType = PersistanceType.Session;
+
                 if (credentials.Load())
                 {
                     Log.Information("Loaded saved TFS credentials from Windows credential store (setting name: {settingName})", SettingName);

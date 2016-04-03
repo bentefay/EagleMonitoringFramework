@@ -27,7 +27,7 @@ export class ObservableCollectionManager {
         this._hubs.url = signalRUrl;
 
         // Uncomment for verbose SignalR logging
-        this._hubs.logging = true;
+        this._hubs.logging = false;
         // More detailed errors can then be enabled on the server with:
         // var hubConfiguration = new HubConfiguration();
         // hubConfiguration.EnableDetailedErrors = true;

@@ -254,6 +254,7 @@
     <Compile Include="AppStartup\SerilogConfig.cs" />
     <Compile Include="AppStartup\SignalRConfig.cs" />
     <Compile Include="AppStartup\UnityConfig.cs" />
+    <TypeScriptCompile Include="Client\common\lodashExtensions.ts" />
     <Compile Include="Hubs\Core\ClientExceptionHandlerPipelineModule.cs" />
     <Compile Include="Hubs\Core\IHubManager.cs" />
     <Compile Include="Hubs\Core\ISubscriptionHubClient.cs" />
@@ -279,17 +280,32 @@
     <Compile Include="Services\Settings\SettingStore.cs" />
     <Compile Include="SettingKeys.cs" />
     <Compile Include="Startup.cs" />
+    <TypeScriptCompile Include="Client\typings\all.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\ambient\jqueryui\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\ambient\jquery\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\ambient\moment-node\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\ambient\react-dom\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\ambient\react\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\ambient\signalr\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\definitions\lodash\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\browser\definitions\moment\index.d.ts" />
+    <TypeScriptCompile Include="Client\typings\custom\react-grid-layout\react-grid-layout.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <TypeScriptCompile Include="Client\common\logging\rx.ts" />
     <TypeScriptCompile Include="Client\libs\jquery-ui.ts" />
+    <None Include="Client\typings.json" />
     <None Include="package.json" />
     <None Include="packages.config" />
     <None Include="Client\tsconfig.json" />
-    <None Include="Client\tsd.json" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Public\fontawesome-webfont-32400f4e08932a94d8bfd2422702c446.eot" />
+    <None Include="Public\fontawesome-webfont-a35720c2fed2c7f043bc7e4ffb45e073.woff" />
+    <None Include="Public\fontawesome-webfont-a3de2170e4e9df77161ea5d3f31b2668.ttf" />
+    <None Include="Public\fontawesome-webfont-db812d8a70a4e88e888744c1c9a27e89.woff2" />
     <None Include="readme.md" />
     <TypeScriptCompile Include="Client\apps\builds\main.tsx" />
     <None Include="Client\apps\builds\main.less" />
@@ -312,6 +328,8 @@
     <Content Include="Client\libs\jquery-ui\jquery-ui.theme.min.css" />
     <Content Include="Client\libs\signalr\hubs.js" />
     <Content Include="gulpfile.js" />
+    <Content Include="Public\builds.css" />
+    <Content Include="Public\fontawesome-webfont-f775f9cca88e21d45bebe185b27c0e5b.svg" />
     <Content Include="WebpackLoaders\prefix-file-name-loader.js" />
     <Content Include="Public\builds.js" />
     <Content Include="Public\builds.min.js" />
@@ -334,17 +352,6 @@
     <TypeScriptCompile Include="Client\common\variables.ts" />
     <TypeScriptCompile Include="Client\libs\react-grid-layout.tsx" />
     <TypeScriptCompile Include="Client\libs\signalr.ts" />
-    <TypeScriptCompile Include="Client\typings\all.d.ts" />
-    <TypeScriptCompile Include="Client\typings\jqueryui\jqueryui.d.ts" />
-    <TypeScriptCompile Include="Client\typings\jquery\jquery.d.ts" />
-    <TypeScriptCompile Include="Client\typings\lodash\lodash.d.ts" />
-    <TypeScriptCompile Include="Client\typings\moment\moment-node.d.ts" />
-    <TypeScriptCompile Include="Client\typings\moment\moment.d.ts" />
-    <TypeScriptCompile Include="Client\typings\react-grid-layout\react-grid-layout.d.ts" />
-    <TypeScriptCompile Include="Client\typings\react\react-dom.d.ts" />
-    <TypeScriptCompile Include="Client\typings\react\react.d.ts" />
-    <TypeScriptCompile Include="Client\typings\signalr\signalr.d.ts" />
-    <TypeScriptCompile Include="Client\typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">

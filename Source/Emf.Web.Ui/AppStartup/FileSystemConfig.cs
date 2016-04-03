@@ -22,18 +22,20 @@ namespace Emf.Web.Ui.AppStartup
             {
                 EnableDirectoryBrowsing = false,
                 FileSystem = new PhysicalFileSystem(relativePathToRoot),
-                StaticFileOptions = { OnPrepareResponse = context =>
+                StaticFileOptions =
                 {
-                    var filePath = context.File.PhysicalPath;
+                    OnPrepareResponse = context =>
+                    {
+                        var filePath = context.File.PhysicalPath;
 
-                    if (filePath == null)
-                        return;
+                        if (filePath == null)
+                            return;
 
-                    if (filePath.StartsWith(pathToRoot))
-                        filePath = $".{filePath.Substring(pathToRoot.Length)}";
+                        if (filePath.StartsWith(pathToRoot))
+                            filePath = $".{filePath.Substring(pathToRoot.Length)}";
 
-                    Log.Information("Serving: {fileName}", filePath);
-                }
+                        Log.Information("Serving: {fileName}", filePath);
+                    }
                 }
             });
         }
