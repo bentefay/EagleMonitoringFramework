@@ -2,6 +2,7 @@
 
 import * as log from "../../common/log";
 import { ObservableCollectionManager, IObservableRepositoryEvent } from "../../common/observable-collection-manager";
+import _ = require("lodash");
 import $ = require("../../libs/jquery");
 import React = require("react");
 import ReactDOM = require("react-dom");
@@ -14,6 +15,7 @@ log.logger.logEvents.subscribe(new log.ConsoleObserver());
 class BuildStateCollection {
 
     map: { [buildDefinitionId: string]: BuildState } = {};
+    count = 0;
 
     get(buildDefinitionId: string): BuildState {
         var value = this.map[buildDefinitionId];
@@ -21,6 +23,7 @@ class BuildStateCollection {
             return value;
         } else {
             this.map[buildDefinitionId] = value = new BuildState();
+            this.count++;
             return value;
         }
     }
@@ -39,6 +42,7 @@ class BuildStateCollection {
             value[path] = null;
             if (!value.definition && !value.latestBuild) {
                 delete this.map[buildDefinitionId];
+                this.count--;
             }
         }
     }
@@ -48,6 +52,7 @@ class MainComponent {
 
     buildStates: BuildStateCollection;
     manager: ObservableCollectionManager;
+
 
     constructor() {
 
@@ -85,9 +90,17 @@ class MainComponent {
         });
     }
 
+    onLayoutChanged(itemProps: ReactGridLayout.ItemProps[]) {
+        
+    }
+
     render = () => {
 
-        const buildStates = _(this.buildStates.map).map((value: BuildState) => value).filter((value: BuildState) => value.definition).value();
+        const buildStates = _(this.buildStates.map)
+            .map((value: BuildState) => value)
+            .filter((value: BuildState) => value.definition)
+            .orderBy((value: BuildState) => value.definition.name)
+            .value();
 
         var values = _.map(buildStates, buildState => {
             return <div key={buildState.definition.id} style={{ backgroundColor: this.getBuildStateColor(buildState) }}>
@@ -114,7 +127,7 @@ class MainComponent {
             return layoutItem;
         });
 
-        ReactDOM.render(<ReactGridLayout layout={layout} cols={6} rowHeight={30}>{values}</ReactGridLayout>,
+        ReactDOM.render(<ReactGridLayout layout={layout} cols={6} rowHeight={30} onLayoutChange={this.onLayoutChanged}>{values}</ReactGridLayout>,
             $(".builds")[0]
         );
     }
@@ -133,7 +146,7 @@ class MainComponent {
                 return "#F0AD4E";
             case BuildResult.Failed:
                 return "#D9534F";
-            case BuildResult.Canceled: 
+            case BuildResult.Canceled:
                 return "#5BC0DE";
         }
     }
@@ -142,8 +155,20 @@ class MainComponent {
 var mainComponent = new MainComponent();
 
 class BuildState {
+
+    constructor() {
+        this.viewModel = { order: 0, width: 1, height: 1 };
+    }
+
     definition: IBuildDefinitionReference;
     latestBuild: IBuild;
+    viewModel: IBuildStateViewModel;
+}
+
+interface IBuildStateViewModel {
+    order: number;
+    width: number;
+    height: number;
 }
 
 interface IBuildDefinitionReference {

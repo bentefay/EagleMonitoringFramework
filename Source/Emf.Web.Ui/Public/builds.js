@@ -49,6 +49,7 @@
 	"use strict";
 	var log = __webpack_require__(1);
 	var observable_collection_manager_1 = __webpack_require__(107);
+	var _ = __webpack_require__(3);
 	var $ = __webpack_require__(110);
 	var React = __webpack_require__(114);
 	var ReactDOM = __webpack_require__(271);
@@ -59,6 +60,7 @@
 	var BuildStateCollection = (function () {
 	    function BuildStateCollection() {
 	        this.map = {};
+	        this.count = 0;
 	    }
 	    BuildStateCollection.prototype.get = function (buildDefinitionId) {
 	        var value = this.map[buildDefinitionId];
@@ -67,6 +69,7 @@
 	        }
 	        else {
 	            this.map[buildDefinitionId] = value = new BuildState();
+	            this.count++;
 	            return value;
 	        }
 	    };
@@ -82,6 +85,7 @@
 	            value[path] = null;
 	            if (!value.definition && !value.latestBuild) {
 	                delete this.map[buildDefinitionId];
+	                this.count--;
 	            }
 	        }
 	    };
@@ -91,7 +95,11 @@
 	    function MainComponent() {
 	        var _this = this;
 	        this.render = function () {
-	            var buildStates = _(_this.buildStates.map).map(function (value) { return value; }).filter(function (value) { return value.definition; }).value();
+	            var buildStates = _(_this.buildStates.map)
+	                .map(function (value) { return value; })
+	                .filter(function (value) { return value.definition; })
+	                .orderBy(function (value) { return value.definition.name; })
+	                .value();
 	            var values = _.map(buildStates, function (buildState) {
 	                return React.createElement("div", {key: buildState.definition.id, style: { backgroundColor: _this.getBuildStateColor(buildState) }}, React.createElement("span", null, buildState.definition.name), (function () {
 	                    if (buildState.latestBuild && buildState.latestBuild.testRuns.length > 0) {
@@ -111,7 +119,7 @@
 	                }
 	                return layoutItem;
 	            });
-	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: 6, rowHeight: 30}, values), $(".builds")[0]);
+	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: 6, rowHeight: 30, onLayoutChange: _this.onLayoutChanged}, values), $(".builds")[0]);
 	        };
 	        this.manager = new observable_collection_manager_1.ObservableCollectionManager("./signalr", { clearError: function () { }, showError: function (message) { } });
 	        this.buildStates = new BuildStateCollection();
@@ -140,6 +148,8 @@
 	            }
 	        });
 	    }
+	    MainComponent.prototype.onLayoutChanged = function (itemProps) {
+	    };
 	    MainComponent.prototype.getBuildStateColor = function (buildState) {
 	        if (!buildState.latestBuild)
 	            return "#F7F7F9";
@@ -161,6 +171,7 @@
 	var mainComponent = new MainComponent();
 	var BuildState = (function () {
 	    function BuildState() {
+	        this.viewModel = { order: 0, width: 1, height: 1 };
 	    }
 	    return BuildState;
 	}());
@@ -65981,9 +65992,15 @@
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(114);
 
@@ -66007,6 +66024,8 @@
 	  _inherits(Resizable, _React$Component);
 
 	  function Resizable() {
+	    var _Object$getPrototypeO;
+
 	    var _temp, _this, _ret;
 
 	    _classCallCheck(this, Resizable);
@@ -66015,149 +66034,158 @@
 	      args[_key] = arguments[_key];
 	    }
 
-	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Resizable)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.state = {
 	      resizing: false,
 	      width: _this.props.width, height: _this.props.height,
 	      slackW: 0, slackH: 0
 	    }, _temp), _possibleConstructorReturn(_this, _ret);
 	  }
 
-	  Resizable.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
-	    // If parent changes height/width, set that in our state.
-	    if (!this.state.resizing && (nextProps.width !== this.props.width || nextProps.height !== this.props.height)) {
-	      this.setState({
-	        width: nextProps.width,
-	        height: nextProps.height
-	      });
+	  _createClass(Resizable, [{
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      // If parent changes height/width, set that in our state.
+	      if (!this.state.resizing && (nextProps.width !== this.props.width || nextProps.height !== this.props.height)) {
+	        this.setState({
+	          width: nextProps.width,
+	          height: nextProps.height
+	        });
+	      }
 	    }
-	  };
-
-	  Resizable.prototype.lockAspectRatio = function lockAspectRatio(width, height, aspectRatio) {
-	    height = width / aspectRatio;
-	    width = height * aspectRatio;
-	    return [width, height];
-	  };
-
-	  // If you do this, be careful of constraints
-
-
-	  Resizable.prototype.runConstraints = function runConstraints(width, height) {
-	    var min = this.props.minConstraints;
-	    var max = this.props.maxConstraints;
-
-
-	    if (this.props.lockAspectRatio) {
-	      var ratio = this.state.width / this.state.height;
-	      height = width / ratio;
-	      width = height * ratio;
+	  }, {
+	    key: 'lockAspectRatio',
+	    value: function lockAspectRatio(width, height, aspectRatio) {
+	      height = width / aspectRatio;
+	      width = height * aspectRatio;
+	      return [width, height];
 	    }
 
-	    if (!min && !max) return [width, height];
+	    // If you do this, be careful of constraints
 
-	    var oldW = width;
-	    var oldH = height;
-
-	    // Add slack to the values used to calculate bound position. This will ensure that if
-	    // we start removing slack, the element won't react to it right away until it's been
-	    // completely removed.
-
-	    var _state = this.state;
-	    var slackW = _state.slackW;
-	    var slackH = _state.slackH;
-
-	    width += slackW;
-	    height += slackH;
-
-	    if (min) {
-	      width = Math.max(min[0], width);
-	      height = Math.max(min[1], height);
-	    }
-	    if (max) {
-	      width = Math.min(max[0], width);
-	      height = Math.min(max[1], height);
-	    }
-
-	    // If the numbers changed, we must have introduced some slack. Record it for the next iteration.
-	    slackW += oldW - width;
-	    slackH += oldH - height;
-	    if (slackW !== this.state.slackW || slackH !== this.state.slackH) {
-	      this.setState({ slackW: slackW, slackH: slackH });
-	    }
-
-	    return [width, height];
-	  };
-
-	  /**
-	   * Wrapper around drag events to provide more useful data.
-	   *
-	   * @param  {String} handlerName Handler name to wrap.
-	   * @return {Function}           Handler function.
-	   */
+	  }, {
+	    key: 'runConstraints',
+	    value: function runConstraints(width, height) {
+	      var min = this.props.minConstraints;
+	      var max = this.props.maxConstraints;
 
 
-	  Resizable.prototype.resizeHandler = function resizeHandler(handlerName) {
-	    var _this2 = this;
-
-	    return function (e, _ref) {
-	      var node = _ref.node;
-	      var position = _ref.position;
-	      var deltaX = position.deltaX;
-	      var deltaY = position.deltaY;
-
-	      var width = _this2.state.width + deltaX,
-	          height = _this2.state.height + deltaY;
-
-	      // Early return if no change
-	      var widthChanged = width !== _this2.state.width,
-	          heightChanged = height !== _this2.state.height;
-	      if (handlerName === 'onResize' && !widthChanged && !heightChanged) return;
-
-	      // Set the appropriate state for this handler.
-
-	      var _runConstraints = _this2.runConstraints(width, height);
-
-	      width = _runConstraints[0];
-	      height = _runConstraints[1];
-	      var newState = {};
-	      if (handlerName === 'onResizeStart') {
-	        newState.resizing = true;
-	      } else if (handlerName === 'onResizeStop') {
-	        newState.resizing = false;
-	      } else {
-	        // Early return if no change after constraints
-	        if (width === _this2.state.width && height === _this2.state.height) return;
-	        newState.width = width;
-	        newState.height = height;
+	      if (this.props.lockAspectRatio) {
+	        var ratio = this.state.width / this.state.height;
+	        height = width / ratio;
+	        width = height * ratio;
 	      }
 
-	      _this2.setState(newState, function () {
-	        _this2.props[handlerName] && _this2.props[handlerName](e, { node: node, size: { width: width, height: height } });
-	      });
-	    };
-	  };
+	      if (!min && !max) return [width, height];
 
-	  Resizable.prototype.render = function render() {
-	    var p = this.props;
-	    var className = p.className ? p.className + ' react-resizable' : 'react-resizable';
+	      var oldW = width;
+	      var oldH = height;
 
-	    // What we're doing here is getting the child of this element, and cloning it with this element's props.
-	    // We are then defining its children as:
-	    // Its original children (resizable's child's children), and
-	    // A draggable handle.
-	    return (0, _cloneElement2.default)(p.children, _extends({}, p, {
-	      className: className,
-	      children: [p.children.props.children, _react2.default.createElement(
-	        _reactDraggable.DraggableCore,
-	        _extends({}, p.draggableOpts, {
-	          ref: 'draggable',
-	          onStop: this.resizeHandler('onResizeStop'),
-	          onStart: this.resizeHandler('onResizeStart'),
-	          onDrag: this.resizeHandler('onResize')
-	        }),
-	        _react2.default.createElement('span', { className: 'react-resizable-handle' })
-	      )]
-	    }));
-	  };
+	      // Add slack to the values used to calculate bound position. This will ensure that if
+	      // we start removing slack, the element won't react to it right away until it's been
+	      // completely removed.
+
+	      var _state = this.state;
+	      var slackW = _state.slackW;
+	      var slackH = _state.slackH;
+
+	      width += slackW;
+	      height += slackH;
+
+	      if (min) {
+	        width = Math.max(min[0], width);
+	        height = Math.max(min[1], height);
+	      }
+	      if (max) {
+	        width = Math.min(max[0], width);
+	        height = Math.min(max[1], height);
+	      }
+
+	      // If the numbers changed, we must have introduced some slack. Record it for the next iteration.
+	      slackW += oldW - width;
+	      slackH += oldH - height;
+	      if (slackW !== this.state.slackW || slackH !== this.state.slackH) {
+	        this.setState({ slackW: slackW, slackH: slackH });
+	      }
+
+	      return [width, height];
+	    }
+
+	    /**
+	     * Wrapper around drag events to provide more useful data.
+	     *
+	     * @param  {String} handlerName Handler name to wrap.
+	     * @return {Function}           Handler function.
+	     */
+
+	  }, {
+	    key: 'resizeHandler',
+	    value: function resizeHandler(handlerName) {
+	      var _this2 = this;
+
+	      return function (e, _ref) {
+	        var node = _ref.node;
+	        var position = _ref.position;
+	        var deltaX = position.deltaX;
+	        var deltaY = position.deltaY;
+
+	        var width = _this2.state.width + deltaX,
+	            height = _this2.state.height + deltaY;
+
+	        // Early return if no change
+	        var widthChanged = width !== _this2.state.width,
+	            heightChanged = height !== _this2.state.height;
+	        if (handlerName === 'onResize' && !widthChanged && !heightChanged) return;
+
+	        // Set the appropriate state for this handler.
+
+	        var _runConstraints = _this2.runConstraints(width, height);
+
+	        var _runConstraints2 = _slicedToArray(_runConstraints, 2);
+
+	        width = _runConstraints2[0];
+	        height = _runConstraints2[1];
+	        var newState = {};
+	        if (handlerName === 'onResizeStart') {
+	          newState.resizing = true;
+	        } else if (handlerName === 'onResizeStop') {
+	          newState.resizing = false;
+	        } else {
+	          // Early return if no change after constraints
+	          if (width === _this2.state.width && height === _this2.state.height) return;
+	          newState.width = width;
+	          newState.height = height;
+	        }
+
+	        _this2.setState(newState, function () {
+	          _this2.props[handlerName] && _this2.props[handlerName](e, { node: node, size: { width: width, height: height } });
+	        });
+	      };
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var p = this.props;
+	      var className = p.className ? p.className + ' react-resizable' : 'react-resizable';
+
+	      // What we're doing here is getting the child of this element, and cloning it with this element's props.
+	      // We are then defining its children as:
+	      // Its original children (resizable's child's children), and
+	      // A draggable handle.
+	      return (0, _cloneElement2.default)(p.children, _extends({}, p, {
+	        className: className,
+	        children: [p.children.props.children, _react2.default.createElement(
+	          _reactDraggable.DraggableCore,
+	          _extends({}, p.draggableOpts, {
+	            ref: 'draggable',
+	            onStop: this.resizeHandler('onResizeStop'),
+	            onStart: this.resizeHandler('onResizeStart'),
+	            onDrag: this.resizeHandler('onResize')
+	          }),
+	          _react2.default.createElement('span', { className: 'react-resizable-handle' })
+	        )]
+	      }));
+	    }
+	  }]);
 
 	  return Resizable;
 	}(_react2.default.Component);
@@ -66235,9 +66263,13 @@
 
 	'use strict';
 
-	exports.__esModule = true;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	var _react = __webpack_require__(114);
 
@@ -66263,6 +66295,8 @@
 	  _inherits(ResizableBox, _React$Component);
 
 	  function ResizableBox() {
+	    var _Object$getPrototypeO;
+
 	    var _temp, _this, _ret;
 
 	    _classCallCheck(this, ResizableBox);
@@ -66271,7 +66305,7 @@
 	      args[_key] = arguments[_key];
 	    }
 
-	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, _React$Component.call.apply(_React$Component, [this].concat(args))), _this), _this.state = {
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(ResizableBox)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.state = {
 	      width: _this.props.width,
 	      height: _this.props.height
 	    }, _this.onResize = function (event, _ref) {
@@ -66287,38 +66321,41 @@
 	    }, _temp), _possibleConstructorReturn(_this, _ret);
 	  }
 
-	  ResizableBox.prototype.render = function render() {
-	    // Basic wrapper around a Resizable instance.
-	    // If you use Resizable directly, you are responsible for updating the child component
-	    // with a new width and height.
-	    var _props = this.props;
-	    var handleSize = _props.handleSize;
-	    var onResizeStart = _props.onResizeStart;
-	    var onResizeStop = _props.onResizeStop;
-	    var draggableOpts = _props.draggableOpts;
-	    var minConstraints = _props.minConstraints;
-	    var maxConstraints = _props.maxConstraints;
-	    var lockAspectRatio = _props.lockAspectRatio;
+	  _createClass(ResizableBox, [{
+	    key: 'render',
+	    value: function render() {
+	      // Basic wrapper around a Resizable instance.
+	      // If you use Resizable directly, you are responsible for updating the child component
+	      // with a new width and height.
+	      var _props = this.props;
+	      var handleSize = _props.handleSize;
+	      var onResizeStart = _props.onResizeStart;
+	      var onResizeStop = _props.onResizeStop;
+	      var draggableOpts = _props.draggableOpts;
+	      var minConstraints = _props.minConstraints;
+	      var maxConstraints = _props.maxConstraints;
+	      var lockAspectRatio = _props.lockAspectRatio;
 
-	    var props = _objectWithoutProperties(_props, ['handleSize', 'onResizeStart', 'onResizeStop', 'draggableOpts', 'minConstraints', 'maxConstraints', 'lockAspectRatio']);
+	      var props = _objectWithoutProperties(_props, ['handleSize', 'onResizeStart', 'onResizeStop', 'draggableOpts', 'minConstraints', 'maxConstraints', 'lockAspectRatio']);
 
-	    return _react2.default.createElement(
-	      _Resizable2.default,
-	      {
-	        handleSize: handleSize,
-	        width: this.state.width,
-	        height: this.state.height,
-	        onResizeStart: onResizeStart,
-	        onResize: this.onResize,
-	        onResizeStop: onResizeStop,
-	        draggableOpts: draggableOpts,
-	        minConstraints: minConstraints,
-	        maxConstraints: maxConstraints,
-	        lockAspectRatio: lockAspectRatio
-	      },
-	      _react2.default.createElement('div', _extends({ style: { width: this.state.width + 'px', height: this.state.height + 'px' } }, props))
-	    );
-	  };
+	      return _react2.default.createElement(
+	        _Resizable2.default,
+	        {
+	          handleSize: handleSize,
+	          width: this.state.width,
+	          height: this.state.height,
+	          onResizeStart: onResizeStart,
+	          onResize: this.onResize,
+	          onResizeStop: onResizeStop,
+	          draggableOpts: draggableOpts,
+	          minConstraints: minConstraints,
+	          maxConstraints: maxConstraints,
+	          lockAspectRatio: lockAspectRatio
+	        },
+	        _react2.default.createElement('div', _extends({ style: { width: this.state.width + 'px', height: this.state.height + 'px' } }, props))
+	      );
+	    }
+	  }]);
 
 	  return ResizableBox;
 	}(_react2.default.Component);
