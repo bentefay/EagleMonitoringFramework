@@ -14,6 +14,7 @@ namespace Emf.Web.Ui.Models
         private readonly TimeSpan _checkForBuildsInterval;
         private readonly ObservableRepository<int, BuildDefinitionReference> _buildDefinitions;
         private readonly ObservableRepository<int, Build> _builds;
+        private readonly ObservableRepository<int, Settings> _settings;
 
         public TfsMonitoringService(TfsBuildDefinitionRepository repository, TimeSpan checkForDefinitionsInterval, TimeSpan checkForBuildsInterval)
         {
@@ -22,6 +23,8 @@ namespace Emf.Web.Ui.Models
             _checkForBuildsInterval = checkForBuildsInterval;
             _buildDefinitions = new ObservableRepository<int, BuildDefinitionReference>(d => d.Id);
             _builds = new ObservableRepository<int, Build>(b => b.Definition.Id);
+            _settings = new ObservableRepository<int, Settings>(s => 0);
+            _settings.AddOrUpdate(new [] { _repository.GetSettings() });
         }
 
         public async Task Start()
@@ -55,6 +58,7 @@ namespace Emf.Web.Ui.Models
 
         public IObservableRepository<int, BuildDefinitionReference> BuildDefinitions => _buildDefinitions;
         public IObservableRepository<int, Build> Builds => _builds;
+        public IObservableRepository<int, Settings> Settings => _settings;
 
         public void Dispose()
         {

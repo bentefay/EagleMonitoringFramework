@@ -269,6 +269,7 @@
     <Compile Include="Models\BuildDefinition.cs" />
     <Compile Include="Models\ObservableRepository.cs" />
     <Compile Include="Models\RepeatTask.cs" />
+    <Compile Include="Models\Settings.cs" />
     <Compile Include="Models\TestRun.cs" />
     <Compile Include="Models\TfsBuildDefinitionRepository.cs" />
     <Compile Include="Models\TfsMonitoringService.cs" />

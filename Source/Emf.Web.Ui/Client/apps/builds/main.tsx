@@ -53,12 +53,19 @@ class MainComponent {
 
     buildStates: BuildStateCollection;
     manager: ObservableCollectionManager;
-
+    settings: ISettings;
 
     constructor() {
 
         this.manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
         this.buildStates = new BuildStateCollection();
+
+        this.manager.subscribe<ISettings>("settings", {
+            onNewEvent: event => {
+                this.settings = event.newOrUpdatedItems[0].value;
+                this.render();
+            }
+        });
 
         this.manager.subscribe<IBuildDefinitionReference>("buildDefinitions", {
             onNewEvent: event => {
@@ -135,15 +142,21 @@ class MainComponent {
         );
     }
 
+    getBuildUrl(buildState: BuildState) {
+        if (this.settings) {
+            return `${this.settings.tfsCollectionUrl}/${this.settings.tfsProject}/_build#definitionId=${buildState.definition.id}&_a=completed`;
+        }
+    }
+
     getProjectComponent(buildStates: BuildState[], key: string) {
         return <div key={key} style={{ backgroundColor: this.getProjectStateColor(buildStates) }}>
-            <div style={{ position: "absolute", left: "10px", right: "10px", top: "0", bottom: "0", lineHeight: "30px" }}>
+            <div style={{ height: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", alignContents: "center", padding: "0 10px" }}>
 
-                <div style={{ textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", textAlign: "right", float: "right" }}>
+                <div style={{ whiteSpace: "nowrap" }}>
                     {_.map(buildStates, buildState => this.getProjectBuildComponent(buildState)) }
                 </div>
 
-                <div style={{ textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", textAlign: "left", float: "left" }}>
+                <div style={{ textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}>
                     <span style={{ fontWeight: "bold", fontSize: "0.8em" }}>{key}</span>
                 </div>
 
@@ -152,11 +165,11 @@ class MainComponent {
     }
 
     getProjectBuildComponent(buildState: BuildState) {
-        return <span key={buildState.definition.id} className="project-build"
-            style={{ backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "4px", borderRadius: "2px" }}
+        return <a key={buildState.definition.id} className="project-build" href={this.getBuildUrl(buildState)} target="_blank"
+            style={{ backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "2px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }}
             title={buildState.definition.name}>
-            {this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name)) }{this.getTestsComponent(buildState) }
-        </span>;
+            {this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name))}{this.getTestsComponent(buildState) }
+        </a>;
     }
 
     getProjectBuildIconComponent(name: string) {
@@ -361,6 +374,11 @@ interface ITestRun {
     notApplicableTests: number;
     totalTests: number;
     errorMessages: string;
+}
+
+interface ISettings {
+    tfsCollectionUrl: string;
+    tfsProject: string;
 }
 
 enum DefinitionType {

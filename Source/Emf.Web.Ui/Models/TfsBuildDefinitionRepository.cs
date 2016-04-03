@@ -14,6 +14,7 @@ namespace Emf.Web.Ui.Models
     {
         private const string _tfsProject = "GlobalRoam";
         private static readonly Uri _baseUrl = new Uri("http://tfs.gr.local:8080/tfs/GRCollection");
+        private static readonly Settings _settings = new Settings(_baseUrl.ToString(), _tfsProject);
 
         private readonly SettingStore<Dictionary<int, BuildDefinition>> _buildDefinitionStore;
         private readonly SettingStore<BuildCollection> _buildStore;
@@ -27,6 +28,8 @@ namespace Emf.Web.Ui.Models
             _buildClient = new BuildHttpClient(_baseUrl, credentials);
             _testManagementClient = new TestManagementHttpClient(_baseUrl, credentials);
         }
+
+        public Settings GetSettings() => _settings;
 
         public async Task<IReadOnlyList<BuildDefinitionReference>> GetLatestDefinitionReferences(CancellationToken cancellationToken)
         {
