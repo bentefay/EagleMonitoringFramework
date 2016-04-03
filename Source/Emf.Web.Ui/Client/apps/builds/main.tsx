@@ -110,7 +110,7 @@ class MainComponent {
             .orderBy((value: BuildState) => value.definition.name)
             .value();
 
-        const groupedBuildStates = _(buildStates).groupBy(s => this.getProjectName(s.definition.name))
+        const groupedBuildStates = _(buildStates).groupBy(s => this.getProjectPath(s.definition.name))
             .map((buildStates: BuildState[], key: string) => { return { buildStates, key }; })
             .orderBy(b => b.key)
             .value();
@@ -137,7 +137,7 @@ class MainComponent {
             return layoutItem;
         });
 
-        ReactDOM.render(<ReactGridLayout layout={layout} cols={columnCount} rowHeight={30} onLayoutChange={this.onLayoutChanged}>{values}</ReactGridLayout>,
+        ReactDOM.render(<ReactGridLayout layout={layout} cols={columnCount} rowHeight={50} onLayoutChange={this.onLayoutChanged}>{values}</ReactGridLayout>,
             $(".builds")[0]
         );
     }
@@ -157,7 +157,8 @@ class MainComponent {
                 </div>
 
                 <div style={{ textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}>
-                    <span style={{ fontWeight: "bold", fontSize: "0.8em" }}>{key}</span>
+                    <div style={{ fontSize: "1.4em" }}>{this.getProjectName(key) }</div>
+                    <div style={{ fontSize: "0.5em" }}>{this.getProjectParentPath(key) }</div>
                 </div>
 
             </div>
@@ -166,7 +167,7 @@ class MainComponent {
 
     getProjectBuildComponent(buildState: BuildState) {
         return <a key={buildState.definition.id} className="project-build" href={this.getBuildUrl(buildState)} target="_blank"
-            style={{ backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "2px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }}
+            style={{ backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "4px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }}
             title={buildState.definition.name}>
             {this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name))}{this.getTestsComponent(buildState) }
         </a>;
@@ -218,6 +219,32 @@ class MainComponent {
     }
 
     getProjectName(name: string) {
+        const projectPath = this.getProjectPath(name);
+
+        if (!projectPath)
+            return null;
+
+        const projectNameStart = _.lastIndexOf(projectPath, ".");
+        if (projectNameStart === -1)
+            return projectPath;
+
+        return projectPath.substring(projectNameStart + 1);
+    }
+
+    getProjectParentPath(name: string) {
+        const projectPath = this.getProjectPath(name);
+
+        if (!projectPath)
+            return null;
+
+        const projectNameStart = _.lastIndexOf(projectPath, ".");
+        if (projectNameStart === -1)
+            return projectPath;
+
+        return projectPath.substring(0, projectNameStart);
+    }
+
+    getProjectPath(name: string) {
         const projectNameStart = _.lastIndexOf(name, ".");
         if (projectNameStart === -1)
             return name;
@@ -336,6 +363,8 @@ class BuildState {
     definition: IBuildDefinitionReference;
     latestBuild: IBuild;
     viewModel: IBuildStateViewModel;
+
+
 }
 
 interface IBuildStateViewModel {

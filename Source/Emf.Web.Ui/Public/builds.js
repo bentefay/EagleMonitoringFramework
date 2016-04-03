@@ -101,7 +101,7 @@
 	                .filter(function (value) { return value.definition && !_.startsWith(value.definition.name, "OLD_") && !_.endsWith(value.definition.name, "_Deprecated"); })
 	                .orderBy(function (value) { return value.definition.name; })
 	                .value();
-	            var groupedBuildStates = _(buildStates).groupBy(function (s) { return _this.getProjectName(s.definition.name); })
+	            var groupedBuildStates = _(buildStates).groupBy(function (s) { return _this.getProjectPath(s.definition.name); })
 	                .map(function (buildStates, key) { return { buildStates: buildStates, key: key }; })
 	                .orderBy(function (b) { return b.key; })
 	                .value();
@@ -120,7 +120,7 @@
 	                minHeightColumn.height += elementHeight;
 	                return layoutItem;
 	            });
-	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: columnCount, rowHeight: 30, onLayoutChange: _this.onLayoutChanged}, values), $(".builds")[0]);
+	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: columnCount, rowHeight: 50, onLayoutChange: _this.onLayoutChanged}, values), $(".builds")[0]);
 	        };
 	        this.manager = new observable_collection_manager_1.ObservableCollectionManager("./signalr", { clearError: function () { }, showError: function (message) { } });
 	        this.buildStates = new BuildStateCollection();
@@ -164,10 +164,10 @@
 	    };
 	    MainComponent.prototype.getProjectComponent = function (buildStates, key) {
 	        var _this = this;
-	        return React.createElement("div", {key: key, style: { backgroundColor: this.getProjectStateColor(buildStates) }}, React.createElement("div", {style: { height: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", alignContents: "center", padding: "0 10px" }}, React.createElement("div", {style: { whiteSpace: "nowrap" }}, _.map(buildStates, function (buildState) { return _this.getProjectBuildComponent(buildState); })), React.createElement("div", {style: { textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}, React.createElement("span", {style: { fontWeight: "bold", fontSize: "0.8em" }}, key))));
+	        return React.createElement("div", {key: key, style: { backgroundColor: this.getProjectStateColor(buildStates) }}, React.createElement("div", {style: { height: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", alignContents: "center", padding: "0 10px" }}, React.createElement("div", {style: { whiteSpace: "nowrap" }}, _.map(buildStates, function (buildState) { return _this.getProjectBuildComponent(buildState); })), React.createElement("div", {style: { textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}, React.createElement("div", {style: { fontSize: "1.4em" }}, this.getProjectName(key)), React.createElement("div", {style: { fontSize: "0.5em" }}, this.getProjectParentPath(key)))));
 	    };
 	    MainComponent.prototype.getProjectBuildComponent = function (buildState) {
-	        return React.createElement("a", {key: buildState.definition.id, className: "project-build", href: this.getBuildUrl(buildState), target: "_blank", style: { backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "2px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }, title: buildState.definition.name}, this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name)), this.getTestsComponent(buildState));
+	        return React.createElement("a", {key: buildState.definition.id, className: "project-build", href: this.getBuildUrl(buildState), target: "_blank", style: { backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "4px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }, title: buildState.definition.name}, this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name)), this.getTestsComponent(buildState));
 	    };
 	    MainComponent.prototype.getProjectBuildIconComponent = function (name) {
 	        var icon = this.getProjectBuildIcon(name);
@@ -211,6 +211,24 @@
 	        return buildNamePostfix;
 	    };
 	    MainComponent.prototype.getProjectName = function (name) {
+	        var projectPath = this.getProjectPath(name);
+	        if (!projectPath)
+	            return null;
+	        var projectNameStart = _.lastIndexOf(projectPath, ".");
+	        if (projectNameStart === -1)
+	            return projectPath;
+	        return projectPath.substring(projectNameStart + 1);
+	    };
+	    MainComponent.prototype.getProjectParentPath = function (name) {
+	        var projectPath = this.getProjectPath(name);
+	        if (!projectPath)
+	            return null;
+	        var projectNameStart = _.lastIndexOf(projectPath, ".");
+	        if (projectNameStart === -1)
+	            return projectPath;
+	        return projectPath.substring(0, projectNameStart);
+	    };
+	    MainComponent.prototype.getProjectPath = function (name) {
 	        var projectNameStart = _.lastIndexOf(name, ".");
 	        if (projectNameStart === -1)
 	            return name;
