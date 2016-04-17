@@ -7,7 +7,7 @@ namespace Emf.Web.Ui.Models
     {
         static TestRun()
         {
-            DefaultComparer = EqualityCompare<TestRun>.EquateBy(t => t);
+            DefaultComparer = EqualityCompare<TestRun>.EquateBy(t => t.Id);
         }
 
         [JsonConstructor]

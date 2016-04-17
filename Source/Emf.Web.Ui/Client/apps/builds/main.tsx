@@ -86,6 +86,14 @@ class MainComponent {
             onNewEvent: event => {
                 _.forEach(event.newOrUpdatedItems, build => {
                     const buildState = this.buildStates.get(build.key);
+
+                    if (buildState.latestBuild && buildState.definition) {
+                        log.information("{buildName} changed to {newStatus} - {newResult} (from {oldStatus} - {oldResult})",
+                            buildState.definition.name,
+                            BuildStatus[build.value.status], BuildResult[build.value.result],
+                            BuildStatus[buildState.latestBuild.status], BuildResult[buildState.latestBuild.result]);
+                    }
+
                     buildState.latestBuild = build.value;
                 });
 
@@ -268,55 +276,75 @@ class MainComponent {
 
         const buildStatesWithResults = _.filter(buildStates, b => b.latestBuild && b.latestBuild.result);
 
-        let worstResult = { result: BuildResult.None };
+        let mostImportantResult = { status: BuildStatus.None, result: BuildResult.None };
 
         if (_.some(buildStatesWithResults)) {
-            worstResult = _(buildStatesWithResults)
-                .map(b => b.latestBuild.result)
-                .map(r => { return { alertLevel: this.getBuildResultAlertLevel(r), result: r }; })
+            mostImportantResult = _(buildStatesWithResults)
+                .map(b => b.latestBuild)
+                .map(b => { return { alertLevel: this.getBuildResultImportanceLevel(b.status, b.result), status: b.status, result: b.result }; })
                 .maxBy(r => r.alertLevel);
         }
 
-        const color = this.getBuildResultColor(worstResult.result);
+        const color = this.getBuildResultColor(mostImportantResult.status, mostImportantResult.result);
 
         return Color.parseColor(color).mix(Color.white, 0.5).toString();
     }
 
-    getBuildResultAlertLevel(result: BuildResult) {
-        switch (result) {
-            case BuildResult.None:
-                return 0;
-            case BuildResult.Succeeded:
-                return 2;
-            case BuildResult.PartiallySucceeded:
-                return 3;
-            case BuildResult.Failed:
-                return 4;
-            case BuildResult.Canceled:
-                return 1;
+    getBuildResultImportanceLevel(status: BuildStatus, result: BuildResult) {
+        if (!_.isNull(result) && result !== BuildResult.None) {
+            switch (result) {
+                case BuildResult.Succeeded:
+                    return 15;
+                case BuildResult.PartiallySucceeded:
+                    return 16;
+                case BuildResult.Failed:
+                    return 20;
+                case BuildResult.Canceled:
+                    return 10;
+            }
+        } else if (!_.isNull(status)) {
+            switch (status) {
+                case BuildStatus.InProgress:
+                    return 19;
+                default:
+                    return 0;
+            }
+        } else {
+            return 0;
         }
     }
 
     getBuildStateColor(buildState: BuildState) {
 
         if (!buildState.latestBuild)
-            return this.getBuildResultColor(BuildResult.None);
+            return this.getBuildResultColor(BuildStatus.None, BuildResult.None);
 
-        return this.getBuildResultColor(buildState.latestBuild.result);
+        return this.getBuildResultColor(buildState.latestBuild.status, buildState.latestBuild.result);
     }
 
-    getBuildResultColor(result: BuildResult) {
-        switch (result) {
-            case BuildResult.None:
-                return "#5CB85C"; // F7F7F9
-            case BuildResult.Succeeded:
-                return "#5CB85C";
-            case BuildResult.PartiallySucceeded:
-                return "#F0AD4E";
-            case BuildResult.Failed:
-                return "#D9534F";
-            case BuildResult.Canceled:
-                return "#5BC0DE";
+    getBuildResultColor(status: BuildStatus, result: BuildResult) {
+        if (!_.isNull(result) && result !== BuildResult.None) {
+            switch (result) {
+                case BuildResult.Succeeded:
+                    return "#5CB85C";
+                case BuildResult.PartiallySucceeded:
+                    return "#F0AD4E";
+                case BuildResult.Failed:
+                    return "#D9534F";
+                case BuildResult.Canceled:
+                    return "#5BC0DE";
+                default:
+                    return "#5CB85C";
+            }
+        } else if (!_.isNull(status)) {
+            switch (status) {
+                case BuildStatus.InProgress:
+                    return "#569CD6";
+                default:
+                    return "#5CB85C";
+            }
+        } else {
+            return null;
         }
     }
 }

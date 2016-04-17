@@ -17,16 +17,17 @@ namespace Emf.Web.Ui.Models
     }
 
     public class ObservableRepository<TKey, TValue> : IObservableRepository<TKey, TValue>
-        where TValue : IEquatable<TValue>
     {
         private readonly object _lock = new object();
         private readonly Func<TValue, TKey> _getKey;
+        private readonly IEqualityComparer<TValue> _equalityComparer;
         private readonly Dictionary<TKey, TValue> _map;
         private readonly Subject<ObservableRepositoryEvent<TKey, TValue>> _subject = new Subject<ObservableRepositoryEvent<TKey, TValue>>();
 
-        public ObservableRepository(Func<TValue, TKey> keyGetter)
+        public ObservableRepository(Func<TValue, TKey> keyGetter, IEqualityComparer<TValue> equalityComparer = null)
         {
             _getKey = keyGetter;
+            _equalityComparer = equalityComparer ?? EqualityComparer<TValue>.Default;
             _map = new Dictionary<TKey, TValue>();
         }
 
@@ -46,6 +47,16 @@ namespace Emf.Web.Ui.Models
 
         public void AddOrUpdate(IEnumerable<TValue> items)
         {
+            SetTo(items, removeOld: false);
+        }
+
+        public void SetTo(IEnumerable<TValue> items)
+        {
+            SetTo(items, removeOld: true);
+        }
+
+        private void SetTo(IEnumerable<TValue> items, bool removeOld)
+        {
             lock (_lock)
             {
                 var pairList = items.Select(i => KeyValue.Create(_getKey(i), i)).ToList();
@@ -57,17 +68,34 @@ namespace Emf.Web.Ui.Models
                 foreach (var pair in pairList)
                 {
                     TValue value;
-                    if (_map.TryGetValue(pair.Key, out value) && EqualityComparer<TValue>.Default.Equals(pair.Value, value))
+                    if (_map.TryGetValue(pair.Key, out value) && _equalityComparer.Equals(pair.Value, value))
                         continue;
 
                     _map[pair.Key] = pair.Value;
                     newOrUpdated.Add(pair);
                 }
 
-                if (!newOrUpdated.Any())
-                    return;
+                if (removeOld)
+                {
+                    var newKeys = new HashSet<TKey>(pairList.Select(p => p.Key));
+                    var deletedKeys = new List<TKey>();
+                    foreach (var oldKey in _map.Keys)
+                    {
+                        if (!newKeys.Contains(oldKey))
+                        {
+                            _map.Remove(oldKey);
+                            deletedKeys.Add(oldKey);
+                        }
+                    }
 
-                _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(newOrUpdateditems: newOrUpdated));
+                    if (deletedKeys.Any() || newOrUpdated.Any())
+                        _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(newOrUpdateditems: newOrUpdated, deletedItems: deletedKeys));
+                }
+                else
+                {
+                    if (newOrUpdated.Any())
+                        _subject.OnNext(new ObservableRepositoryEvent<TKey, TValue>(newOrUpdateditems: newOrUpdated));
+                }
             }
         }
 

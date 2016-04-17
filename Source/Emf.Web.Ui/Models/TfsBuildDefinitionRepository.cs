@@ -92,7 +92,7 @@ namespace Emf.Web.Ui.Models
 
             await AddBuilds(latestReferences, cancellationToken, buildCollection);
 
-            var latestBuildFinishTime = buildCollection.BuildsByDefinitionId.Values.Select(b => b.FinishTime).DefaultIfEmpty(null).Max();
+            var latestBuildFinishTime = buildCollection.BuildsByDefinitionId.Values.Select(b => b.FinishTime ?? b.StartTime).DefaultIfEmpty(null).Max();
 
             if (latestBuildFinishTime != buildCollection.LatestBuildFinishTime)
             {
@@ -107,6 +107,7 @@ namespace Emf.Web.Ui.Models
         {
             var completedBuilds = await _buildClient.GetBuildsAsync(
                 _tfsProject,
+                minFinishTime: buildCollection.LatestBuildFinishTime,
                 cancellationToken: cancellationToken);
 
             var completedBuildsByDefinition = completedBuilds

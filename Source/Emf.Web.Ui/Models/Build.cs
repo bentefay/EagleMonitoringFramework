@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace Emf.Web.Ui.Models
 {
-    public class Build : IEquatable<Build>
+    public class Build
     {
-        public static readonly IEqualityComparer<Build> DefaultComparer = EqualityCompare<Build>.EquateBy(b => b.Id);
+        public static readonly IEqualityComparer<Build> ChangedComparer = EqualityCompare<Build>.EquateBy(b => b.Id).ThenEquateBy(b => b.FinishTime).ThenEquateBy(b => b.StartTime);
 
         [JsonConstructor]
         public Build(BuildDefinitionReference definition, int id, BuildStatus? status, DateTime? queueTime, DateTime? startTime, DateTime? finishTime, BuildResult? result, IReadOnlyList<TestRun> testRuns)
@@ -50,9 +50,5 @@ namespace Emf.Web.Ui.Models
         public BuildResult? Result { get; }
 
         public IReadOnlyList<TestRun> TestRuns { get; }
-
-        public bool Equals(Build other) => DefaultComparer.Equals(this, other);
-        public override bool Equals(object other) => Equals(other as Build);
-        public override int GetHashCode() => DefaultComparer.GetHashCode(this);
     }
 }

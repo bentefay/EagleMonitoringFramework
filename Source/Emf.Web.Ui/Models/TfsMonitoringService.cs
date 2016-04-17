@@ -21,9 +21,9 @@ namespace Emf.Web.Ui.Models
             _repository = repository;
             _checkForDefinitionsInterval = checkForDefinitionsInterval;
             _checkForBuildsInterval = checkForBuildsInterval;
-            _buildDefinitions = new ObservableRepository<int, BuildDefinitionReference>(d => d.Id);
-            _builds = new ObservableRepository<int, Build>(b => b.Definition.Id);
-            _settings = new ObservableRepository<int, Settings>(s => 0);
+            _buildDefinitions = new ObservableRepository<int, BuildDefinitionReference>(d => d.Id, BuildDefinitionReference.ChangedComparer);
+            _builds = new ObservableRepository<int, Build>(b => b.Definition.Id, Build.ChangedComparer);
+            _settings = new ObservableRepository<int, Settings>(s => 0, Models.Settings.ChangedComparer);
             _settings.AddOrUpdate(new [] { _repository.GetSettings() });
         }
 
