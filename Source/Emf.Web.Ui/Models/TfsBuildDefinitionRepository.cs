@@ -74,11 +74,11 @@ namespace Emf.Web.Ui.Models
         {
             var xamlDefinition = baseDefinition as XamlBuildDefinition;
             if (xamlDefinition != null)
-                return new BuildDefinition(latestDefinitionReference);
+                return new BuildDefinition(latestDefinitionReference, xamlDefinition);
 
             var definition = baseDefinition as Microsoft.TeamFoundation.Build.WebApi.BuildDefinition;
             if (definition != null)
-                return new BuildDefinition(latestDefinitionReference);
+                return new BuildDefinition(latestDefinitionReference, definition);
 
             throw new Exception($"{nameof(baseDefinition)} has unexpected type {baseDefinition.GetType()}");
         }

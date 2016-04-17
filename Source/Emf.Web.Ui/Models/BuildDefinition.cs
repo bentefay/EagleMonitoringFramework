@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using EqualityComparers;
+using Microsoft.TeamFoundation.Build.WebApi;
 using Newtonsoft.Json;
 
 namespace Emf.Web.Ui.Models
@@ -10,7 +11,12 @@ namespace Emf.Web.Ui.Models
         public static readonly IEqualityComparer<BuildDefinition> DefaultComparer = EqualityCompare<BuildDefinition>.EquateBy(b => b.Reference);
 
         [JsonConstructor]
-        public BuildDefinition(BuildDefinitionReference reference)
+        public BuildDefinition(BuildDefinitionReference reference, Microsoft.TeamFoundation.Build.WebApi.BuildDefinition definition)
+        {
+            Reference = reference;
+        }
+
+        public BuildDefinition(BuildDefinitionReference reference, XamlBuildDefinition xamlDefinition)
         {
             Reference = reference;
         }

@@ -42,7 +42,7 @@ namespace Emf.Web.Ui.Models
             var buildDefinitions = await _repository.GetLatestDefinitionReferences(_tokenSource.Token);
 
             lock (_buildDefinitions)
-                _buildDefinitions.AddOrUpdate(buildDefinitions);
+                _buildDefinitions.SetTo(buildDefinitions);
         }
 
         private async Task UpdateBuilds(CancellationToken token)
@@ -53,7 +53,7 @@ namespace Emf.Web.Ui.Models
 
             var builds = await _repository.GetLatestBuilds(buildDefinitions, _tokenSource.Token);
 
-            _builds.AddOrUpdate(builds.Values);
+            _builds.SetTo(builds.Values);
         }
 
         public IObservableRepository<int, BuildDefinitionReference> BuildDefinitions => _buildDefinitions;
