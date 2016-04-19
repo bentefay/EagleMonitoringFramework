@@ -53,25 +53,25 @@ class MainComponent {
 
     buildStates: BuildStateCollection;
     manager: ObservableCollectionManager;
-    settings: ISettings;
+    settings: Settings;
 
     constructor() {
 
         this.manager = new ObservableCollectionManager("./signalr", { clearError: () => { }, showError: message => { } });
         this.buildStates = new BuildStateCollection();
 
-        this.manager.subscribe<ISettings>("settings", {
+        this.manager.subscribe<Settings>("settings", {
             onNewEvent: event => {
                 this.settings = event.newOrUpdatedItems[0].value;
                 this.render();
             }
         });
 
-        this.manager.subscribe<IBuildDefinitionReference>("buildDefinitions", {
+        this.manager.subscribe<BuildDefinitionReference>("buildDefinitions", {
             onNewEvent: event => {
                 _.forEach(event.newOrUpdatedItems, buildDefinition => {
                     const buildState = this.buildStates.get(buildDefinition.key);
-                    buildState.definition = buildDefinition.value;
+                    buildState.definition = new BuildDefinition(buildDefinition.value);
                 });
 
                 _.forEach(event.deletedItemKeys, key => {
@@ -82,14 +82,14 @@ class MainComponent {
             }
         });
 
-        this.manager.subscribe<IBuild>("builds", {
+        this.manager.subscribe<BuildDto>("builds", {
             onNewEvent: event => {
                 _.forEach(event.newOrUpdatedItems, build => {
                     const buildState = this.buildStates.get(build.key);
 
                     if (buildState.latestBuild && buildState.definition) {
                         log.information("{buildName} changed to {newStatus} - {newResult} (from {oldStatus} - {oldResult})",
-                            buildState.definition.name,
+                            buildState.definition.name.fullName,
                             BuildStatus[build.value.status], BuildResult[build.value.result],
                             BuildStatus[buildState.latestBuild.status], BuildResult[buildState.latestBuild.result]);
                     }
@@ -114,40 +114,63 @@ class MainComponent {
 
         const buildStates = _(this.buildStates.map)
             .map((value: BuildState) => value)
-            .filter((value: BuildState) => value.definition && !_.startsWith(value.definition.name, "OLD_") && !_.endsWith(value.definition.name, "_Deprecated"))
-            .orderBy((value: BuildState) => value.definition.name)
+            .filter((value: BuildState) => value.definition && !value.definition.isDeprecated)
             .value();
 
-        const groupedBuildStates = _(buildStates).groupBy(s => this.getProjectPath(s.definition.name))
-            .map((buildStates: BuildState[], key: string) => { return { buildStates, key }; })
-            .orderBy(b => b.key)
+        const groupedBuildStates = _(buildStates).groupBy(s => s.definition.name.group.fullName)
+            .map((buildStates: BuildState[], buildGroupFullName: string) => { return { buildStates: _.orderBy(buildStates, b => b.definition.name.type), name: new BuildGroupName(buildGroupFullName) }; })
+            .orderBy(g => g.name.fullName)
             .value();
 
-        const values = _.map(groupedBuildStates, group => {
-            return this.getProjectComponent(group.buildStates, group.key);
+        const children = _.map(groupedBuildStates, group => {
+            return this.getBuildGroupComponent(group.buildStates, group.name);
         });
 
-        const columnCount = 5;
-        const columnHeights = _.map(_.range(0, columnCount), columnIndex => { return { columnIndex, height: 0 }; });
+        const columnCount = 20;
+        const layout = this.getLayout(groupedBuildStates, columnCount);
 
-        const layout = _.map(groupedBuildStates, group => {
+        ReactDOM.render(<ReactGridLayout layout={layout} cols={columnCount} rowHeight={50} onLayoutChange={this.onLayoutChanged}>{children}</ReactGridLayout>,
+            $(".builds")[0]
+        );
+    }
 
-            var minHeightColumn = _.minBy(columnHeights, c => c.height);
-            var elementHeight = 1;
+    getLayout(groupedBuildStates: { name: BuildGroupName, buildStates: BuildState[] }[], columnCount: number) {
+
+        const defaultColumnSpan = 4;
+        const defaultRowSpan = 1;
+        let column = 0;
+        let row = 0;
+        
+        return _.map(groupedBuildStates, group => {
+
+            let columnSpan = defaultColumnSpan;
+
+            const lengthInCharacters = group.name.name.length + group.buildStates.length * 2 + (group.buildStates.length > 0 ? 1 : 0);
+
+            if (lengthInCharacters <= 12) {
+                columnSpan = 2;
+            } else if (lengthInCharacters <= 20) {
+                columnSpan = 3;
+            }
+
+            if (column + columnSpan - 1 >= columnCount) {
+                column = 0;
+                row += defaultRowSpan;
+            }
 
             var layoutItem: ReactGridLayout.ItemProps = {
-                i: group.key,
-                x: minHeightColumn.columnIndex, y: minHeightColumn.height, w: 1, h: elementHeight
+                i: group.name.fullName,
+                x: column, y: row, w: columnSpan, h: defaultRowSpan
             };
 
-            minHeightColumn.height += elementHeight;
+            column += columnSpan;
+            if (column >= columnCount) {
+                column = 0;
+                row += defaultRowSpan;
+            }
 
             return layoutItem;
         });
-
-        ReactDOM.render(<ReactGridLayout layout={layout} cols={columnCount} rowHeight={50} onLayoutChange={this.onLayoutChanged}>{values}</ReactGridLayout>,
-            $(".builds")[0]
-        );
     }
 
     getBuildUrl(buildState: BuildState) {
@@ -156,34 +179,34 @@ class MainComponent {
         }
     }
 
-    getProjectComponent(buildStates: BuildState[], key: string) {
-        return <div key={key} style={{ backgroundColor: this.getProjectStateColor(buildStates) }}>
+    getBuildGroupComponent(buildStates: BuildState[], groupName: BuildGroupName) {
+        return <div key={groupName.fullName} style={{ backgroundColor: this.getProjectStateColor(buildStates) }}>
             <div style={{ height: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", alignContents: "center", padding: "0 10px" }}>
 
                 <div style={{ whiteSpace: "nowrap" }}>
-                    {_.map(buildStates, buildState => this.getProjectBuildComponent(buildState)) }
+                    {_.map(buildStates, buildState => this.getBuildComponent(buildState)) }
                 </div>
 
                 <div style={{ textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}>
-                    <div style={{ fontSize: "1.4em" }}>{this.getProjectName(key) }</div>
-                    <div style={{ fontSize: "0.5em" }}>{this.getProjectParentPath(key) }</div>
+                    <div style={{ fontSize: "1.4em" }}>{groupName.name}</div>
+                    <div style={{ fontSize: "0.5em" }}>{groupName.namespace}</div>
                 </div>
 
             </div>
         </div>;
     }
 
-    getProjectBuildComponent(buildState: BuildState) {
+    getBuildComponent(buildState: BuildState) {
         return <a key={buildState.definition.id} className="project-build" href={this.getBuildUrl(buildState)} target="_blank"
             style={{ backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "4px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }}
-            title={buildState.definition.name}>
-            {this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name))}{this.getTestsComponent(buildState) }
+            title={buildState.definition.name.fullName}>
+            {this.getBuildIconComponent(buildState.definition.name.type) }{this.getTestsComponent(buildState) }
         </a>;
     }
 
-    getProjectBuildIconComponent(name: string) {
+    getBuildIconComponent(name: string) {
 
-        var icon = this.getProjectBuildIcon(name);
+        var icon = this.getBuildIconClass(name);
 
         if (icon) {
             return <i className={`fa fa-${icon}`}></i>;
@@ -192,8 +215,8 @@ class MainComponent {
         }
     }
 
-    getProjectBuildIcon(name: string) {
-        switch (name) {
+    getBuildIconClass(buildType: string) {
+        switch (buildType) {
             case "Release":
                 return "star";
             case "N":
@@ -216,60 +239,6 @@ class MainComponent {
         } else {
             return null;
         }
-    }
-
-    getProjectBuildName(name: string) {
-        const buildName = this.substringFromLast(name, ".");
-        const buildNamePostfix = this.substringFromFirst(buildName, "_");
-        if (buildName === buildNamePostfix)
-            return "Release";
-        return buildNamePostfix;
-    }
-
-    getProjectName(name: string) {
-        const projectPath = this.getProjectPath(name);
-
-        if (!projectPath)
-            return null;
-
-        const projectNameStart = _.lastIndexOf(projectPath, ".");
-        if (projectNameStart === -1)
-            return projectPath;
-
-        return projectPath.substring(projectNameStart + 1);
-    }
-
-    getProjectParentPath(name: string) {
-        const projectPath = this.getProjectPath(name);
-
-        if (!projectPath)
-            return null;
-
-        const projectNameStart = _.lastIndexOf(projectPath, ".");
-        if (projectNameStart === -1)
-            return projectPath;
-
-        return projectPath.substring(0, projectNameStart);
-    }
-
-    getProjectPath(name: string) {
-        const projectNameStart = _.lastIndexOf(name, ".");
-        if (projectNameStart === -1)
-            return name;
-        const buildNamePostfixStart = _.indexOf(name, "_", projectNameStart);
-        if (buildNamePostfixStart === -1)
-            return name;
-        return name.substring(0, buildNamePostfixStart);
-    }
-
-    substringFromFirst(str: string, separator: string) {
-        const index = _.indexOf(str, separator);
-        return index === -1 ? str : str.substring(index + 1);
-    }
-
-    substringFromLast(str: string, separator: string) {
-        const index = _.lastIndexOf(str, separator);
-        return index === -1 ? str : str.substring(index + 1);
     }
 
     getProjectStateColor(buildStates: BuildState[]) {
@@ -388,30 +357,113 @@ class BuildState {
         this.viewModel = { order: 0, width: 1, height: 1 };
     }
 
-    definition: IBuildDefinitionReference;
-    latestBuild: IBuild;
-    viewModel: IBuildStateViewModel;
-
-
+    definition: BuildDefinition;
+    latestBuild: BuildDto;
+    viewModel: BuildStateViewModel;
 }
 
-interface IBuildStateViewModel {
+interface BuildStateViewModel {
     order: number;
     width: number;
     height: number;
 }
 
-interface IBuildDefinitionReference {
+interface BuildDefinitionReference {
     id: number;
     revision: number;
     name: string;
     type: DefinitionType;
 }
 
-interface IBuild {
+class BuildName {
+
+    type: string;
+    group: BuildGroupName;
+    fullName: string; // = {group.namespace}.{group.name}_{type}
+
+    constructor(fullName: string) {
+
+        this.group = {} as BuildGroupName;
+
+        this.fullName = fullName;
+
+        let groupNameStart = _.lastIndexOf(fullName, ".");
+        if (groupNameStart === -1) {
+            groupNameStart = 0;
+        }
+
+        const buildTypeStart = _.indexOf(fullName, "_", groupNameStart);
+        if (buildTypeStart !== -1) {
+            this.type = fullName.substring(buildTypeStart + 1);
+            this.group = new BuildGroupName(fullName.substring(0, buildTypeStart));
+        } else {
+            this.type = "Release";
+            this.group = new BuildGroupName(fullName);
+        }
+    }
+}
+
+class BuildGroupName {
+
+    name: string;
+    namespace: string;
+    fullName: string; // = {namespace}.{name}
+
+    constructor(fullName: string) {
+
+        this.fullName = fullName;
+
+        let nameStart = _.lastIndexOf(fullName, ".");
+        if (nameStart !== -1) {
+            this.namespace = fullName.substring(0, nameStart);
+            this.name = fullName.substring(nameStart + 1);
+        } else {
+            this.namespace = "";
+            this.name = fullName;
+        }
+    }
+}
+
+class BuildDefinition {
+
+    constructor(reference: BuildDefinitionReference) {
+
+        this.id = reference.id;
+        this.revision = reference.revision;
+        this.type = reference.type;
+
+        const { isDeprecated, name: strippedFullName } = BuildDefinition.getNameWithoutDeprecatedIndicators(reference.name);
+
+        this.isDeprecated = isDeprecated;
+        this.name = new BuildName(strippedFullName);
+    }
 
     id: number;
-    definition: IBuildDefinitionReference;
+    revision: number;
+    type: DefinitionType;
+
+    name: BuildName;
+    isDeprecated: boolean;
+
+    private static getNameWithoutDeprecatedIndicators(fullName: string): { isDeprecated: boolean, name: string } {
+
+        const oldPrefix = "OLD_";
+        const deprecatedPostfix = "_Deprecated";
+
+        if (_.startsWith(fullName, oldPrefix)) {
+            return { isDeprecated: true, name: fullName.substring(oldPrefix.length) };
+        } else if (_.endsWith(fullName, deprecatedPostfix)) {
+            return { isDeprecated: true, name: fullName.substring(0, fullName.length - deprecatedPostfix.length) };
+        } else {
+            return { isDeprecated: false, name: fullName };
+        }
+    }
+}
+
+interface BuildDto {
+
+    id: number;
+    definition: BuildDefinitionReference;
 
     status: BuildStatus;
 
@@ -421,10 +473,10 @@ interface IBuild {
 
     result: BuildResult;
 
-    testRuns: ITestRun[];
+    testRuns: TestRun[];
 }
 
-interface ITestRun {
+interface TestRun {
     id: number;
     incompleteTests: number;
     passedTests: number;
@@ -433,7 +485,7 @@ interface ITestRun {
     errorMessages: string;
 }
 
-interface ISettings {
+interface Settings {
     tfsCollectionUrl: string;
     tfsProject: string;
 }

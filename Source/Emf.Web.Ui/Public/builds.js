@@ -98,29 +98,18 @@
 	        this.render = function () {
 	            var buildStates = _(_this.buildStates.map)
 	                .map(function (value) { return value; })
-	                .filter(function (value) { return value.definition && !_.startsWith(value.definition.name, "OLD_") && !_.endsWith(value.definition.name, "_Deprecated"); })
-	                .orderBy(function (value) { return value.definition.name; })
+	                .filter(function (value) { return value.definition && !value.definition.isDeprecated; })
 	                .value();
-	            var groupedBuildStates = _(buildStates).groupBy(function (s) { return _this.getProjectPath(s.definition.name); })
-	                .map(function (buildStates, key) { return { buildStates: buildStates, key: key }; })
-	                .orderBy(function (b) { return b.key; })
+	            var groupedBuildStates = _(buildStates).groupBy(function (s) { return s.definition.name.group.fullName; })
+	                .map(function (buildStates, buildGroupFullName) { return { buildStates: _.orderBy(buildStates, function (b) { return b.definition.name.type; }), name: new BuildGroupName(buildGroupFullName) }; })
+	                .orderBy(function (g) { return g.name.fullName; })
 	                .value();
-	            var values = _.map(groupedBuildStates, function (group) {
-	                return _this.getProjectComponent(group.buildStates, group.key);
+	            var children = _.map(groupedBuildStates, function (group) {
+	                return _this.getBuildGroupComponent(group.buildStates, group.name);
 	            });
-	            var columnCount = 5;
-	            var columnHeights = _.map(_.range(0, columnCount), function (columnIndex) { return { columnIndex: columnIndex, height: 0 }; });
-	            var layout = _.map(groupedBuildStates, function (group) {
-	                var minHeightColumn = _.minBy(columnHeights, function (c) { return c.height; });
-	                var elementHeight = 1;
-	                var layoutItem = {
-	                    i: group.key,
-	                    x: minHeightColumn.columnIndex, y: minHeightColumn.height, w: 1, h: elementHeight
-	                };
-	                minHeightColumn.height += elementHeight;
-	                return layoutItem;
-	            });
-	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: columnCount, rowHeight: 50, onLayoutChange: _this.onLayoutChanged}, values), $(".builds")[0]);
+	            var columnCount = 20;
+	            var layout = _this.getLayout(groupedBuildStates, columnCount);
+	            ReactDOM.render(React.createElement(ReactGridLayout, {layout: layout, cols: columnCount, rowHeight: 50, onLayoutChange: _this.onLayoutChanged}, children), $(".builds")[0]);
 	        };
 	        this.manager = new observable_collection_manager_1.ObservableCollectionManager("./signalr", { clearError: function () { }, showError: function (message) { } });
 	        this.buildStates = new BuildStateCollection();
@@ -134,7 +123,7 @@
 	            onNewEvent: function (event) {
 	                _.forEach(event.newOrUpdatedItems, function (buildDefinition) {
 	                    var buildState = _this.buildStates.get(buildDefinition.key);
-	                    buildState.definition = buildDefinition.value;
+	                    buildState.definition = new BuildDefinition(buildDefinition.value);
 	                });
 	                _.forEach(event.deletedItemKeys, function (key) {
 	                    _this.buildStates.deleteDefinition(key);
@@ -147,7 +136,7 @@
 	                _.forEach(event.newOrUpdatedItems, function (build) {
 	                    var buildState = _this.buildStates.get(build.key);
 	                    if (buildState.latestBuild && buildState.definition) {
-	                        log.information("{buildName} changed to {newStatus} - {newResult} (from {oldStatus} - {oldResult})", buildState.definition.name, BuildStatus[build.value.status], BuildResult[build.value.result], BuildStatus[buildState.latestBuild.status], BuildResult[buildState.latestBuild.result]);
+	                        log.information("{buildName} changed to {newStatus} - {newResult} (from {oldStatus} - {oldResult})", buildState.definition.name.fullName, BuildStatus[build.value.status], BuildResult[build.value.result], BuildStatus[buildState.latestBuild.status], BuildResult[buildState.latestBuild.result]);
 	                    }
 	                    buildState.latestBuild = build.value;
 	                });
@@ -160,20 +149,50 @@
 	    }
 	    MainComponent.prototype.onLayoutChanged = function (itemProps) {
 	    };
+	    MainComponent.prototype.getLayout = function (groupedBuildStates, columnCount) {
+	        var defaultColumnSpan = 4;
+	        var defaultRowSpan = 1;
+	        var column = 0;
+	        var row = 0;
+	        return _.map(groupedBuildStates, function (group) {
+	            var columnSpan = defaultColumnSpan;
+	            var lengthInCharacters = group.name.name.length + group.buildStates.length * 2 + (group.buildStates.length > 0 ? 1 : 0);
+	            if (lengthInCharacters <= 12) {
+	                columnSpan = 2;
+	            }
+	            else if (lengthInCharacters <= 20) {
+	                columnSpan = 3;
+	            }
+	            if (column + columnSpan - 1 >= columnCount) {
+	                column = 0;
+	                row += defaultRowSpan;
+	            }
+	            var layoutItem = {
+	                i: group.name.fullName,
+	                x: column, y: row, w: columnSpan, h: defaultRowSpan
+	            };
+	            column += columnSpan;
+	            if (column >= columnCount) {
+	                column = 0;
+	                row += defaultRowSpan;
+	            }
+	            return layoutItem;
+	        });
+	    };
 	    MainComponent.prototype.getBuildUrl = function (buildState) {
 	        if (this.settings) {
 	            return this.settings.tfsCollectionUrl + "/" + this.settings.tfsProject + "/_build#definitionId=" + buildState.definition.id + "&_a=completed";
 	        }
 	    };
-	    MainComponent.prototype.getProjectComponent = function (buildStates, key) {
+	    MainComponent.prototype.getBuildGroupComponent = function (buildStates, groupName) {
 	        var _this = this;
-	        return React.createElement("div", {key: key, style: { backgroundColor: this.getProjectStateColor(buildStates) }}, React.createElement("div", {style: { height: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", alignContents: "center", padding: "0 10px" }}, React.createElement("div", {style: { whiteSpace: "nowrap" }}, _.map(buildStates, function (buildState) { return _this.getProjectBuildComponent(buildState); })), React.createElement("div", {style: { textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}, React.createElement("div", {style: { fontSize: "1.4em" }}, this.getProjectName(key)), React.createElement("div", {style: { fontSize: "0.5em" }}, this.getProjectParentPath(key)))));
+	        return React.createElement("div", {key: groupName.fullName, style: { backgroundColor: this.getProjectStateColor(buildStates) }}, React.createElement("div", {style: { height: "100%", display: "flex", flexDirection: "row-reverse", alignItems: "center", alignContents: "center", padding: "0 10px" }}, React.createElement("div", {style: { whiteSpace: "nowrap" }}, _.map(buildStates, function (buildState) { return _this.getBuildComponent(buildState); })), React.createElement("div", {style: { textOverflow: "ellipsis", overflow: "hidden", verticalAlign: "middle", whiteSpace: "nowrap", flexGrow: 1 }}, React.createElement("div", {style: { fontSize: "1.4em" }}, groupName.name), React.createElement("div", {style: { fontSize: "0.5em" }}, groupName.namespace))));
 	    };
-	    MainComponent.prototype.getProjectBuildComponent = function (buildState) {
-	        return React.createElement("a", {key: buildState.definition.id, className: "project-build", href: this.getBuildUrl(buildState), target: "_blank", style: { backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "4px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }, title: buildState.definition.name}, this.getProjectBuildIconComponent(this.getProjectBuildName(buildState.definition.name)), this.getTestsComponent(buildState));
+	    MainComponent.prototype.getBuildComponent = function (buildState) {
+	        return React.createElement("a", {key: buildState.definition.id, className: "project-build", href: this.getBuildUrl(buildState), target: "_blank", style: { backgroundColor: this.getBuildStateColor(buildState), margin: "0 0 0 5px", padding: "4px 4px", borderRadius: "2px", display: "inline-block", color: "black", textDecoration: "none" }, title: buildState.definition.name.fullName}, this.getBuildIconComponent(buildState.definition.name.type), this.getTestsComponent(buildState));
 	    };
-	    MainComponent.prototype.getProjectBuildIconComponent = function (name) {
-	        var icon = this.getProjectBuildIcon(name);
+	    MainComponent.prototype.getBuildIconComponent = function (name) {
+	        var icon = this.getBuildIconClass(name);
 	        if (icon) {
 	            return React.createElement("i", {className: "fa fa-" + icon});
 	        }
@@ -181,8 +200,8 @@
 	            return React.createElement("span", null, name);
 	        }
 	    };
-	    MainComponent.prototype.getProjectBuildIcon = function (name) {
-	        switch (name) {
+	    MainComponent.prototype.getBuildIconClass = function (buildType) {
+	        switch (buildType) {
 	            case "Release":
 	                return "star";
 	            case "N":
@@ -205,48 +224,6 @@
 	        else {
 	            return null;
 	        }
-	    };
-	    MainComponent.prototype.getProjectBuildName = function (name) {
-	        var buildName = this.substringFromLast(name, ".");
-	        var buildNamePostfix = this.substringFromFirst(buildName, "_");
-	        if (buildName === buildNamePostfix)
-	            return "Release";
-	        return buildNamePostfix;
-	    };
-	    MainComponent.prototype.getProjectName = function (name) {
-	        var projectPath = this.getProjectPath(name);
-	        if (!projectPath)
-	            return null;
-	        var projectNameStart = _.lastIndexOf(projectPath, ".");
-	        if (projectNameStart === -1)
-	            return projectPath;
-	        return projectPath.substring(projectNameStart + 1);
-	    };
-	    MainComponent.prototype.getProjectParentPath = function (name) {
-	        var projectPath = this.getProjectPath(name);
-	        if (!projectPath)
-	            return null;
-	        var projectNameStart = _.lastIndexOf(projectPath, ".");
-	        if (projectNameStart === -1)
-	            return projectPath;
-	        return projectPath.substring(0, projectNameStart);
-	    };
-	    MainComponent.prototype.getProjectPath = function (name) {
-	        var projectNameStart = _.lastIndexOf(name, ".");
-	        if (projectNameStart === -1)
-	            return name;
-	        var buildNamePostfixStart = _.indexOf(name, "_", projectNameStart);
-	        if (buildNamePostfixStart === -1)
-	            return name;
-	        return name.substring(0, buildNamePostfixStart);
-	    };
-	    MainComponent.prototype.substringFromFirst = function (str, separator) {
-	        var index = _.indexOf(str, separator);
-	        return index === -1 ? str : str.substring(index + 1);
-	    };
-	    MainComponent.prototype.substringFromLast = function (str, separator) {
-	        var index = _.lastIndexOf(str, separator);
-	        return index === -1 ? str : str.substring(index + 1);
 	    };
 	    MainComponent.prototype.getProjectStateColor = function (buildStates) {
 	        var _this = this;
@@ -352,6 +329,65 @@
 	        this.viewModel = { order: 0, width: 1, height: 1 };
 	    }
 	    return BuildState;
+	}());
+	var BuildName = (function () {
+	    function BuildName(fullName) {
+	        this.group = {};
+	        this.fullName = fullName;
+	        var groupNameStart = _.lastIndexOf(fullName, ".");
+	        if (groupNameStart === -1) {
+	            groupNameStart = 0;
+	        }
+	        var buildTypeStart = _.indexOf(fullName, "_", groupNameStart);
+	        if (buildTypeStart !== -1) {
+	            this.type = fullName.substring(buildTypeStart + 1);
+	            this.group = new BuildGroupName(fullName.substring(0, buildTypeStart));
+	        }
+	        else {
+	            this.type = "Release";
+	            this.group = new BuildGroupName(fullName);
+	        }
+	    }
+	    return BuildName;
+	}());
+	var BuildGroupName = (function () {
+	    function BuildGroupName(fullName) {
+	        this.fullName = fullName;
+	        var nameStart = _.lastIndexOf(fullName, ".");
+	        if (nameStart !== -1) {
+	            this.namespace = fullName.substring(0, nameStart);
+	            this.name = fullName.substring(nameStart + 1);
+	        }
+	        else {
+	            this.namespace = "";
+	            this.name = fullName;
+	        }
+	    }
+	    return BuildGroupName;
+	}());
+	var BuildDefinition = (function () {
+	    function BuildDefinition(reference) {
+	        this.id = reference.id;
+	        this.revision = reference.revision;
+	        this.type = reference.type;
+	        var _a = BuildDefinition.getNameWithoutDeprecatedIndicators(reference.name), isDeprecated = _a.isDeprecated, strippedFullName = _a.name;
+	        this.isDeprecated = isDeprecated;
+	        this.name = new BuildName(strippedFullName);
+	    }
+	    BuildDefinition.getNameWithoutDeprecatedIndicators = function (fullName) {
+	        var oldPrefix = "OLD_";
+	        var deprecatedPostfix = "_Deprecated";
+	        if (_.startsWith(fullName, oldPrefix)) {
+	            return { isDeprecated: true, name: fullName.substring(oldPrefix.length) };
+	        }
+	        else if (_.endsWith(fullName, deprecatedPostfix)) {
+	            return { isDeprecated: true, name: fullName.substring(0, fullName.length - deprecatedPostfix.length) };
+	        }
+	        else {
+	            return { isDeprecated: false, name: fullName };
+	        }
+	    };
+	    return BuildDefinition;
 	}());
 	var DefinitionType;
 	(function (DefinitionType) {
