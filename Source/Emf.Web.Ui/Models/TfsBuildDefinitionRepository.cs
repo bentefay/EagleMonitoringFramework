@@ -12,28 +12,27 @@ namespace Emf.Web.Ui.Models
 {
     public class TfsBuildDefinitionRepository
     {
-        private const string _tfsProject = "GlobalRoam";
-        private static readonly Uri _baseUrl = new Uri("http://tfs.gr.local:8080/tfs/GRCollection");
-        private static readonly Settings _settings = new Settings(_baseUrl.ToString(), _tfsProject);
-
         private readonly SettingStore<Dictionary<int, BuildDefinition>> _buildDefinitionStore;
         private readonly SettingStore<BuildCollection> _buildStore;
+        private readonly ConnectionSettings _connectionSettings;
         private readonly BuildHttpClient _buildClient;
         private readonly TestManagementHttpClient _testManagementClient;
 
-        public TfsBuildDefinitionRepository(VssCredentials credentials, SettingStore<Dictionary<int, BuildDefinition>> buildDefinitionStore, SettingStore<BuildCollection> buildStore)
+        public TfsBuildDefinitionRepository(VssCredentials credentials, SettingStore<Dictionary<int, BuildDefinition>> buildDefinitionStore, SettingStore<BuildCollection> buildStore, ConnectionSettings connectionSettings)
         {
             _buildDefinitionStore = buildDefinitionStore;
             _buildStore = buildStore;
-            _buildClient = new BuildHttpClient(_baseUrl, credentials);
-            _testManagementClient = new TestManagementHttpClient(_baseUrl, credentials);
+            _connectionSettings = connectionSettings;
+            var tfsCollectionUri = new Uri(_connectionSettings.TfsCollectionUrl);
+            _buildClient = new BuildHttpClient(tfsCollectionUri, credentials);
+            _testManagementClient = new TestManagementHttpClient(tfsCollectionUri, credentials);
         }
 
-        public Settings GetSettings() => _settings;
+        public ConnectionSettings GetSettings() => _connectionSettings;
 
         public async Task<IReadOnlyList<BuildDefinitionReference>> GetLatestDefinitionReferences(CancellationToken cancellationToken)
         {
-            var definitionReferences = await _buildClient.GetDefinitionsAsync(project: _tfsProject, cancellationToken: cancellationToken);
+            var definitionReferences = await _buildClient.GetDefinitionsAsync(project: _connectionSettings.TfsProject, cancellationToken: cancellationToken);
 
             return definitionReferences.Select(r => new BuildDefinitionReference(r.Id, r.Name, r.Revision, r.Type)).ToList();
         }
@@ -50,7 +49,7 @@ namespace Emf.Web.Ui.Models
                 if (existingDefinitionsLookup.TryGetValue(latestReference.Id, out oldFullBuildDefinition) && latestReference.Revision <= oldFullBuildDefinition.Reference.Revision)
                     continue;
 
-                var baseDefinition = await _buildClient.GetDefinitionAsync(project: _tfsProject, definitionId: latestReference.Id, cancellationToken: cancellationToken);
+                var baseDefinition = await _buildClient.GetDefinitionAsync(project: _connectionSettings.TfsProject, definitionId: latestReference.Id, cancellationToken: cancellationToken);
 
                 existingDefinitionsLookup[latestReference.Id] = GetBuildDefinition(latestReference, baseDefinition);
                 anyChanges = true;
@@ -106,7 +105,7 @@ namespace Emf.Web.Ui.Models
         private async Task AddBuilds(IReadOnlyDictionary<int, BuildDefinitionReference> latestReferences, CancellationToken cancellationToken, BuildCollection buildCollection)
         {
             var completedBuilds = await _buildClient.GetBuildsAsync(
-                _tfsProject,
+                _connectionSettings.TfsProject,
                 minFinishTime: buildCollection.LatestBuildFinishTime,
                 cancellationToken: cancellationToken);
 
@@ -136,7 +135,7 @@ namespace Emf.Web.Ui.Models
                 if (latestCompletedBuild == null)
                     continue;
 
-                var testRuns = await _testManagementClient.GetTestRunsAsync(projectId: _tfsProject, buildUri: latestCompletedBuild.Uri.ToString(), includeRunDetails: true);
+                var testRuns = await _testManagementClient.GetTestRunsAsync(projectId: _connectionSettings.TfsProject, buildUri: latestCompletedBuild.Uri.ToString(), includeRunDetails: true);
                 buildCollection.BuildsByDefinitionId[completedBuildsForDefinition.Key] = new Build(buildReference, latestCompletedBuild, testRuns);
             }
         }

@@ -1,18 +1,15 @@
 ﻿using System;
 using Emf.Web.Ui.AppStartup;
+using Emf.Web.Ui.Services;
 using Emf.Web.Ui.Services.CredentialManagement;
-using Emf.Web.Ui.Services.Settings;
 using Microsoft.Owin.Hosting;
 using Microsoft.Practices.Unity;
-using Microsoft.VisualStudio.Services.Common;
 using Serilog;
 
 namespace Emf.Web.Ui
 {
     internal class Program
     {
-        
-
         private static void Main(string[] args)
         {
             SerilogConfig.Initialize();
@@ -21,6 +18,7 @@ namespace Emf.Web.Ui
             {
                 var unity = UnityConfig.GetConfiguredContainer();
                 var credentialService = unity.Resolve<CredentialsService>();
+                var connectionSettingsService = unity.Resolve<ConnectionSettingsService>();
 
                 const string url = "http://+:8080";
 
@@ -29,21 +27,27 @@ namespace Emf.Web.Ui
                     Console.WriteLine("Running on {0}", url);
                     Console.WriteLine("Press:");
                     Console.WriteLine("b - to open your default browser");
-                    Console.WriteLine("d - to delete credentials");
+                    Console.WriteLine("dcred - to delete credentials");
+                    Console.WriteLine("dconn - to delete TFS connection settings");
                     Console.WriteLine("q - to exit");
 
                     while (true)
                     {
-                        var key = Console.ReadKey();
-                        switch (key.Key)
+                        var commands = Console.ReadLine() ?? string.Empty;
+                        switch (commands.ToLowerInvariant())
                         {
-                            case ConsoleKey.B:
+                            case "b":
                                 System.Diagnostics.Process.Start(url.Replace("+", "localhost"));
                                 break;
-                            case ConsoleKey.Q:
+                            case "q":
                                 return;
-                            case ConsoleKey.D:
+                            case "dcred":
                                 credentialService.Delete();
+                                Console.WriteLine("Deleted credentials");
+                                break;
+                            case "dconn":
+                                connectionSettingsService.Delete();
+                                Console.WriteLine("Deleted TFS connection settings");
                                 break;
                         }
                     }

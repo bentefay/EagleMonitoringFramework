@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Emf.Web.Ui.Hubs;
 using Emf.Web.Ui.Models;
+using Emf.Web.Ui.Services;
 using Emf.Web.Ui.Services.CredentialManagement;
 using Emf.Web.Ui.Services.Settings;
 using Microsoft.Practices.Unity;
@@ -36,7 +37,12 @@ namespace Emf.Web.Ui.AppStartup
 
             var credentials = credentialService.Get();
 
-            var tfsBuildDefinitionRepository = new TfsBuildDefinitionRepository(credentials, settingStore.ForKey(SettingKeys.BuildDefinitions), settingStore.ForKey(SettingKeys.Builds));
+            var connectionSettingsService = new ConnectionSettingsService(settingStore.ForKey(SettingKeys.ConnectionSettings));
+            container.RegisterInstance(connectionSettingsService);
+
+            var connectionSettings = connectionSettingsService.Get();
+
+            var tfsBuildDefinitionRepository = new TfsBuildDefinitionRepository(credentials, settingStore.ForKey(SettingKeys.BuildDefinitions), settingStore.ForKey(SettingKeys.Builds), connectionSettings);
             var tfsMonitoringService = new TfsMonitoringService(tfsBuildDefinitionRepository, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(30));
             tfsMonitoringService.Start();
             var observableCollections = new Dictionary<string, IObservableRepository>

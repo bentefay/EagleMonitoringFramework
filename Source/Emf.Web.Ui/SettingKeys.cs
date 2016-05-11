@@ -10,5 +10,6 @@ namespace Emf.Web.Ui
         public static readonly SettingKey<CredentialsSettings> Credentials = new SettingKey<CredentialsSettings>("Credentials");
         public static readonly SettingKey<Dictionary<int, BuildDefinition>> BuildDefinitions = new SettingKey<Dictionary<int, BuildDefinition>>("BuildDefinitions");
         public static readonly SettingKey<BuildCollection> Builds = new SettingKey<BuildCollection>("Builds");
+        public static readonly SettingKey<ConnectionSettings> ConnectionSettings = new SettingKey<ConnectionSettings>("ConnectionSettings");
     }
 }

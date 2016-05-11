@@ -250,6 +250,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\ConnectionSettingsService.cs" />
     <Compile Include="AppStartup\FileSystemConfig.cs" />
     <Compile Include="AppStartup\SerilogConfig.cs" />
     <Compile Include="AppStartup\SignalRConfig.cs" />
@@ -269,7 +270,7 @@
     <Compile Include="Models\BuildDefinition.cs" />
     <Compile Include="Models\ObservableRepository.cs" />
     <Compile Include="Models\RepeatTask.cs" />
-    <Compile Include="Models\Settings.cs" />
+    <Compile Include="Models\ConnectionSettings.cs" />
     <Compile Include="Models\TestRun.cs" />
     <Compile Include="Models\TfsBuildDefinitionRepository.cs" />
     <Compile Include="Models\TfsMonitoringService.cs" />

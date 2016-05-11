@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using Emf.Web.Ui.Hubs.Core;
 using Newtonsoft.Json;
 
 namespace Emf.Web.Ui.Services.Settings
@@ -9,13 +12,13 @@ namespace Emf.Web.Ui.Services.Settings
     {
         private static readonly string _basePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BuildMonitor");
 
-        private readonly Dictionary<string, object> _settings = new Dictionary<string, object>();
+        private readonly Dictionary<string, SettingRecord> _settings = new Dictionary<string, SettingRecord>();
 
-        public void Set<T>(string settingName, T setting)
+        public void Set<T>(string settingId, T setting)
         {
-            _settings[settingName] = setting;
+            _settings.GetValueOrAdd(settingId, () => new SettingRecord()).Value = setting;
 
-            var filePath = GetFilePath(settingName);
+            var filePath = GetFilePath(settingId);
             var directory = Path.GetDirectoryName(filePath);
 
             if (!Directory.Exists(directory))
@@ -34,10 +37,10 @@ namespace Emf.Web.Ui.Services.Settings
 
         public bool TryGet<T>(string settingId, out T setting)
         {
-            object settingUntyped;
-            if (_settings.TryGetValue(settingId, out settingUntyped))
+            SettingRecord record;
+            if (_settings.TryGetValue(settingId, out record))
             {
-                setting = (T)settingUntyped;
+                setting = (T)record.Value;
                 return true;
             }
 
@@ -61,6 +64,7 @@ namespace Emf.Web.Ui.Services.Settings
 
                 var serializer = new JsonSerializer();
                 setting = serializer.Deserialize<T>(jsonReader);
+                _settings.GetValueOrAdd(settingId, () => new SettingRecord()).Value = setting;
                 return true;
             }
         }
@@ -71,9 +75,15 @@ namespace Emf.Web.Ui.Services.Settings
             return TryGet(settingId, out setting) ? setting : factory();
         }
 
+        public IObservable<T> GetObservable<T>(string settingId) => _settings.GetValueOrAdd(settingId, () => new SettingRecord()).Observable.OfType<T>();
+
         public bool Delete(string settingId)
         {
             var filePath = GetFilePath(settingId);
+
+            SettingRecord record;
+            if (_settings.TryGetValue(settingId, out record))
+                record.Dispose();
 
             _settings.Remove(settingId);
 
@@ -88,27 +98,58 @@ namespace Emf.Web.Ui.Services.Settings
         {
             return Path.Combine(_basePath, settingName + ".json");
         }
+
+        private class SettingRecord : IDisposable
+        {
+            private readonly ReplaySubject<object> _subject = new ReplaySubject<object>();
+            private object _value;
+
+            public object Value
+            {
+                get { return _value; }
+                set
+                {
+                    if (Equals(_value, value))
+                        return;
+                    _value = value;
+                    _subject.OnNext(value);
+                }
+            }
+
+            public IObservable<object> Observable => _subject;
+
+            public void Dispose()
+            {
+                _subject.OnCompleted();
+                _subject.Dispose();
+            }
+        }
     }
 
     public class SettingStore<T>
     {
         private readonly SettingStore _settingStore;
-        private readonly string _settingName;
+        private readonly string _settingId;
 
-        public SettingStore(SettingStore settingStore, string settingName)
+        public SettingStore(SettingStore settingStore, string settingId)
         {
             _settingStore = settingStore;
-            _settingName = settingName;
+            _settingId = settingId;
         }
 
         public void Set(T setting)
         {
-            _settingStore.Set(_settingName, setting);
+            _settingStore.Set(_settingId, setting);
         }
 
         public bool TryGet(out T setting)
         {
-            return _settingStore.TryGet(_settingName, out setting);
+            return _settingStore.TryGet(_settingId, out setting);
+        }
+
+        public IObservable<T> GetObservable()
+        {
+            return _settingStore.GetObservable<T>(_settingId);
         }
 
         public T GetOrCreate(Func<T> factory)
@@ -119,7 +160,7 @@ namespace Emf.Web.Ui.Services.Settings
 
         public bool Delete()
         {
-            return _settingStore.Delete(_settingName);
+            return _settingStore.Delete(_settingId);
         }
     }
 

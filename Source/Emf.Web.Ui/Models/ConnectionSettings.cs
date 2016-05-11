@@ -4,11 +4,11 @@ using EqualityComparers;
 
 namespace Emf.Web.Ui.Models
 {
-    public class Settings
+    public class ConnectionSettings
     {
-        public static readonly IEqualityComparer<Settings> ChangedComparer = EqualityCompare<Settings>.EquateBy(b => b.TfsCollectionUrl).ThenEquateBy(b => b.TfsCollectionUrl);
+        public static readonly IEqualityComparer<ConnectionSettings> ChangedComparer = EqualityCompare<ConnectionSettings>.EquateBy(b => b.TfsCollectionUrl).ThenEquateBy(b => b.TfsCollectionUrl);
 
-        public Settings(string tfsCollectionUrl, string tfsProject)
+        public ConnectionSettings(string tfsCollectionUrl, string tfsProject)
         {
             TfsCollectionUrl = tfsCollectionUrl;
             TfsProject = tfsProject;
